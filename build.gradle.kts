@@ -11,7 +11,7 @@ java {
 }
 
 group = "me.barny1094875" // Declare bundle identifier.
-version = "1.4" // Declare plugin version (will be in .jar).
+version = "1.4.1" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 

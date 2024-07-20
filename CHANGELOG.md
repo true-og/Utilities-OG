@@ -1,3 +1,7 @@
+**1.4.1:**
+- Added TrueOG Text Interpreter API.
+- Generic MiniPlaceholder name specification.
+
 **1.4:**
 
 - Added TrueOG Message API (supports modern + legacy formatting in the same message, &* for rainbow, and MiniPlaceholder expansion).

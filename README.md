@@ -54,7 +54,7 @@ At the moment, any config change requires a server restart to take effect.
 
 **1. trueogSendMessage(Player player, String message)**
 
-Send a message to the player with TrueOG formatting (supports legacy and modern formatting).
+Send a message to the player with TrueOG formatting (supports audience MiniPlaceholder expansion, legacy and modern formatting).
 
 ```java
 Player targetPlayer = Bukkit.getPlayer("USERNAME");
@@ -72,7 +72,16 @@ TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(targetP
 UtilitiesOG.trueogSendMessage(targetPlayer, expandedMessage);
 ```
 
-**3. ranksCommand():**
+**3. trueogTextInterpreter(Player player, String message)**
+
+Process a message without sending it right away (supports audience MiniPlaceholder expansion, legacy and modern formatting).
+
+```java
+Player targetPlayer = Bukkit.getPlayer("USERNAME");
+TextComponent myMessage = UtilitiesOG.trueogTextInterpreter(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
+```
+
+**4. ranksCommand():**
 
 Returns a new instance of the RanksCommand class, allowing you to potentially customize its behavior in the future.
 
@@ -81,7 +90,7 @@ RanksCommand ranksCommand = UtilitiesOG.ranksCommand();
 // Future configuration here.
 ```
 
-**4. pingCommand():**
+**5. pingCommand():**
 
 Returns a new instance of the PingCommand class, allowing you to potentially customize its behavior in the future.
 

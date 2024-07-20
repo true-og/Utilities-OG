@@ -17,12 +17,23 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 // Declare the TrueOG MiniPlaceholderAPI Module.
 public class MiniPlaceholderAPI {
 
+	String miniPlaceholderPrefix;
+	String miniPlaceholderSuffix;
+
+	public MiniPlaceholderAPI(String miniPlaceholderPrefix, String miniPlaceholderSuffix) {
+		if (miniPlaceholderPrefix == null || miniPlaceholderSuffix == null) {
+			throw new IllegalArgumentException("Both prefix and suffix must be provided");
+		}
+		this.miniPlaceholderPrefix = miniPlaceholderPrefix;
+		this.miniPlaceholderSuffix = miniPlaceholderSuffix;
+	}
+
 	// Easy to call function to run all the code in this Module.
 	public void register() {
 
 		// Construct the MiniPlaceholder Expansion "player_display_name".
-		Expansion expansion = Expansion.builder("player_display").filter(Player.class)
-				.audiencePlaceholder("name", (audience, ctx, queue) -> {
+		Expansion expansion = Expansion.builder(miniPlaceholderPrefix).filter(Player.class)
+				.audiencePlaceholder(miniPlaceholderSuffix, (audience, ctx, queue) -> {
 
 					// Get the player who is seeing the MiniPlaceholder expansion.
 					Player player = (Player) audience;

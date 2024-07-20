@@ -127,7 +127,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
 
 			// Enable the TrueOG MiniPlaceholdersAPI Module.
-			MiniPlaceholderAPI miniPlaceholders = new MiniPlaceholderAPI();
+			MiniPlaceholderAPI miniPlaceholders = new MiniPlaceholderAPI("player_display", "name");
 
 			// Register our custom MiniPlaceholdersAPI Module with MiniPlaceholders.
 			miniPlaceholders.register();
@@ -232,13 +232,21 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
+	// API for the TrueOG text interpreter.
+	public static TextComponent trueogTextInterpreter(Player player, String message) {
+
+		// Pass on the interpreted TextComponent.
+		return Utils.serializerAnyCase(player, message);
+
+	}
+
 	// API for TrueOG MiniPlaceholderAPI creation.
 	public static void trueogCreateMiniPlaceholder() {
 
 		// TODO: Implement the trueogCreateMiniPlaceholder API.
 
 	}
-	
+
 	// Getter/API for TrueOG MiniPlaceholderAPI expansion.
 	public static TextComponent trueogExpandMiniPlaceholders(Player player, String input) {
 
