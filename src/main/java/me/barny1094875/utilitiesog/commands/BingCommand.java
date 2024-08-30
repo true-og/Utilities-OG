@@ -8,7 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.barny1094875.utilitiesog.internal.Utils;
+import me.barny1094875.utilitiesog.UtilitiesOG;
+import me.barny1094875.utilitiesog.utils.TextUtils;
 
 // Declare the /bing command in the Ping Module with Bukkit Commands.
 public class BingCommand implements CommandExecutor {
@@ -30,14 +31,14 @@ public class BingCommand implements CommandExecutor {
 			if (player.hasPermission(pingPermission)) {
 
 				// Send player a connection confirmation message with formatting using the TrueOG Message API.
-				Utils.trueogMessage(player, "<#FFFFFF> Bong!");
+				UtilitiesOG.trueOGMessage(player, "<#FFFFFF> Bong!");
 
 			}
 			// If the player does not have permission to use the Ping Module, do this...
 			else {
 
 				// Send a detailed, formatted permissions error message to the player.
-				Utils.permissionsErrorMessage(player, cmd.getName(), pingPermission);
+				TextUtils.permissionsErrorMessage(player, cmd.getName(), pingPermission);
 
 			}
 
@@ -46,7 +47,7 @@ public class BingCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			Utils.consoleUseErrorMessage(sender, cmd.getName(), pingPermission);
+			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), pingPermission);
 
 		}
 

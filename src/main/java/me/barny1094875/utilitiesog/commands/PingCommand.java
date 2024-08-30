@@ -9,7 +9,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.barny1094875.utilitiesog.internal.Utils;
+import me.barny1094875.utilitiesog.UtilitiesOG;
+import me.barny1094875.utilitiesog.utils.TextUtils;
 
 // Declare the /ping command in the Ping Module with Bukkit Commands.
 public class PingCommand implements CommandExecutor {
@@ -34,7 +35,7 @@ public class PingCommand implements CommandExecutor {
 				if(args.length == 0) {
 
 					// Send player their own ping with formatting using the TrueOG Message API.
-					Utils.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>Your current ping is: <#FFAA00>" + player.getPing() + "<#00AA00>."));
+					UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>Your current ping is: <#FFAA00>" + player.getPing() + "<#00AA00>."));
 
 				}
 				// If the player provided one or more arguments, do this...
@@ -47,14 +48,14 @@ public class PingCommand implements CommandExecutor {
 					if(target != null) {
 
 						// Send player their specified player's ping with formatting using the TrueOG Message API.
-						Utils.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>" + target.getName() + "'s current ping is: <#FFAA00>" + target.getPing() + "<#00AA00>."));
+						UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>" + target.getName() + "'s current ping is: <#FFAA00>" + target.getPing() + "<#00AA00>."));
 
 					}
 					// If the provided argument was not a valid player, do this...
 					else {
 
 						// Send a "player not found" error message with formatting using the TrueOG Message API.				
-						Utils.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: The player " + args[0] + " was not found!"));
+						UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: The player " + args[0] + " was not found!"));
 
 					}
 
@@ -63,7 +64,7 @@ public class PingCommand implements CommandExecutor {
 				else {
 
 					// Send a "too many arguments" error message with formatting using the TrueOG Message API.
-					Utils.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: Too many arguments provided. Syntax: <#FFFF55>/ping <player>"));
+					UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: Too many arguments provided. Syntax: <#FFFF55>/ping <player>"));
 
 				}
 
@@ -72,7 +73,7 @@ public class PingCommand implements CommandExecutor {
 			else {
 
 				// Send a detailed, formatted permissions error message to the player.
-				Utils.permissionsErrorMessage(player, cmd.getName(), pingPermission);
+				TextUtils.permissionsErrorMessage(player, cmd.getName(), pingPermission);
 
 			}
 
@@ -81,7 +82,7 @@ public class PingCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			Utils.consoleUseErrorMessage(sender, cmd.getName(), pingPermission);
+			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), pingPermission);
 
 		}
 

@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import me.barny1094875.utilitiesog.UtilitiesOG;
-import me.barny1094875.utilitiesog.internal.Utils;
+import me.barny1094875.utilitiesog.utils.TextUtils;
 
 //Declare the /togglephantoms command in the Ping Module with Bukkit Commands.
 public class TogglePhantomsCommand implements CommandExecutor {
@@ -46,14 +46,14 @@ public class TogglePhantomsCommand implements CommandExecutor {
 				if (phantomToggleState) {
 
 					// Send a formatted "true" message with formatting using the TrueOG Message API.				
-					Utils.trueogMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#55FF55>Phantom spawning turned <#00AA00>ON<#55FF55>.");
+					UtilitiesOG.trueOGMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#55FF55>Phantom spawning turned <#00AA00>ON<#55FF55>.");
 
 				}
 				// If the command sender's phantom spawning is turned off, do this...
 				else {
 
 					// Send a formatted "false" message with formatting using the TrueOG Message API.				
-					Utils.trueogMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Phantom spawning turned <#FF5555>OFF<#FFAA00>.");
+					UtilitiesOG.trueOGMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Phantom spawning turned <#FF5555>OFF<#FFAA00>.");
 
 				}
 
@@ -75,7 +75,7 @@ public class TogglePhantomsCommand implements CommandExecutor {
 			else {
 
 				// Send a detailed, formatted permissions error message to the player.
-				Utils.permissionsErrorMessage(player, cmd.getName(), togglePhantomsPermission);
+				TextUtils.permissionsErrorMessage(player, cmd.getName(), togglePhantomsPermission);
 
 			}
 
@@ -84,7 +84,7 @@ public class TogglePhantomsCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			Utils.consoleUseErrorMessage(sender, cmd.getName(), togglePhantomsPermission);
+			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), togglePhantomsPermission);
 
 		}
 

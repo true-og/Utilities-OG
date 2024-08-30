@@ -2,7 +2,6 @@ plugins {
     java // Tell gradle this is a java project.
     id("io.github.goooler.shadow") version "8.1.8" // Import shadow plugin for dependency shading.
     eclipse // Import eclipse plugin for IDE integration.
-    kotlin("jvm") version "1.9.23" // Import kotlin jvm plugin for kotlin/java integration.
 }
 
 java {
@@ -86,10 +85,6 @@ tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-parameters")
     options.encoding = "UTF-8" // Use UTF-8 encoding universally.
     options.isFork = true
-}
-
-kotlin {
-    jvmToolchain(17) // Declare kotlin jvm toolchain version.
 }
 
 java {

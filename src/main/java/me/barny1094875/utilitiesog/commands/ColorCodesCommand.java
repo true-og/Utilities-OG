@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.barny1094875.utilitiesog.internal.Utils;
+import me.barny1094875.utilitiesog.utils.TextUtils;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 // Declare the ColorCodes Module with Bukkit Commands.
@@ -60,7 +60,7 @@ public class ColorCodesCommand implements CommandExecutor {
 			else {
 
 				// Send a detailed, formatted permissions error message to the player.
-				Utils.permissionsErrorMessage(player, cmd.getName(), colorCodesPermission);
+				TextUtils.permissionsErrorMessage(player, cmd.getName(), colorCodesPermission);
 
 			}
 
@@ -69,7 +69,7 @@ public class ColorCodesCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			Utils.consoleUseErrorMessage(sender, cmd.getName(), colorCodesPermission);
+			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), colorCodesPermission);
 
 		}
 

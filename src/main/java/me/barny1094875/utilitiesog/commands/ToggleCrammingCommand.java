@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.barny1094875.utilitiesog.UtilitiesOG;
-import me.barny1094875.utilitiesog.internal.Utils;
+import me.barny1094875.utilitiesog.utils.TextUtils;
 
 // Declare the /togglecramming command in the DisableEntityCramming Module with Bukkit Commands.
 public class ToggleCrammingCommand implements CommandExecutor {
@@ -37,14 +37,14 @@ public class ToggleCrammingCommand implements CommandExecutor {
 				config.set("doEntityCramming", ! config.getBoolean("doEntityCramming"));
 
 				// Send confirmation message with formatting using the TrueOG Message API.
-				Utils.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Entity cramming has been set to <#FFFF55>" + config.getBoolean("doEntityCramming") + "<#FFAA00>."));
+				UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Entity cramming has been set to <#FFFF55>" + config.getBoolean("doEntityCramming") + "<#FFAA00>."));
 
 			}
 			// If the player does not have permission to use /togglecramming, do this...
 			else {
 
 				// Send a detailed, formatted permissions error message to the player.
-				Utils.permissionsErrorMessage(player, cmd.getName(), toggleCrammingPermission);
+				TextUtils.permissionsErrorMessage(player, cmd.getName(), toggleCrammingPermission);
 
 			}
 
@@ -53,7 +53,7 @@ public class ToggleCrammingCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			Utils.consoleUseErrorMessage(sender, cmd.getName(), toggleCrammingPermission);
+			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), toggleCrammingPermission);
 
 		}
 

@@ -52,57 +52,61 @@ At the moment, any config change requires a server restart to take effect.
 
 ### API Documentation:
 
-**1. trueogSendMessage(Player player, String message)**
+**1. [void] trueOGMessage(Player player, String message)**
 
-Send a message to the player with TrueOG formatting (supports audience MiniPlaceholder expansion, legacy and modern formatting).
+Send a message to the player with TrueOG formatting. Supports modern color codes and legacy Bukkit color codes (case-insensitive).
 
 ```java
 Player targetPlayer = Bukkit.getPlayer("USERNAME");
-UtilitiesOG.trueogSendMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
+UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
-**2. trueogExpandMiniPlaceholders(Player player, String input)**
+**2. [TextComponent] trueOGExpandMiniPlaceholders(Player player, String input)**
 
-Expands MiniPlaceholders within a string for the given player. (**Note:** Requires MiniPlaceholdersAPI to be enabled in the config).
+Expands MiniPlaceholders within a string for the given player, with support for color code processing through trueogColorize().
 
 ```java
 Player targetPlayer = Bukkit.getPlayer("SomePlayer");
 String message = "Welcome back, <player_display_name>!";
-TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(targetPlayer, message);
-UtilitiesOG.trueogSendMessage(targetPlayer, expandedMessage);
+TextComponent expandedMessage = UtilitiesOG.trueOGExpandMiniPlaceholders(targetPlayer, message);
+UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage);
 ```
 
-**3. trueogTextInterpreter(Player player, String message)**
+**3. [TextComponent] trueogColorize(Player player, String message)**
 
-Process a message without sending it right away (supports audience MiniPlaceholder expansion, legacy and modern formatting).
+Processes a message into a formatted TextComponent without sending it right away. Supports both legacy and modern color codes, as well as MiniMessage processing.
 
 ```java
 Player targetPlayer = Bukkit.getPlayer("USERNAME");
-TextComponent myMessage = UtilitiesOG.trueogTextInterpreter(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
+TextComponent myMessage = UtilitiesOG.trueogColorize(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
-**4. ranksCommand():**
+**4. [Plugin] getPlugin()**
 
-Returns a new instance of the RanksCommand class, allowing you to potentially customize its behavior in the future.
+Returns the active instance of the UtilitiesOG plugin.
 
 ```java
-RanksCommand ranksCommand = UtilitiesOG.ranksCommand();
-// Future configuration here.
+UtilitiesOG pluginInstance = UtilitiesOG.getPlugin();
 ```
 
-**5. pingCommand():**
+**5. [BukkitTask] runTaskAsynchronously(final Runnable run)**
 
-Returns a new instance of the PingCommand class, allowing you to potentially customize its behavior in the future.
+Runs a task asynchronously as UtilitiesOG using the BukkitTask API.
 
 ```java
-PingCommand pingCommand = UtilitiesOG.pingCommand();
-// Future configuration here.
+BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
+    // Your async code here.
+});
 ```
 
 ## TODO:
 
 - LuckPerms colors for <player_display_name>.
 
-- trueOGCreateMiniPlaceholderAPI.
+- AUDIENCE_WITHOUT_NAME MiniPlaceholder registration
 
-- Customization options for the Ranks and Ping APIs.
+- GLOBAL MiniPlaceholder Registration
+
+- RELATIVE_WITH_NAMES MiniPlaceholder Registration
+
+- RELATIVE_WITHOUT_NAMES MiniPlaceholder Registration

@@ -8,7 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.barny1094875.utilitiesog.internal.Utils;
+import me.barny1094875.utilitiesog.UtilitiesOG;
+import me.barny1094875.utilitiesog.utils.TextUtils;
 
 // Declare the About Module with Bukkit Commands.
 public class AboutCommand implements CommandExecutor {
@@ -30,14 +31,14 @@ public class AboutCommand implements CommandExecutor {
 			if (player.hasPermission(aboutPermission)) {
 
 				// Send a formatted about message to the player using the TrueOG Message API.
-				Utils.trueogMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>A collection of utilities and APIs used by <#00AA00>True<#AA0000>OG<#FFAA00> <#FFFF55>Network<#FFAA00>. Developed by <#FFFF55>christianniehaus <#FFAA00>& <#FFFF55>NotAlexNoyle<#FFAA00>.");
+				UtilitiesOG.trueOGMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>A collection of utilities and APIs used by <#00AA00>True<#AA0000>OG<#FFAA00> <#FFFF55>Network<#FFAA00>. Developed by <#FFFF55>christianniehaus <#FFAA00>& <#FFFF55>NotAlexNoyle<#FFAA00>.");
 
 			}
 			// If the player does not have permission to use /about, do this...
 			else {
 
 				// Send a detailed, formatted permissions error message to the player.
-				Utils.permissionsErrorMessage(player, cmd.getName(), aboutPermission);
+				TextUtils.permissionsErrorMessage(player, cmd.getName(), aboutPermission);
 
 			}
 
@@ -46,7 +47,7 @@ public class AboutCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			Utils.consoleUseErrorMessage(sender, cmd.getName(), aboutPermission);
+			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), aboutPermission);
 
 		}
 

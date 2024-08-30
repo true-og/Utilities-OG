@@ -7,8 +7,8 @@ ColorCodes: true
 # Turn off entity cramming damage server-wide. Entity cramming is when mobs pile up and cause damage to each other. Default: false.
 # WARNING: Make sure there is another plugin that establishes entity limits if this module is enabled. Otherwise the server will lag.
 DisableEntityCramming: false
-# A custom, easy to use MiniPlaceholders API. Default: true.
-MiniPlaceholderAPI: true
+# Enable the included MiniPlaceholders?
+MiniPlaceholders: true
 # Prevents trap doors from being flipped in any WorldGuard regions with the "can-flippy" flag set to DENY. Default: true.
 NoFlippy: true
 # Empowers individual players to toggle phantom spawning on or off with the command /togglephantoms. Default: true.

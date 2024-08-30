@@ -1,6 +1,9 @@
 **1.4.1:**
-- Added TrueOG Text Interpreter API.
-- Generic MiniPlaceholder name specification.
+- Implemented AUDIENCE_WITH_NAME MiniPlaceholder registration API.
+- Implemented MiniPlaceholder unregistration API.
+- Implemented runTaskAsynchronously API.
+- Implemented trueogColorize API.
+- Refactored existing APIs.
 
 **1.4:**
 

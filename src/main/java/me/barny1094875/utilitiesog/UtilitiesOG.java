@@ -2,7 +2,6 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package me.barny1094875.utilitiesog;
 
-// Import libraries.
 import java.io.File;
 import java.io.IOException;
 
@@ -25,11 +24,14 @@ import me.barny1094875.utilitiesog.commands.RanksCommand;
 import me.barny1094875.utilitiesog.commands.ToggleCrammingCommand;
 import me.barny1094875.utilitiesog.commands.TogglePhantomsCommand;
 import me.barny1094875.utilitiesog.internal.FlagRegistrationException;
-import me.barny1094875.utilitiesog.internal.MiniPlaceholderAPI;
-import me.barny1094875.utilitiesog.internal.Utils;
+import me.barny1094875.utilitiesog.internal.PlaceholderType;
 import me.barny1094875.utilitiesog.modules.ChainArmorModule;
 import me.barny1094875.utilitiesog.modules.MockBambooModule;
+import me.barny1094875.utilitiesog.utils.PlaceholderUtils;
+import me.barny1094875.utilitiesog.utils.TextUtils;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 // Declare main plugin class.
 public final class UtilitiesOG extends JavaPlugin {
@@ -38,6 +40,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	private File file;
 	private static UtilitiesOG plugin;
 	private static FileConfiguration config;
+	private PlaceholderUtils playerDisplayNameMiniPlaceholder;
 	private static File phantomPreferencesFile;
 	private static YamlConfiguration phantomPreferences;
 	private static StateFlag FlippyFlag;
@@ -123,14 +126,10 @@ public final class UtilitiesOG extends JavaPlugin {
 		}
 
 		// FEATURE: A custom, easy to use MiniPlaceholders API.
-		// If the MiniPlaceholdersAPI Module is enabled in the config file, do this...
+		// If the built-in MiniPlaceholders Module is enabled in the config file, do this...
 		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
 
-			// Enable the TrueOG MiniPlaceholdersAPI Module.
-			MiniPlaceholderAPI miniPlaceholders = new MiniPlaceholderAPI("player_display", "name");
-
-			// Register our custom MiniPlaceholdersAPI Module with MiniPlaceholders.
-			miniPlaceholders.register();
+			trueOGRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE_WITH_NAME, "<dark_purple><player></dark_purple>");
 
 		}
 
@@ -224,58 +223,21 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
-	// Getter/API for TrueOG message formatting. Supports legacy Bukkit color codes. Case insensitive.
-	public static void trueogSendMessage(Player player, String message) {
+	// As the server un-loads, do this...
+	@Override
+	public void onDisable() {
 
-		// Forward the message to the server.
-		Utils.trueogMessage(player, message);
-
-	}
-
-	// API for the TrueOG text interpreter.
-	public static TextComponent trueogTextInterpreter(Player player, String message) {
-
-		// Pass on the interpreted TextComponent.
-		return Utils.serializerAnyCase(player, message);
+		// Unregister the MiniPlaceholderAPI if it was enabled.
+		disableMiniPlaceholderAPI();
 
 	}
 
-	// API for TrueOG MiniPlaceholderAPI creation.
-	public static void trueogCreateMiniPlaceholder() {
+	// Unregister the placeholder.
+	private void disableMiniPlaceholderAPI() {
 
-		// TODO: Implement the trueogCreateMiniPlaceholder API.
+		trueOGUnregisterMiniPlaceholder(playerDisplayNameMiniPlaceholder);
 
-	}
-
-	// Getter/API for TrueOG MiniPlaceholderAPI expansion.
-	public static TextComponent trueogExpandMiniPlaceholders(Player player, String input) {
-
-		// Expand all the MiniPlaceholders in a given String.
-		return MiniPlaceholderAPI.expandPlayerMiniPlaceholders(player, input);
-
-	}
-
-	// Getter/API for the Ranks Module.
-	public static RanksCommand ranksCommand() {
-
-		// Return a fresh Ranks Module.
-		return new RanksCommand();
-
-	}
-
-	// Getter/API for the Ping Module.
-	public static PingCommand pingCommand() {
-
-		// Return a fresh Ping Module.
-		return new PingCommand();
-
-	}
-
-	// Getter/API for Utilities-OG.
-	public static UtilitiesOG getPlugin() {
-
-		// Return the current Utilities-OG instance.
-		return plugin;
+		playerDisplayNameMiniPlaceholder = null;
 
 	}
 
@@ -287,22 +249,6 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
-	// Getter/API for the phantom toggle cache file.
-	public static File getPhantomDisabledPlayersFile() {
-
-		// Return the phantom toggle cache file.
-		return phantomPreferencesFile;
-
-	}
-
-	// Getter/API for the phantom toggle cache file in YAML form.
-	public static YamlConfiguration getPhantomPreferences() {
-
-		// Return the phantom toggle cache file in YAML form.
-		return phantomPreferences;
-
-	}
-
 	// Getter for the FlippyFlag state.
 	public static StateFlag getFlippyFlag() {
 
@@ -311,11 +257,116 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
-	// Runs plugin asynchronously so multiple players can use it at once efficiently.
-	public BukkitTask runTaskAsynchronously(final Runnable run) {
+	// Getter for the phantom toggle cache file.
+	public static File getPhantomDisabledPlayersFile() {
+
+		// Return the phantom toggle cache file.
+		return phantomPreferencesFile;
+
+	}
+
+	// Getter for the phantom toggle cache file in YAML form.
+	public static YamlConfiguration getPhantomPreferences() {
+
+		// Return the phantom toggle cache file in YAML form.
+		return phantomPreferences;
+
+	}
+
+	// API for sending TrueOG Player messages. Supports modern color codes, and legacy Bukkit color codes (case INsensitive).
+	public static void trueOGMessage(Player player, String message) {
+
+		// Forward the message to the server.
+		TextUtils.utilitiesOGMessage(player, message);
+
+	}
+
+	// API for TrueOG MiniPlaceholderAPI expansion (with color code processing from trueOGColorize).
+	public static TextComponent trueOGExpandMiniPlaceholders(Player player, String input) {
+
+		// Expand all the MiniPlaceholders in a given String.
+		return TextUtils.expandPlayerMiniPlaceholders(player, input);
+
+	}
+
+	// API for the TrueOG text colorizer.
+	public static TextComponent trueogColorize(Player player, String message) {
+
+		// Convert the String's legacy color codes to modern ones.
+		String processedMessage = TextUtils.processColorCodes(message);
+
+		// Use MiniMessage to parse the modern colors in the String and convert it to a Component.
+		Component component = MiniMessage.miniMessage().deserialize(processedMessage);
+
+		// If the result is a TextComponent, do this...
+		if (component instanceof TextComponent) {
+
+			// Cast and send off.
+			return (TextComponent) component;
+
+		}
+		// If the result is not a TextComponent, do this...
+		else {
+
+			// Convert the Component to a TextComponent.
+			return Component.text().append(component).build();
+
+		}
+
+	}
+
+	// API for easy creation and registration of a MiniPlaceholder.
+	public void trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content) {
+
+		int lastIndex = placeholderName.lastIndexOf('_');
+
+		String placeholderPrefix = "";
+		String placeholderSuffix = "";
+		if (lastIndex != -1) {
+
+			// Split the placeholder name into its prefix and suffix.
+			placeholderPrefix = placeholderName.substring(0, lastIndex);
+			placeholderSuffix = placeholderName.substring(lastIndex + 1);
+
+		}
+
+		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
+
+			// Register the placeholder with MiniPlaceholders
+			PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, Component.text(content));
+
+			// Register the placeholder
+			placeholderUtils.register();
+
+		}
+
+	}
+
+
+	// API to unregister any MiniPlaceholder.
+	public void trueOGUnregisterMiniPlaceholder(PlaceholderUtils placeholderUtils) {
+
+		if (placeholderUtils != null) {
+
+			placeholderUtils.unregister();
+
+		}
+
+	}
+
+	// API for getting the Utilities-OG instance.
+	public static UtilitiesOG getPlugin() {
+
+		// Return the current Utilities-OG instance.
+		return plugin;
+
+	}
+
+	// API for basic async tasks using the BukkitTask API.
+	public static BukkitTask runTaskAsynchronously(final Runnable run) {
 
 		// Schedule processes.
-		return this.getServer().getScheduler().runTaskAsynchronously(this, run);
+		return getPlugin().getServer().getScheduler().runTaskAsynchronously(getPlugin(), run);
 
 	}
 
