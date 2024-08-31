@@ -330,15 +330,11 @@ public final class UtilitiesOG extends JavaPlugin {
 
 		}
 
-		if (getPlugin().getConfig().getBoolean("MiniPlaceholderAPI")) {
+		// Register the placeholder with MiniPlaceholders
+		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, Component.text(content));
 
-			// Register the placeholder with MiniPlaceholders
-			PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, Component.text(content));
-
-			// Register the placeholder
-			placeholderUtils.register();
-
-		}
+		// Register the placeholder
+		placeholderUtils.register();
 
 	}
 
