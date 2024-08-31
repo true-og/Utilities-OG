@@ -11,27 +11,18 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 
 public enum PlaceholderType {
 
-	AUDIENCE_WITH_NAME(player -> {
+	AUDIENCE(player -> {
 
 		// The placeholder logic will be provided externally.
 		return Tag.inserting(null);
 
 	}),
 
-	/*AUDIENCE_WITHOUT_NAME(player -> {
-        // Same as above, logic handled externally.
+	/*GLOBAL(player -> {
         return Tag.inserting(null);
     }),
 
-    GLOBAL(player -> {
-        return Tag.inserting(null);
-    }),
-
-    RELATIVE_WITH_NAMES(player -> {
-        return Tag.inserting(null);
-    }),
-
-    RELATIVE_WITHOUT_NAMES(player -> {
+    RELATIVE(player -> {
         return Tag.inserting(null);
     })*/;
 

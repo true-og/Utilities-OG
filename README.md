@@ -103,10 +103,6 @@ BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
 
 - LuckPerms colors for <player_display_name>.
 
-- AUDIENCE_WITHOUT_NAME MiniPlaceholder registration
+- Global Placeholder Registration.
 
-- GLOBAL MiniPlaceholder Registration
-
-- RELATIVE_WITH_NAMES MiniPlaceholder Registration
-
-- RELATIVE_WITHOUT_NAMES MiniPlaceholder Registration
+- Relative Placeholder Registration.

@@ -1,5 +1,8 @@
+**1.4.2:**
+- 
+
 **1.4.1:**
-- Implemented AUDIENCE_WITH_NAME MiniPlaceholder registration API.
+- Implemented AUDIENCE type MiniPlaceholder registration API.
 - Implemented MiniPlaceholder unregistration API.
 - Implemented runTaskAsynchronously API.
 - Implemented trueogColorize API.

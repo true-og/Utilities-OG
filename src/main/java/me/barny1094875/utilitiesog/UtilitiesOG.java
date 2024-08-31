@@ -4,6 +4,8 @@ package me.barny1094875.utilitiesog;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -44,6 +46,9 @@ public final class UtilitiesOG extends JavaPlugin {
 	private static File phantomPreferencesFile;
 	private static YamlConfiguration phantomPreferences;
 	private static StateFlag FlippyFlag;
+
+	// Maintain a map of registered placeholders.
+	private static final Map<String, PlaceholderUtils> registeredPlaceholders = new HashMap<>();
 
 	// When the plugin is enabled, do this...
 	@Override
@@ -129,7 +134,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		// If the built-in MiniPlaceholders Module is enabled in the config file, do this...
 		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
 
-			trueOGRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE_WITH_NAME, "<dark_purple><player></dark_purple>");
+			trueOGRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE, "<dark_purple><player></dark_purple>");
 
 		}
 
@@ -234,11 +239,11 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	// Unregister the placeholder.
 	private void disableMiniPlaceholderAPI() {
-
-		trueOGUnregisterMiniPlaceholder(playerDisplayNameMiniPlaceholder);
-
-		playerDisplayNameMiniPlaceholder = null;
-
+	    if (playerDisplayNameMiniPlaceholder != null) {
+	        String placeholderName = playerDisplayNameMiniPlaceholder.getFullPlaceholderName();
+	        trueOGUnregisterMiniPlaceholder(placeholderName);
+	        playerDisplayNameMiniPlaceholder = null;
+	    }
 	}
 
 	// Getter for the config file.
@@ -323,32 +328,29 @@ public final class UtilitiesOG extends JavaPlugin {
 		String placeholderPrefix = "";
 		String placeholderSuffix = "";
 		if (lastIndex != -1) {
-
 			// Split the placeholder name into its prefix and suffix.
 			placeholderPrefix = placeholderName.substring(0, lastIndex);
 			placeholderSuffix = placeholderName.substring(lastIndex + 1);
-
 		}
 
 		// Register the placeholder with MiniPlaceholders
 		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, Component.text(content));
 
-		// Register the placeholder
+		// Register the placeholder and store it in the map.
 		placeholderUtils.register();
-
+		registeredPlaceholders.put(placeholderName, placeholderUtils);
 	}
 
-
-	// API to unregister any MiniPlaceholder.
-	public static void trueOGUnregisterMiniPlaceholder(PlaceholderUtils placeholderUtils) {
-
-		if (placeholderUtils != null) {
-
-			placeholderUtils.unregister();
-
+	// API to unregister a specific MiniPlaceholder by its name.
+	public static void trueOGUnregisterMiniPlaceholder(String placeholderName) {
+		PlaceholderUtils placeholder = registeredPlaceholders.remove(placeholderName);
+		if (placeholder != null) {
+			placeholder.unregister();
+		} else {
+			TextUtils.logToConsole("TrueOG MiniPlaceholdersAPI: Placeholder " + placeholderName + " not found.");
 		}
-
 	}
+
 
 	// API for getting the Utilities-OG instance.
 	public static UtilitiesOG getPlugin() {

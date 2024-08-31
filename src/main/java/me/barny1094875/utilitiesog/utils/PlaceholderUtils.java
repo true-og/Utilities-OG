@@ -27,6 +27,10 @@ public class PlaceholderUtils {
 		this.placeholderFunction = placeholderType.createPlaceholderFunction(content);
 	}
 
+	public String getFullPlaceholderName() {
+		return miniPlaceholderPrefix + "_" + miniPlaceholderSuffix;
+	}
+
 	public void register() {
 		if (expansion == null) {
 			expansion = Expansion.builder(miniPlaceholderPrefix)
@@ -48,8 +52,8 @@ public class PlaceholderUtils {
 		if (expansion != null) {
 			expansion.unregister();
 
-			// Use the simplified logging method to log the unregistration
-			String placeholder = "<" + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + ">";
+			// Simplified logging method to log the unregistration.
+			String placeholder = "<" + getFullPlaceholderName() + ">";
 			TextUtils.logToConsole("TrueOG MiniPlaceholdersAPI expansion " + placeholder + " unregistered successfully.");
 
 			expansion = null;
