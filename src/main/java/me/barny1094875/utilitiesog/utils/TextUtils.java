@@ -4,11 +4,11 @@ package me.barny1094875.utilitiesog.utils;
 
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import io.github.miniplaceholders.api.MiniPlaceholders;
-import me.barny1094875.utilitiesog.UtilitiesOG;
 import me.barny1094875.utilitiesog.internal.ColorCodeMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -115,7 +115,7 @@ public class TextUtils {
 	// Log a Component message to the console, stripping colors.
 	public static void logToConsole(String message) {
 
-		UtilitiesOG.getPlugin().getLogger().info(message);
+		Bukkit.getLogger().info(message);
 
 	}
 
