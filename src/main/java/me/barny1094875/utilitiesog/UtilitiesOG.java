@@ -134,7 +134,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		// If the built-in MiniPlaceholders Module is enabled in the config file, do this...
 		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
 
-			trueOGRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE, "<dark_purple><player></dark_purple>");
+			trueOGRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE, "<dark_purple><luckperms_prefix><player></dark_purple>");
 
 		}
 
@@ -239,11 +239,11 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	// Unregister the placeholder.
 	private void disableMiniPlaceholderAPI() {
-	    if (playerDisplayNameMiniPlaceholder != null) {
-	        String placeholderName = playerDisplayNameMiniPlaceholder.getFullPlaceholderName();
-	        trueOGUnregisterMiniPlaceholder(placeholderName);
-	        playerDisplayNameMiniPlaceholder = null;
-	    }
+		if (playerDisplayNameMiniPlaceholder != null) {
+			String placeholderName = playerDisplayNameMiniPlaceholder.getFullPlaceholderName();
+			trueOGUnregisterMiniPlaceholder(placeholderName);
+			playerDisplayNameMiniPlaceholder = null;
+		}
 	}
 
 	// Getter for the config file.
@@ -334,7 +334,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		}
 
 		// Register the placeholder with MiniPlaceholders
-		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, Component.text(content));
+		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, TextUtils.expandGlobalMiniPlaceholders(content));
 
 		// Register the placeholder and store it in the map.
 		placeholderUtils.register();
@@ -351,6 +351,13 @@ public final class UtilitiesOG extends JavaPlugin {
 		}
 	}
 
+	// API to check if a MiniPlaceholder is already registered based on its name.
+	public static boolean isMiniPlaceholderRegistered(String placeholderName) {
+
+		// Check if the placeholder is in the registeredPlaceholders map.
+		return registeredPlaceholders.containsKey(placeholderName);
+
+	}
 
 	// API for getting the Utilities-OG instance.
 	public static UtilitiesOG getPlugin() {

@@ -27,10 +27,6 @@ public class PlaceholderUtils {
 		this.placeholderFunction = placeholderType.createPlaceholderFunction(content);
 	}
 
-	public String getFullPlaceholderName() {
-		return miniPlaceholderPrefix + "_" + miniPlaceholderSuffix;
-	}
-
 	public void register() {
 		if (expansion == null) {
 			expansion = Expansion.builder(miniPlaceholderPrefix)
@@ -58,6 +54,12 @@ public class PlaceholderUtils {
 
 			expansion = null;
 		}
+	}
+
+	public String getFullPlaceholderName() {
+
+		return miniPlaceholderPrefix + "_" + miniPlaceholderSuffix;
+
 	}
 
 }

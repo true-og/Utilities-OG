@@ -98,6 +98,20 @@ public class TextUtils {
 
 	}
 
+	// Replace MiniPlaceholders in a given String with their global content from MiniPlaceholderAPI.
+	public static TextComponent expandGlobalMiniPlaceholders(String message) {
+
+		// Get the global MiniPlaceholder content that is not specific to any player.
+		TagResolver globalPlaceholders = MiniPlaceholders.getGlobalPlaceholders();
+
+		// Replace the MiniPlaceholders with the global placeholder content and the modern color codes with actual colors.
+		Component expandedMessage = MiniMessage.miniMessage().deserialize(message, globalPlaceholders);
+
+		// Put the message back into a TextComponent and return it.
+		return (TextComponent) expandedMessage;
+
+	}
+
 	// Replace MiniPlaceholders in a given String with their content from MiniPlaceholderAPI.
 	public static TextComponent expandPlayerMiniPlaceholders(Player player, String message) {
 
