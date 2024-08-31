@@ -316,7 +316,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	}
 
 	// API for easy creation and registration of a MiniPlaceholder.
-	public void trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content) {
+	public static void trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content) {
 
 		int lastIndex = placeholderName.lastIndexOf('_');
 
@@ -330,7 +330,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
 		}
 
-		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
+		if (getPlugin().getConfig().getBoolean("MiniPlaceholderAPI")) {
 
 			// Register the placeholder with MiniPlaceholders
 			PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, Component.text(content));
@@ -344,7 +344,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
 
 	// API to unregister any MiniPlaceholder.
-	public void trueOGUnregisterMiniPlaceholder(PlaceholderUtils placeholderUtils) {
+	public static void trueOGUnregisterMiniPlaceholder(PlaceholderUtils placeholderUtils) {
 
 		if (placeholderUtils != null) {
 
