@@ -19,33 +19,42 @@ public class PlaceholderUtils {
 	public PlaceholderUtils(String miniPlaceholderPrefix, String miniPlaceholderSuffix, PlaceholderType placeholderType, TextComponent content) {
 
 		if (miniPlaceholderPrefix == null || miniPlaceholderSuffix == null) {
+
 			throw new IllegalArgumentException("[Utilities-OG] MiniPlaceholderAPI ERROR: Both the prefix and suffix parameters must be specified!");
+
 		}
 
 		this.miniPlaceholderPrefix = miniPlaceholderPrefix;
 		this.miniPlaceholderSuffix = miniPlaceholderSuffix;
 		this.placeholderFunction = placeholderType.createPlaceholderFunction(content);
+
 	}
 
 	public void register() {
+
 		if (expansion == null) {
-			expansion = Expansion.builder(miniPlaceholderPrefix)
-					.filter(Player.class)
+
+			expansion = Expansion.builder(miniPlaceholderPrefix).filter(Player.class)
 					.audiencePlaceholder(miniPlaceholderSuffix, (audience, ctx, queue) -> {
+
 						Player player = (Player) audience;
 						return placeholderFunction.apply(player);
-					})
-					.build();
+
+					}).build();
 
 			expansion.register();
 
 			String placeholder = "<" + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + ">";
 			TextUtils.logToConsole("TrueOG MiniPlaceholdersAPI expansion " + placeholder + " registered successfully.");
+
 		}
+
 	}
 
 	public void unregister() {
+
 		if (expansion != null) {
+
 			expansion.unregister();
 
 			// Simplified logging method to log the unregistration.
@@ -53,7 +62,9 @@ public class PlaceholderUtils {
 			TextUtils.logToConsole("TrueOG MiniPlaceholdersAPI expansion " + placeholder + " unregistered successfully.");
 
 			expansion = null;
+
 		}
+
 	}
 
 	public String getFullPlaceholderName() {

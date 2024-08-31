@@ -63,7 +63,7 @@ UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&
 
 **2. [TextComponent] trueOGExpandMiniPlaceholders(Player player, String input)**
 
-Expands MiniPlaceholders within a string for the given player, with support for color code processing through trueogColorize().
+Expands MiniPlaceholders within a string for the given player, with support for color code processing via trueogColorize().
 
 ```java
 Player targetPlayer = Bukkit.getPlayer("SomePlayer");
@@ -74,22 +74,44 @@ UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage);
 
 **3. [TextComponent] trueogColorize(Player player, String message)**
 
-Processes a message into a formatted TextComponent without sending it right away. Supports both legacy and modern color codes, as well as MiniMessage processing.
+Converts a message string into a formatted TextComponent using both legacy and modern color codes, along with MiniMessage processing.
 
 ```java
 Player targetPlayer = Bukkit.getPlayer("USERNAME");
 TextComponent myMessage = UtilitiesOG.trueogColorize(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
-**4. [Plugin] getPlugin()**
+**4. [void] trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content)**
 
-Returns the active instance of the UtilitiesOG plugin.
+Creates and registers a MiniPlaceholder with the specified name and type. The content can include global MiniPlaceholders that will be expanded during registration.
 
 ```java
-UtilitiesOG pluginInstance = UtilitiesOG.getPlugin();
+String placeholderName = "example_placeholder";
+PlaceholderType placeholderType = PlaceholderType.STRING;
+String content = "Hello, <player_name>!";
+UtilitiesOG.trueOGRegisterMiniPlaceholder(placeholderName, placeholderType, content);
 ```
 
-**5. [BukkitTask] runTaskAsynchronously(final Runnable run)**
+**5. [void] trueOGUnregisterMiniPlaceholder(String placeholderName)**
+
+Unregisters a previously registered MiniPlaceholder by its name.
+
+```java
+String placeholderName = "example_placeholder";
+UtilitiesOG.trueOGUnregisterMiniPlaceholder(placeholderName);
+});
+```
+
+**6. [boolean] isMiniPlaceholderRegistered(String placeholderName)**
+
+Checks if a MiniPlaceholder is already registered based on its name.
+
+```java
+String placeholderName = "example_placeholder";
+boolean isRegistered = UtilitiesOG.isMiniPlaceholderRegistered(placeholderName);
+```
+
+**7. [BukkitTask] runTaskAsynchronously(final Runnable run)**
 
 Runs a task asynchronously as UtilitiesOG using the BukkitTask API.
 

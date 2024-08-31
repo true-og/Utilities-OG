@@ -239,11 +239,17 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	// Unregister the placeholder.
 	private void disableMiniPlaceholderAPI() {
+
 		if (playerDisplayNameMiniPlaceholder != null) {
+
 			String placeholderName = playerDisplayNameMiniPlaceholder.getFullPlaceholderName();
+
 			trueOGUnregisterMiniPlaceholder(placeholderName);
+
 			playerDisplayNameMiniPlaceholder = null;
+
 		}
+
 	}
 
 	// Getter for the config file.
@@ -328,9 +334,11 @@ public final class UtilitiesOG extends JavaPlugin {
 		String placeholderPrefix = "";
 		String placeholderSuffix = "";
 		if (lastIndex != -1) {
+
 			// Split the placeholder name into its prefix and suffix.
 			placeholderPrefix = placeholderName.substring(0, lastIndex);
 			placeholderSuffix = placeholderName.substring(lastIndex + 1);
+
 		}
 
 		// Register the placeholder with MiniPlaceholders
@@ -339,16 +347,24 @@ public final class UtilitiesOG extends JavaPlugin {
 		// Register the placeholder and store it in the map.
 		placeholderUtils.register();
 		registeredPlaceholders.put(placeholderName, placeholderUtils);
+
 	}
 
 	// API to unregister a specific MiniPlaceholder by its name.
 	public static void trueOGUnregisterMiniPlaceholder(String placeholderName) {
+
 		PlaceholderUtils placeholder = registeredPlaceholders.remove(placeholderName);
 		if (placeholder != null) {
+
 			placeholder.unregister();
-		} else {
-			TextUtils.logToConsole("TrueOG MiniPlaceholdersAPI: Placeholder " + placeholderName + " not found.");
+
 		}
+		else {
+
+			TextUtils.logToConsole("TrueOG MiniPlaceholdersAPI: Placeholder " + placeholderName + " not found.");
+
+		}
+
 	}
 
 	// API to check if a MiniPlaceholder is already registered based on its name.

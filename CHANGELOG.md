@@ -1,5 +1,7 @@
 **1.4.2:**
-- 
+- Implemented trueOGUnregisterMiniPlaceholder API.
+- Implemented isMiniPlaceholderRegistered API.
+- Tested/Fixed other APIs.
 
 **1.4.1:**
 - Implemented AUDIENCE type MiniPlaceholder registration API.
