@@ -72,13 +72,12 @@ TextComponent expandedMessage = UtilitiesOG.trueOGExpandMiniPlaceholders(targetP
 UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage);
 ```
 
-**3. [TextComponent] trueogColorize(Player player, String message)**
+**3. [TextComponent] trueogColorize(String message)**
 
 Converts a message string into a formatted TextComponent using both legacy and modern color codes, along with MiniMessage processing.
 
 ```java
-Player targetPlayer = Bukkit.getPlayer("USERNAME");
-TextComponent myMessage = UtilitiesOG.trueogColorize(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
+TextComponent myMessage = UtilitiesOG.trueogColorize("&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
 **4. [void] trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content)**

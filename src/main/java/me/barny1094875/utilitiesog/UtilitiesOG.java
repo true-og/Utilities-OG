@@ -134,6 +134,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		// If the built-in MiniPlaceholders Module is enabled in the config file, do this...
 		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
 
+			// TODO: Luckperms prefix probably getting removed by color processor.
 			trueOGRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE, "<dark_purple><luckperms_prefix><player></dark_purple>");
 
 		}
@@ -301,7 +302,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	}
 
 	// API for the TrueOG text colorizer.
-	public static TextComponent trueogColorize(Player player, String message) {
+	public static TextComponent trueogColorize(String message) {
 
 		// Convert the String's legacy color codes to modern ones.
 		String processedMessage = TextUtils.processColorCodes(message);

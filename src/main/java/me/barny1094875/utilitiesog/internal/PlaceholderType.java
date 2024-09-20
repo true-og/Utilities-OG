@@ -52,9 +52,11 @@ public enum PlaceholderType {
 
 			String formattedString = template.content().replace("<player>", player.getName());
 
-			Component formattedComponent = MiniMessage.miniMessage().deserialize(formattedString);
+			 Component unformattedComponent = Component.text(formattedString);
+			
+			// Component formattedComponent = MiniMessage.miniMessage().deserialize(formattedString);
 
-			return Tag.inserting(formattedComponent);
+			return Tag.inserting(unformattedComponent);
 
 		};
 
