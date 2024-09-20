@@ -59,12 +59,14 @@ Send a message to the player with TrueOG formatting. Supports modern color codes
 Kotlin:
 ```kotlin
 val targetPlayer = Bukkit.getPlayer("USERNAME")
-UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!")```
+UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!")
+```
 
 Java:
 ```java
 Player targetPlayer = Bukkit.getPlayer("USERNAME");
-UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");```
+UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
+```
 
 **[void] trueogMessage(UUID playerUUID, String message)**
 
@@ -73,12 +75,14 @@ Send a message to the player with TrueOG formatting in environments where the Bu
 Kotlin:
 ```kotlin
 val playerUUID = UUID.fromString("player_uuid")
-UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!")```
+UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!")
+```
 
 Java:
 ```java
 UUID playerUUID = UUID.fromString("player_uuid");
-UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");```
+UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");
+```
 
 **[TextComponent] trueOGExpandMiniPlaceholders(Player player, String input)**
 
@@ -89,14 +93,16 @@ Kotlin:
 val targetPlayer = Bukkit.getPlayer("SomePlayer")
 val message = "Welcome back, <player_display_name>!"
 val expandedMessage = UtilitiesOG.trueOGExpandMiniPlaceholders(targetPlayer, message)
-UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage)```
+UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage)
+```
 
 Java:
 ```java
 Player targetPlayer = Bukkit.getPlayer("SomePlayer");
 String message = "Welcome back, <player_display_name>!";
 TextComponent expandedMessage = UtilitiesOG.trueOGExpandMiniPlaceholders(targetPlayer, message);
-UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage);```
+UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage);
+```
 
 **[TextComponent] trueogExpandMiniPlaceholders(UUID playerUUID, String input)**
 
@@ -107,14 +113,16 @@ Kotlin:
 val playerUUID = UUID.fromString("player_uuid")
 val input = "Welcome back, <player_display_name>!"
 val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(playerUUID, input)
-UtilitiesOG.trueOGMessage(playerUUID, expandedMessage)```
+UtilitiesOG.trueOGMessage(playerUUID, expandedMessage)
+```
 
 Java:
 ```java
 UUID playerUUID = UUID.fromString("player_uuid");
 String input = "Welcome back, <player_display_name>!";
 TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(playerUUID, input);
-UtilitiesOG.trueOGMessage(playerUUID, expandedMessage);```
+UtilitiesOG.trueOGMessage(playerUUID, expandedMessage);
+```
 
 **[TextComponent] trueogColorize(String message)**
 
@@ -122,11 +130,13 @@ Converts a message string into a formatted TextComponent using both legacy and m
 
 Kotlin:
 ```kotlin
-val myMessage = UtilitiesOG.trueogColorize("&6This is a &*message with <green>True&4OG <bold>formatting!")```
+val myMessage = UtilitiesOG.trueogColorize("&6This is a &*message with <green>True&4OG <bold>formatting!")
+```
 
 Java:
 ```java
-TextComponent myMessage = UtilitiesOG.trueogColorize("&6This is a &*message with <green>True&4OG <bold>formatting!");```
+TextComponent myMessage = UtilitiesOG.trueogColorize("&6This is a &*message with <green>True&4OG <bold>formatting!");
+```
 
 **[void] trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content)**
 
@@ -137,14 +147,16 @@ Kotlin:
 val placeholderName = "example_placeholder"
 val placeholderType = PlaceholderType.STRING
 val content = "Hello, <player_name>!"
-UtilitiesOG.trueOGRegisterMiniPlaceholder(placeholderName, placeholderType, content)```
+UtilitiesOG.trueOGRegisterMiniPlaceholder(placeholderName, placeholderType, content)
+```
 
 Java:
 ```java
 String placeholderName = "example_placeholder";
 PlaceholderType placeholderType = PlaceholderType.STRING;
 String content = "Hello, <player_name>!";
-UtilitiesOG.trueOGRegisterMiniPlaceholder(placeholderName, placeholderType, content);```
+UtilitiesOG.trueOGRegisterMiniPlaceholder(placeholderName, placeholderType, content);
+```
 
 **[void] trueOGUnregisterMiniPlaceholder(String placeholderName)**
 
@@ -153,12 +165,14 @@ Unregisters a previously registered MiniPlaceholder by its name.
 Kotlin:
 ```kotlin
 val placeholderName = "example_placeholder"
-UtilitiesOG.trueOGUnregisterMiniPlaceholder(placeholderName)```
+UtilitiesOG.trueOGUnregisterMiniPlaceholder(placeholderName)
+```
 
 Java:
 ```java
 String placeholderName = "example_placeholder";
-UtilitiesOG.trueOGUnregisterMiniPlaceholder(placeholderName);```
+UtilitiesOG.trueOGUnregisterMiniPlaceholder(placeholderName);
+```
 
 **[boolean] isMiniPlaceholderRegistered(String placeholderName)**
 
@@ -167,12 +181,14 @@ Checks if a MiniPlaceholder is already registered based on its name.
 Kotlin:
 ```kotlin
 val placeholderName = "example_placeholder"
-val isRegistered = UtilitiesOG.isMiniPlaceholderRegistered(placeholderName)```
+val isRegistered = UtilitiesOG.isMiniPlaceholderRegistered(placeholderName)
+```
 
 Java:
 ```java
 String placeholderName = "example_placeholder";
-boolean isRegistered = UtilitiesOG.isMiniPlaceholderRegistered(placeholderName);```
+boolean isRegistered = UtilitiesOG.isMiniPlaceholderRegistered(placeholderName);
+```
 
 **[BukkitTask] runTaskAsynchronously(final Runnable run)**
 
@@ -182,13 +198,15 @@ Kotlin:
 ```kotlin
 val asyncTask = UtilitiesOG.runTaskAsynchronously {
     // Your async code here
-}```
+}
+```
 
 Java:
 ```java
 BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
     // Your async code here
-});```
+});
+```
 
 ## TODO:
 
