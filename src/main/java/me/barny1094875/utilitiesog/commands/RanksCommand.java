@@ -36,19 +36,19 @@ public class RanksCommand implements CommandExecutor {
 				if (args.length == 0) {
 
 					// Send the available ranks to the player, with clickable menus to get more information about each rank.
-					UtilitiesOG.trueOGMessage(player, "<bold><dark_purple>-=-=-=-=- <dark_green>True<dark_red>OG <aqua>Donation Store: <dark_purple>-=-=-=-=-");
-					UtilitiesOG.trueOGMessage(player, "");
-					UtilitiesOG.trueOGMessage(player, "Each donor rank requires the rank before it.");
-					UtilitiesOG.trueOGMessage(player, "");
-					UtilitiesOG.trueOGMessage(player, "<green>Rank Overview: <dark_aqua><underlined>https://shop.true-og.net");
-					UtilitiesOG.trueOGMessage(player, "");
-					UtilitiesOG.trueOGMessage(player, "<white>[OG] <gray>(<dark_green>$10 Once<gray>) <dark_aqua><underlined>https://true-og.net/og");
+					UtilitiesOG.trueogMessage(player, "<bold><dark_purple>-=-=-=-=- <dark_green>True<dark_red>OG <aqua>Donation Store: <dark_purple>-=-=-=-=-");
+					UtilitiesOG.trueogMessage(player, "");
+					UtilitiesOG.trueogMessage(player, "Each donor rank requires the rank before it.");
+					UtilitiesOG.trueogMessage(player, "");
+					UtilitiesOG.trueogMessage(player, "<green>Rank Overview: <dark_aqua><underlined>https://shop.true-og.net");
+					UtilitiesOG.trueogMessage(player, "");
+					UtilitiesOG.trueogMessage(player, "<white>[OG] <gray>(<dark_green>$10 Once<gray>) <dark_aqua><underlined>https://true-og.net/og");
 					sendClickableMessage(player, "/ranks og");
-					UtilitiesOG.trueOGMessage(player, "");
-					UtilitiesOG.trueOGMessage(player,"<red>[OG Pro] <gray>(<dark_green>$50 Once<gray>) <dark_aqua><underlined>https://true-og.net/og-pro");
+					UtilitiesOG.trueogMessage(player, "");
+					UtilitiesOG.trueogMessage(player,"<red>[OG Pro] <gray>(<dark_green>$50 Once<gray>) <dark_aqua><underlined>https://true-og.net/og-pro");
 					sendClickableMessage(player, "/ranks og-pro");
-					UtilitiesOG.trueOGMessage(player, "");
-					UtilitiesOG.trueOGMessage(player, "<dark_red><bold>[OG Master] <gray>(<gold>$10 Monthly<gray>) <dark_aqua><underlined>https://true-og.net/og-master");
+					UtilitiesOG.trueogMessage(player, "");
+					UtilitiesOG.trueogMessage(player, "<dark_red><bold>[OG Master] <gray>(<gold>$10 Monthly<gray>) <dark_aqua><underlined>https://true-og.net/og-master");
 					sendClickableMessage(player, "/ranks og-master");
 
 				}
@@ -59,46 +59,46 @@ public class RanksCommand implements CommandExecutor {
 					if (args[0].equalsIgnoreCase("og")) {
 
 						// Share "OG" benefits with the player with formatting using the TrueOG Message API.
-						UtilitiesOG.trueOGMessage(player, "<dark_purple><bold>-=-=-=-=- <dark_green>True<dark_red>OG <white>OG Rank: <dark_purple>-=-=-=-=-");
-						UtilitiesOG.trueOGMessage(player, "- Use /afk for an unlimited amount of time.");
-						UtilitiesOG.trueOGMessage(player, "- Prominent white chat prefix");
-						UtilitiesOG.trueOGMessage(player, "- Create unions with /union create.");
-						UtilitiesOG.trueOGMessage(player, "- Invite people to unions with /union invite.");
-						UtilitiesOG.trueOGMessage(player, "- Access to #donor-chat on Discord.");
-						UtilitiesOG.trueOGMessage(player, "- 6 homes (temporary benefit until the implementation of our in-game home earning plugin).");
-						UtilitiesOG.trueOGMessage(player, "- &lMore TBA&r.");
+						UtilitiesOG.trueogMessage(player, "<dark_purple><bold>-=-=-=-=- <dark_green>True<dark_red>OG <white>OG Rank: <dark_purple>-=-=-=-=-");
+						UtilitiesOG.trueogMessage(player, "- Use /afk for an unlimited amount of time.");
+						UtilitiesOG.trueogMessage(player, "- Prominent white chat prefix");
+						UtilitiesOG.trueogMessage(player, "- Create unions with /union create.");
+						UtilitiesOG.trueogMessage(player, "- Invite people to unions with /union invite.");
+						UtilitiesOG.trueogMessage(player, "- Access to #donor-chat on Discord.");
+						UtilitiesOG.trueogMessage(player, "- 6 homes (temporary benefit until the implementation of our in-game home earning plugin).");
+						UtilitiesOG.trueogMessage(player, "- &lMore TBA&r.");
 
 					}
 					// If the "OG Pro" message was clicked, do this...
 					else if (args[0].equalsIgnoreCase("og-pro")) {
 
 						// Share "OG Pro" benefits with the player with formatting using the TrueOG Message API.
-						UtilitiesOG.trueOGMessage(player, "<dark_purple><bold>-=-=-=-=- <dark_green>True&<dark_red>OG <red>OG Pro Rank: <dark_purple>-=-=-=-=-");
-						UtilitiesOG.trueOGMessage(player, "- &lAll OG Benefits&r.");
-						UtilitiesOG.trueOGMessage(player, "- Rent up to 2 shops at the player market.");
-						UtilitiesOG.trueOGMessage(player, "- Special chat formatting (bold, italics, magic, etc).");
-						UtilitiesOG.trueOGMessage(player, "- Use color codes in chat, mail, unions, signs, anvils, and book titles.");
-						UtilitiesOG.trueOGMessage(player, "- Edit written books with /book.");
-						UtilitiesOG.trueOGMessage(player, "- Edit signs with /editsign.");
-						UtilitiesOG.trueOGMessage(player, "- Wear hats with /hat.");
-						UtilitiesOG.trueOGMessage(player, "- Sit anywhere with /sit.");
-						UtilitiesOG.trueOGMessage(player, "- Access your ender chest anywhere with /echest.");
-						UtilitiesOG.trueOGMessage(player, "- Use 9 exclusive particle cosmetics with /cosmetics (up to 3 at once).");
-						UtilitiesOG.trueOGMessage(player, "- &lMore TBA&r.");
+						UtilitiesOG.trueogMessage(player, "<dark_purple><bold>-=-=-=-=- <dark_green>True&<dark_red>OG <red>OG Pro Rank: <dark_purple>-=-=-=-=-");
+						UtilitiesOG.trueogMessage(player, "- &lAll OG Benefits&r.");
+						UtilitiesOG.trueogMessage(player, "- Rent up to 2 shops at the player market.");
+						UtilitiesOG.trueogMessage(player, "- Special chat formatting (bold, italics, magic, etc).");
+						UtilitiesOG.trueogMessage(player, "- Use color codes in chat, mail, unions, signs, anvils, and book titles.");
+						UtilitiesOG.trueogMessage(player, "- Edit written books with /book.");
+						UtilitiesOG.trueogMessage(player, "- Edit signs with /editsign.");
+						UtilitiesOG.trueogMessage(player, "- Wear hats with /hat.");
+						UtilitiesOG.trueogMessage(player, "- Sit anywhere with /sit.");
+						UtilitiesOG.trueogMessage(player, "- Access your ender chest anywhere with /echest.");
+						UtilitiesOG.trueogMessage(player, "- Use 9 exclusive particle cosmetics with /cosmetics (up to 3 at once).");
+						UtilitiesOG.trueogMessage(player, "- &lMore TBA&r.");
 
 					}
 					// If the "OG Master" message was clicked, do this...
 					else if (args[0].equalsIgnoreCase("og-master")) {
 
 						// Share "OG Master" benefits with the player with formatting using the TrueOG Message API.
-						UtilitiesOG.trueOGMessage(player, "<dark_purple><bold>-=-=-=-=- <dark_green>True<dark_red>OG <dark_red>OG Master Rank: <dark_purple>-=-=-=-=-");
-						UtilitiesOG.trueOGMessage(player, "- &lAll OG and OG Pro Benefits&r.");
-						UtilitiesOG.trueOGMessage(player, "- Rent up to 3 shops at the player market.");
-						UtilitiesOG.trueOGMessage(player, "- &lWorld inspection &rwith /co inspect.");
-						UtilitiesOG.trueOGMessage(player, "- Return to last teleport destination with /back.");
-						UtilitiesOG.trueOGMessage(player, "- Toggle your death coordinates in chat with /tdc.");
-						UtilitiesOG.trueOGMessage(player, "- Special mail, sign, and anvil formatting (strike-through, italics, magic, etc).");
-						UtilitiesOG.trueOGMessage(player, "- &lMore TBA&r.");
+						UtilitiesOG.trueogMessage(player, "<dark_purple><bold>-=-=-=-=- <dark_green>True<dark_red>OG <dark_red>OG Master Rank: <dark_purple>-=-=-=-=-");
+						UtilitiesOG.trueogMessage(player, "- &lAll OG and OG Pro Benefits&r.");
+						UtilitiesOG.trueogMessage(player, "- Rent up to 3 shops at the player market.");
+						UtilitiesOG.trueogMessage(player, "- &lWorld inspection &rwith /co inspect.");
+						UtilitiesOG.trueogMessage(player, "- Return to last teleport destination with /back.");
+						UtilitiesOG.trueogMessage(player, "- Toggle your death coordinates in chat with /tdc.");
+						UtilitiesOG.trueogMessage(player, "- Special mail, sign, and anvil formatting (strike-through, italics, magic, etc).");
+						UtilitiesOG.trueogMessage(player, "- &lMore TBA&r.");
 
 					}
 
@@ -107,7 +107,7 @@ public class RanksCommand implements CommandExecutor {
 				else {
 
 					// Send the player a formatted error message using the TrueOG Message API.
-					UtilitiesOG.trueOGMessage(player, "<gray>[<dark_green>True<dark_red>OG<gray>] <red>ERROR: Too many arguments! <gold>Syntax: <yellow>/ranks");
+					UtilitiesOG.trueogMessage(player, "<gray>[<dark_green>True<dark_red>OG<gray>] <red>ERROR: Too many arguments! <gold>Syntax: <yellow>/ranks");
 
 				}
 

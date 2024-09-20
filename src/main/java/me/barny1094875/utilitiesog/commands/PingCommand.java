@@ -35,7 +35,7 @@ public class PingCommand implements CommandExecutor {
 				if(args.length == 0) {
 
 					// Send player their own ping with formatting using the TrueOG Message API.
-					UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>Your current ping is: <#FFAA00>" + player.getPing() + "<#00AA00>."));
+					UtilitiesOG.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>Your current ping is: <#FFAA00>" + player.getPing() + "<#00AA00>."));
 
 				}
 				// If the player provided one or more arguments, do this...
@@ -48,14 +48,14 @@ public class PingCommand implements CommandExecutor {
 					if(target != null) {
 
 						// Send player their specified player's ping with formatting using the TrueOG Message API.
-						UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>" + target.getName() + "'s current ping is: <#FFAA00>" + target.getPing() + "<#00AA00>."));
+						UtilitiesOG.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#00AA00>" + target.getName() + "'s current ping is: <#FFAA00>" + target.getPing() + "<#00AA00>."));
 
 					}
 					// If the provided argument was not a valid player, do this...
 					else {
 
 						// Send a "player not found" error message with formatting using the TrueOG Message API.				
-						UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: The player " + args[0] + " was not found!"));
+						UtilitiesOG.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: The player " + args[0] + " was not found!"));
 
 					}
 
@@ -64,7 +64,7 @@ public class PingCommand implements CommandExecutor {
 				else {
 
 					// Send a "too many arguments" error message with formatting using the TrueOG Message API.
-					UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: Too many arguments provided. Syntax: <#FFFF55>/ping <player>"));
+					UtilitiesOG.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#AA0000> ERROR: Too many arguments provided. Syntax: <#FFFF55>/ping <player>"));
 
 				}
 

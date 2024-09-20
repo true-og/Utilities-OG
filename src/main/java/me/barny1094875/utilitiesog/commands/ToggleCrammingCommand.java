@@ -37,7 +37,7 @@ public class ToggleCrammingCommand implements CommandExecutor {
 				config.set("doEntityCramming", ! config.getBoolean("doEntityCramming"));
 
 				// Send confirmation message with formatting using the TrueOG Message API.
-				UtilitiesOG.trueOGMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Entity cramming has been set to <#FFFF55>" + config.getBoolean("doEntityCramming") + "<#FFAA00>."));
+				UtilitiesOG.trueogMessage(player, ("<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Entity cramming has been set to <#FFFF55>" + config.getBoolean("doEntityCramming") + "<#FFAA00>."));
 
 			}
 			// If the player does not have permission to use /togglecramming, do this...

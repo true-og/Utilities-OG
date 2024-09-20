@@ -46,14 +46,14 @@ public class TogglePhantomsCommand implements CommandExecutor {
 				if (phantomToggleState) {
 
 					// Send a formatted "true" message with formatting using the TrueOG Message API.				
-					UtilitiesOG.trueOGMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#55FF55>Phantom spawning turned <#00AA00>ON<#55FF55>.");
+					UtilitiesOG.trueogMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#55FF55>Phantom spawning turned <#00AA00>ON<#55FF55>.");
 
 				}
 				// If the command sender's phantom spawning is turned off, do this...
 				else {
 
 					// Send a formatted "false" message with formatting using the TrueOG Message API.				
-					UtilitiesOG.trueOGMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Phantom spawning turned <#FF5555>OFF<#FFAA00>.");
+					UtilitiesOG.trueogMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Phantom spawning turned <#FF5555>OFF<#FFAA00>.");
 
 				}
 

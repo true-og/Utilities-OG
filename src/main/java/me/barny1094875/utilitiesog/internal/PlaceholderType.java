@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 
 public enum PlaceholderType {
@@ -52,8 +51,8 @@ public enum PlaceholderType {
 
 			String formattedString = template.content().replace("<player>", player.getName());
 
-			 Component unformattedComponent = Component.text(formattedString);
-			
+			Component unformattedComponent = Component.text(formattedString);
+
 			// Component formattedComponent = MiniMessage.miniMessage().deserialize(formattedString);
 
 			return Tag.inserting(unformattedComponent);

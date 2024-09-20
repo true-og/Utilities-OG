@@ -31,7 +31,7 @@ public class AboutCommand implements CommandExecutor {
 			if (player.hasPermission(aboutPermission)) {
 
 				// Send a formatted about message to the player using the TrueOG Message API.
-				UtilitiesOG.trueOGMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>A collection of utilities and APIs used by <#00AA00>True<#AA0000>OG<#FFAA00> <#FFFF55>Network<#FFAA00>. Developed by <#FFFF55>christianniehaus <#FFAA00>& <#FFFF55>NotAlexNoyle<#FFAA00>.");
+				UtilitiesOG.trueogMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>A collection of utilities and APIs used by <#00AA00>True<#AA0000>OG<#FFAA00> <#FFFF55>Network<#FFAA00>. Developed by <#FFFF55>christianniehaus <#FFAA00>& <#FFFF55>NotAlexNoyle<#FFAA00>.");
 
 			}
 			// If the player does not have permission to use /about, do this...

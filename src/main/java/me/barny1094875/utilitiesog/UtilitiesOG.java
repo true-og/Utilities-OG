@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -135,7 +137,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
 
 			// TODO: Luckperms prefix probably getting removed by color processor.
-			trueOGRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE, "<dark_purple><luckperms_prefix><player></dark_purple>");
+			trueogRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE, "<dark_purple><luckperms_prefix><player></dark_purple>");
 
 		}
 
@@ -245,7 +247,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
 			String placeholderName = playerDisplayNameMiniPlaceholder.getFullPlaceholderName();
 
-			trueOGUnregisterMiniPlaceholder(placeholderName);
+			trueogUnregisterMiniPlaceholder(placeholderName);
 
 			playerDisplayNameMiniPlaceholder = null;
 
@@ -286,7 +288,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	}
 
 	// API for sending TrueOG Player messages. Supports modern color codes, and legacy Bukkit color codes (case INsensitive).
-	public static void trueOGMessage(Player player, String message) {
+	public static void trueogMessage(Player player, String message) {
 
 		// Forward the message to the server.
 		TextUtils.utilitiesOGMessage(player, message);
@@ -294,10 +296,26 @@ public final class UtilitiesOG extends JavaPlugin {
 	}
 
 	// API for TrueOG MiniPlaceholderAPI expansion (with color code processing from trueOGColorize).
-	public static TextComponent trueOGExpandMiniPlaceholders(Player player, String input) {
+	public static TextComponent trueogExpandMiniPlaceholders(Player player, String input) {
 
 		// Expand all the MiniPlaceholders in a given String.
 		return TextUtils.expandPlayerMiniPlaceholders(player, input);
+
+	}
+
+	// Variant of trueOGMessage for use cases where the Bukkit API is not available.
+	public static void trueogMessage(UUID playerUUID, String message) {
+
+		// Forward the message to the server.
+		TextUtils.utilitiesOGMessage(Bukkit.getPlayer(playerUUID), message);
+
+	}
+
+	// Variant of the TrueOG MiniPlaceholder API for use cases where the Bukkit API is not available.
+	public static TextComponent trueogExpandMiniPlaceholders(UUID playerUUID, String input) {
+
+		// Expand all the MiniPlaceholders in a given String.
+		return TextUtils.expandPlayerMiniPlaceholders(Bukkit.getPlayer(playerUUID), input);
 
 	}
 
@@ -328,7 +346,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	}
 
 	// API for easy creation and registration of a MiniPlaceholder.
-	public static void trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content) {
+	public static void trueogRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content) {
 
 		int lastIndex = placeholderName.lastIndexOf('_');
 
@@ -352,7 +370,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	}
 
 	// API to unregister a specific MiniPlaceholder by its name.
-	public static void trueOGUnregisterMiniPlaceholder(String placeholderName) {
+	public static void trueogUnregisterMiniPlaceholder(String placeholderName) {
 
 		PlaceholderUtils placeholder = registeredPlaceholders.remove(placeholderName);
 		if (placeholder != null) {

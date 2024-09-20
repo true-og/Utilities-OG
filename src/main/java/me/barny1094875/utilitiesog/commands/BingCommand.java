@@ -31,7 +31,7 @@ public class BingCommand implements CommandExecutor {
 			if (player.hasPermission(pingPermission)) {
 
 				// Send player a connection confirmation message with formatting using the TrueOG Message API.
-				UtilitiesOG.trueOGMessage(player, "<#FFFFFF> Bong!");
+				UtilitiesOG.trueogMessage(player, "<#FFFFFF> Bong!");
 
 			}
 			// If the player does not have permission to use the Ping Module, do this...
