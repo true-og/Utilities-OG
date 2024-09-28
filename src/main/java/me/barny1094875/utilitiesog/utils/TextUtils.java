@@ -28,7 +28,7 @@ public class TextUtils {
 		String colorProcessedMessage = processColorCodes(message);
 
 		// Then, expand the MiniPlaceholders.
-		TextComponent finalMessage = expandPlayerMiniPlaceholders(player, colorProcessedMessage);
+		TextComponent finalMessage = expandMiniPlaceholders(colorProcessedMessage, player, null);
 
 		// Send the final message to the player.
 		player.sendMessage(finalMessage);
@@ -98,36 +98,41 @@ public class TextUtils {
 
 	}
 
-	// Replace MiniPlaceholders in a given String with their global content from MiniPlaceholderAPI.
-	public static TextComponent expandGlobalMiniPlaceholders(String message) {
+    // Unified function to expand global, audience, and relational MiniPlaceholders.
+    public static TextComponent expandMiniPlaceholders(String message, Player mainPlayer, Player relationalPlayer) {
 
-		// Get the global MiniPlaceholder content that is not specific to any player.
-		TagResolver globalPlaceholders = MiniPlaceholders.getGlobalPlaceholders();
+        // Start with global placeholders (these will always be included).
+        TagResolver globalPlaceholders = MiniPlaceholders.getGlobalPlaceholders();
+        TagResolver resolver = globalPlaceholders;
 
-		// Replace the MiniPlaceholders with the global placeholder content and the modern color codes with actual colors.
-		Component expandedMessage = MiniMessage.miniMessage().deserialize(message, globalPlaceholders);
+        // If a main player is provided, add audience placeholders.
+        if (mainPlayer != null) {
+            TagResolver audiencePlaceholders = MiniPlaceholders.getAudiencePlaceholders(mainPlayer);
+            resolver = TagResolver.builder()
+                                  .resolver(resolver)  // Add global placeholders.
+                                  .resolver(audiencePlaceholders)  // Add player-specific placeholders.
+                                  .build();
+        }
 
-		// Put the message back into a TextComponent and return it.
-		return (TextComponent) expandedMessage;
+        // If a relational player is provided, add relational placeholders.
+        if (mainPlayer != null && relationalPlayer != null) {
+            TagResolver relationalPlaceholders = MiniPlaceholders.getRelationalPlaceholders(mainPlayer, relationalPlayer);
+            resolver = TagResolver.builder()
+                                  .resolver(resolver)  // Include global and audience placeholders.
+                                  .resolver(relationalPlaceholders)  // Add relational placeholders.
+                                  .build();
+        }
 
-	}
+        // Process color codes and formatting.
+        message = processColorCodes(message);
 
-	// Replace MiniPlaceholders in a given String with their content from MiniPlaceholderAPI.
-	public static TextComponent expandPlayerMiniPlaceholders(Player player, String message) {
+        // Replace the placeholders in the message.
+        Component expandedMessage = MiniMessage.miniMessage().deserialize(message, resolver);
 
-		// Get the MiniPlaceholder content that is relevant for the specific player who is seeing the message.
-		TagResolver placeholders = MiniPlaceholders.getAudiencePlaceholders(player);
-		
-		// Replace the legacy color codes with modern ones.
-		message = processColorCodes(message);
-
-		// Replace the MiniPlaceholders with the audience placeholder content and the modern color codes with actual colors.
-		Component expandedMessage = MiniMessage.miniMessage().deserialize(message, placeholders);
-
-		// Put the message back into a TextComponent and send it on.
-		return (TextComponent) expandedMessage;
-
-	}
+        // Return the expanded message as a TextComponent.
+        return (TextComponent) expandedMessage;
+        
+    }
 
 	// Log a Component message to the console, stripping colors.
 	public static void logToConsole(String message) {

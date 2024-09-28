@@ -11,7 +11,7 @@ java {
 }
 
 group = "net.trueog.utilities-og" // Declare bundle identifier.
-version = "1.4.6" // Declare plugin version (will be in .jar).
+version = "1.4.7" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 

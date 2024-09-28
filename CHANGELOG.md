@@ -1,3 +1,6 @@
+**1.4.7:**
+- Expand global and relational placeholders.
+
 **1.4.6:**
 - logToConsole API.
 

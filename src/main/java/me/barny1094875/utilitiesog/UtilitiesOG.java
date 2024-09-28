@@ -299,7 +299,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	public static TextComponent trueogExpandMiniPlaceholders(Player player, String input) {
 
 		// Expand all the MiniPlaceholders in a given String.
-		return TextUtils.expandPlayerMiniPlaceholders(player, input);
+		return TextUtils.expandMiniPlaceholders(input, player, null);
 
 	}
 
@@ -315,7 +315,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	public static TextComponent trueogExpandMiniPlaceholders(UUID playerUUID, String input) {
 
 		// Expand all the MiniPlaceholders in a given String.
-		return TextUtils.expandPlayerMiniPlaceholders(Bukkit.getPlayer(playerUUID), input);
+		return TextUtils.expandMiniPlaceholders(input, Bukkit.getPlayer(playerUUID), null);
 
 	}
 
@@ -361,7 +361,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		}
 
 		// Register the placeholder with MiniPlaceholders
-		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, TextUtils.expandGlobalMiniPlaceholders(content));
+		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix, placeholderType, TextUtils.expandMiniPlaceholders(content, null, null));
 
 		// Register the placeholder and store it in the map.
 		placeholderUtils.register();
