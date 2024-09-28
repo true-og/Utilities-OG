@@ -1,3 +1,13 @@
+**1.4.5:**
+- LuckPerms colors for <player_display_name>.
+
+**1.4.4:**
+- Added UUID processing for API use outside of a bukkit context.
+
+**1.4.3:**
+- Revised APIs for better usability.
+- Updated gradle / dependencies.
+
 **1.4.2:**
 - Implemented trueOGUnregisterMiniPlaceholder API.
 - Implemented isMiniPlaceholderRegistered API.

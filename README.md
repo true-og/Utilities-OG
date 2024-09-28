@@ -210,7 +210,6 @@ BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
 
 ## TODO:
 
-- LuckPerms colors for <player_display_name>.
 
 - Console logging API with formatting stripping.
 

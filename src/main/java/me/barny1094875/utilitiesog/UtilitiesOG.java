@@ -134,9 +134,8 @@ public final class UtilitiesOG extends JavaPlugin {
 
 		// FEATURE: A custom, easy to use MiniPlaceholders API.
 		// If the built-in MiniPlaceholders Module is enabled in the config file, do this...
-		if (this.getConfig().getBoolean("MiniPlaceholderAPI")) {
+		if (this.getConfig().getBoolean("MiniPlaceholders")) {
 
-			// TODO: Luckperms prefix probably getting removed by color processor.
 			trueogRegisterMiniPlaceholder("player_display_name", PlaceholderType.AUDIENCE, "<dark_purple><luckperms_prefix><player></dark_purple>");
 
 		}

@@ -11,7 +11,7 @@ java {
 }
 
 group = "net.trueog.utilities-og" // Declare bundle identifier.
-version = "1.4.4" // Declare plugin version (will be in .jar).
+version = "1.4.5" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 
@@ -54,6 +54,7 @@ dependencies {
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.11.2") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-kotlin-ext:2.2.3") // Import MiniPlaceholders API helper.
+    compileOnly("net.luckperms:api:5.4") // Import LuckPerms API.
 }
 
 tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible builds.

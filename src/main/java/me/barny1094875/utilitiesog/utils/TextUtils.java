@@ -117,6 +117,9 @@ public class TextUtils {
 
 		// Get the MiniPlaceholder content that is relevant for the specific player who is seeing the message.
 		TagResolver placeholders = MiniPlaceholders.getAudiencePlaceholders(player);
+		
+		// Replace the legacy color codes with modern ones.
+		message = processColorCodes(message);
 
 		// Replace the MiniPlaceholders with the audience placeholder content and the modern color codes with actual colors.
 		Component expandedMessage = MiniMessage.miniMessage().deserialize(message, placeholders);
