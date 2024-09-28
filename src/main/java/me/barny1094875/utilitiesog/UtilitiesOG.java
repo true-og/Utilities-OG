@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -391,6 +392,14 @@ public final class UtilitiesOG extends JavaPlugin {
 		// Check if the placeholder is in the registeredPlaceholders map.
 		return registeredPlaceholders.containsKey(placeholderName);
 
+	}
+	
+	// API to log a message to the console without any formatting.
+	public static void logToConsole(Plugin plugin, String message) {
+		
+		// Send an unformatted console message with the plugin's prefix which is using the API.
+		Bukkit.getLogger().info("[" + plugin.getName() + "]" + " " + TextUtils.stripColors(message));
+		
 	}
 
 	// API for getting the Utilities-OG instance.

@@ -1,3 +1,6 @@
+**1.4.6:**
+- logToConsole API.
+
 **1.4.5:**
 - LuckPerms colors for <player_display_name>.
 

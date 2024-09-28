@@ -211,8 +211,6 @@ BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
 ## TODO:
 
 
-- Console logging API with formatting stripping.
-
 - Global Placeholder Registration.
 
 - Relative Placeholder Registration.
