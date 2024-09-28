@@ -208,6 +208,20 @@ BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
 });
 ```
 
+**[void] logToConsole(Plugin plugin, String message)**
+
+Logs a message directly to the server console with the prefix of the plugin that is using the API. The message will be stripped of any color codes or formatting.
+
+Kotlin:
+```kotlin
+UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!")
+```
+
+Java:
+```java
+UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!");
+```
+
 ## TODO:
 
 
