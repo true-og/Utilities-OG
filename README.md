@@ -52,30 +52,30 @@ At the moment, any config change requires a server restart to take effect.
 
 ### API Documentation:
 
-**[void] trueOGMessage(Player player, String message)**
+**[void] trueogMessage(Player player, String message)**
 
-Send a message to the player with TrueOG formatting. Supports modern color codes and legacy Bukkit color codes (case-insensitive).
+Sends a message to the specified player with TrueOG formatting. Supports both modern color codes and legacy Bukkit color codes (case-insensitive). Automatically expands MiniPlaceholders within the message.
 
 Kotlin:
 ```kotlin
 val targetPlayer = Bukkit.getPlayer("USERNAME")
-UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!")
+UtilitiesOG.trueogMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!")
 ```
 
 Java:
 ```java
 Player targetPlayer = Bukkit.getPlayer("USERNAME");
-UtilitiesOG.trueOGMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
+UtilitiesOG.trueogMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
 **[void] trueogMessage(UUID playerUUID, String message)**
 
-Send a message to the player with TrueOG formatting in environments where the Bukkit API is not available. Supports modern color codes and legacy Bukkit color codes (case-insensitive).
+Sends a message to a player identified by their UUID with TrueOG formatting. Useful when the Bukkit Player object is not available. Supports modern color codes and legacy Bukkit color codes (case-insensitive), and expands MiniPlaceholders within the message.
 
 Kotlin:
 ```kotlin
-val playerUUID = UUID.fromString("player_uuid")
-UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!")
+UUID playerUUID = UUID.fromString("player_uuid");
+UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");
 ```
 
 Java:
@@ -84,115 +84,159 @@ UUID playerUUID = UUID.fromString("player_uuid");
 UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");
 ```
 
-**[TextComponent] trueOGExpandMiniPlaceholders(Player player, String input)**
+**[TextComponent] trueogExpandMiniPlaceholders(String message)**
 
-Expands MiniPlaceholders within a string for the given player, with support for color code processing via trueogColorize().
+Expands MiniPlaceholders within a message string without any player context. Supports color code processing via TrueOG's formatting.
+
+Kotlin:
+```kotlin
+val message = "Welcome to the server, everyone!"
+val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message)
+```
+
+Java:
+```java
+String message = "Welcome to the server, everyone!";
+TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message);
+```
+
+**[TextComponent] trueogExpandMiniPlaceholders(String message, Player player)**
+
+Expands MiniPlaceholders within a message string using the provided player's context. Supports color code processing.
 
 Kotlin:
 ```kotlin
 val targetPlayer = Bukkit.getPlayer("SomePlayer")
 val message = "Welcome back, <player_display_name>!"
-val expandedMessage = UtilitiesOG.trueOGExpandMiniPlaceholders(targetPlayer, message)
-UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage)
+val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, targetPlayer)
+UtilitiesOG.trueogMessage(targetPlayer, expandedMessage)
 ```
 
 Java:
 ```java
 Player targetPlayer = Bukkit.getPlayer("SomePlayer");
 String message = "Welcome back, <player_display_name>!";
-TextComponent expandedMessage = UtilitiesOG.trueOGExpandMiniPlaceholders(targetPlayer, message);
-UtilitiesOG.trueOGMessage(targetPlayer, expandedMessage);
+TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, targetPlayer);
+UtilitiesOG.trueogMessage(targetPlayer, expandedMessage);
 ```
 
-**[TextComponent] trueogExpandMiniPlaceholders(UUID playerUUID, String input)**
+**[TextComponent] trueogExpandMiniPlaceholders(String message, Player player, Player target)**
 
-Expands MiniPlaceholders within a string for the given player, with support for color code processing via trueogColorize() in environments where the Bukkit API is not available.
+Expands MiniPlaceholders within a message string using both the sender's and the target's player contexts, which is useful for relational placeholders. Supports color code processing.
+
+Kotlin:
+```kotlin
+val player = Bukkit.getPlayer("Player")
+val target = Bukkit.getPlayer("TargetPlayer")
+val message = "<player_display_name> is sending a message to <target_display_name>"
+val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, player, target)
+UtilitiesOG.trueogMessage(player, expandedMessage)
+```
+
+Java:
+```java
+Player player = Bukkit.getPlayer("Player");
+Player target = Bukkit.getPlayer("TargetPlayer");
+String message = "<player_display_name> is sending a message to <target_display_name>";
+TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, player, target);
+UtilitiesOG.trueogMessage(player, expandedMessage);
+```
+
+**[TextComponent] trueogExpandMiniPlaceholders(String message, UUID playerUUID)**
+
+Expands MiniPlaceholders within a message string using a player's UUID, useful when the Player object isn't available. Supports color code processing.
 
 Kotlin:
 ```kotlin
 val playerUUID = UUID.fromString("player_uuid")
-val input = "Welcome back, <player_display_name>!"
-val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(playerUUID, input)
-UtilitiesOG.trueOGMessage(playerUUID, expandedMessage)
+val message = "Welcome back, <player_display_name>!"
+val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, playerUUID)
+UtilitiesOG.trueogMessage(playerUUID, expandedMessage)
 ```
 
 Java:
 ```java
 UUID playerUUID = UUID.fromString("player_uuid");
-String input = "Welcome back, <player_display_name>!";
-TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(playerUUID, input);
-UtilitiesOG.trueOGMessage(playerUUID, expandedMessage);
+String message = "Welcome back, <player_display_name>!";
+TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, playerUUID);
+UtilitiesOG.trueogMessage(playerUUID, expandedMessage);
 ```
 
-**[TextComponent] trueogColorize(String message)**
+**[void] registerGlobalPlaceholder(String placeholderName, {String})**
 
-Converts a message string into a formatted TextComponent using both legacy and modern color codes, along with MiniMessage processing.
+Registers a global MiniPlaceholder that can be used anywhere in your messages. The valueSupplier provides the placeholder's value at runtime.
 
 Kotlin:
 ```kotlin
-val myMessage = UtilitiesOG.trueogColorize("&6This is a &*message with <green>True&4OG <bold>formatting!")
+UtilitiesOG.registerGlobalPlaceholder("server_name") { "&aTrue&cOG &eNetwork" }
 ```
 
 Java:
 ```java
-TextComponent myMessage = UtilitiesOG.trueogColorize("&6This is a &*message with <green>True&4OG <bold>formatting!");
+UtilitiesOG.registerGlobalPlaceholder("server_name", () -> "&aTrue&cOG &eNetwork");
 ```
 
-**[void] trueOGRegisterMiniPlaceholder(String placeholderName, PlaceholderType placeholderType, String content)**
+**[void] registerAudiencePlaceholder(String name, player -> {String})**
 
-Creates and registers a MiniPlaceholder with the specified name and type. The content can include global MiniPlaceholders that will be expanded during registration. Placeholder Types include AUDIENCE, RELATIVE, and GLOBAL.
+Registers an audience-specific MiniPlaceholder. The valueFunction uses the player's context to generate a dynamic value for the placeholder.
 
 Kotlin:
 ```kotlin
-val placeholderName = "example_placeholder"
-val placeholderType = PlaceholderType.STRING
-val content = "Hello, <player_name>!"
-UtilitiesOG.trueOGRegisterMiniPlaceholder(placeholderName, placeholderType, content)
+UtilitiesOG.registerAudiencePlaceholder("player_display_name") { player ->
+    val luckPerms = LuckPermsProvider.get()
+    val user = luckPerms.getUserManager().getUser(player.uniqueId)
+    val prefix = user?.cachedData?.metaData?.prefix ?: ""
+    "$prefix ${player.name}"
+}
 ```
 
 Java:
 ```java
-String placeholderName = "example_placeholder";
-PlaceholderType placeholderType = PlaceholderType.STRING;
-String content = "Hello, <player_name>!";
-UtilitiesOG.trueOGRegisterMiniPlaceholder(placeholderName, placeholderType, content);
+UtilitiesOG.registerAudiencePlaceholder("player_display_name", player -> {
+    LuckPerms luckPerms = LuckPermsProvider.get();
+    User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+    String prefix = user != null ? user.getCachedData().getMetaData().getPrefix() : "";
+    return prefix + " " + player.getName();
+});
 ```
 
-**[void] trueOGUnregisterMiniPlaceholder(String placeholderName)**
+**[void] registerRelationalPlaceholder(String name, player, target -> {String})**
 
-Unregisters a previously registered MiniPlaceholder by its name.
+Registers a relational MiniPlaceholder that depends on two players (e.g., viewer and target). The valueFunction provides a dynamic value based on both players' contexts.
 
 Kotlin:
 ```kotlin
-val placeholderName = "example_placeholder"
-UtilitiesOG.trueOGUnregisterMiniPlaceholder(placeholderName)
+UtilitiesOG.registerRelationalPlaceholder("distance_between") { player, target ->
+    val distance = player.location.distance(target.location)
+    "Distance: ${distance.toInt()} blocks"
+}
 ```
 
 Java:
 ```java
-String placeholderName = "example_placeholder";
-UtilitiesOG.trueOGUnregisterMiniPlaceholder(placeholderName);
+UtilitiesOG.registerRelationalPlaceholder("distance_between", (player, target) -> {
+    double distance = player.getLocation().distance(target.getLocation());
+    return "Distance: " + (int) distance + " blocks";
+});
 ```
 
-**[boolean] isMiniPlaceholderRegistered(String placeholderName)**
+**[void] logToConsole(Plugin plugin, String message)**
 
-Checks if a MiniPlaceholder is already registered based on its name.
+Logs a message to the server console with the prefix of the calling plugin. The message will have color codes and formatting stripped.
 
 Kotlin:
 ```kotlin
-val placeholderName = "example_placeholder"
-val isRegistered = UtilitiesOG.isMiniPlaceholderRegistered(placeholderName)
+UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!")
 ```
 
 Java:
 ```java
-String placeholderName = "example_placeholder";
-boolean isRegistered = UtilitiesOG.isMiniPlaceholderRegistered(placeholderName);
+UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!");
 ```
 
 **[BukkitTask] runTaskAsynchronously(final Runnable run)**
 
-Runs a task asynchronously as UtilitiesOG using the BukkitTask API.
+Schedules a task to run asynchronously using the Bukkit scheduler under the UtilitiesOG plugin.
 
 Kotlin:
 ```kotlin
@@ -207,24 +251,3 @@ BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
     // Your async code here
 });
 ```
-
-**[void] logToConsole(Plugin plugin, String message)**
-
-Logs a message directly to the server console with the prefix of the plugin that is using the API. The message will be stripped of any color codes or formatting.
-
-Kotlin:
-```kotlin
-UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!")
-```
-
-Java:
-```java
-UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!");
-```
-
-## TODO:
-
-
-- Global Placeholder Registration.
-
-- Relative Placeholder Registration.

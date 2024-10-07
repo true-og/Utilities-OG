@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 // Authors: christianniehaus, NotAlexNoyle.
-package me.barny1094875.utilitiesog.commands;
+package net.trueog.utilitiesog.commands;
 
 // Import libraries.
 import org.bukkit.Bukkit;
@@ -9,8 +9,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.barny1094875.utilitiesog.UtilitiesOG;
-import me.barny1094875.utilitiesog.utils.TextUtils;
+import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.utils.TextUtils;
 
 // Declare the /ping command in the Ping Module with Bukkit Commands.
 public class PingCommand implements CommandExecutor {
@@ -82,7 +82,7 @@ public class PingCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), pingPermission);
+			TextUtils.logToConsole(cmd.getName() + " " + pingPermission);
 
 		}
 

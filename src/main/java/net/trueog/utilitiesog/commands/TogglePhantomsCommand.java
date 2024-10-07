@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 // Authors: christianniehaus, NotAlexNoyle.
-package me.barny1094875.utilitiesog.commands;
+package net.trueog.utilitiesog.commands;
 
 // Import libraries.
 import java.io.IOException;
@@ -11,8 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import me.barny1094875.utilitiesog.UtilitiesOG;
-import me.barny1094875.utilitiesog.utils.TextUtils;
+import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.utils.TextUtils;
 
 //Declare the /togglephantoms command in the Ping Module with Bukkit Commands.
 public class TogglePhantomsCommand implements CommandExecutor {
@@ -84,7 +84,7 @@ public class TogglePhantomsCommand implements CommandExecutor {
 		else {
 
 			// Send a detailed error message to the server console.
-			TextUtils.consoleUseErrorMessage(sender, cmd.getName(), togglePhantomsPermission);
+			TextUtils.logToConsole(cmd.getName() + " " + togglePhantomsPermission);
 
 		}
 

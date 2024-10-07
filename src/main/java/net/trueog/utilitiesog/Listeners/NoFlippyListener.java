@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 // Authors: christianniehaus, NotAlexNoyle.
-package me.barny1094875.utilitiesog.Listeners;
+package net.trueog.utilitiesog.Listeners;
 
 // Import libraries.
 import org.bukkit.block.Block;
@@ -21,8 +21,8 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 
-import me.barny1094875.utilitiesog.UtilitiesOG;
-import me.barny1094875.utilitiesog.internal.FlagRegistrationException;
+import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.internal.FlagRegistrationException;
 
 // Declare the NoFlippy Module with Bukkit Listeners.
 public class NoFlippyListener implements Listener {

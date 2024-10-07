@@ -1,3 +1,8 @@
+**1.5:**
+- Create audience, global, and relative MiniPlaceholders in one new, simple API.
+- Expand and format MiniPlaceholders within MiniPlaceholders.
+- First 1.19 Stable Release.
+
 **1.4.7:**
 - Expand global and relational placeholders.
 

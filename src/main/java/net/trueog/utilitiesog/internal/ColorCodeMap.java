@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 // Authors: christianniehaus, NotAlexNoyle.
-package me.barny1094875.utilitiesog.internal;
+package net.trueog.utilitiesog.internal;
 
 // Import libraries.
 import java.util.HashMap;

@@ -2,7 +2,7 @@ name: Utilities-OG
 authors: [ christianniehaus, NotAlexNoyle ]
 version: '${version}'
 api-version: '${apiVersion}'
-main: me.barny1094875.utilitiesog.UtilitiesOG
+main: net.trueog.utilitiesog.UtilitiesOG
 depend: [ MiniPlaceholders, WorldGuard ]
 commands:
   utilities:

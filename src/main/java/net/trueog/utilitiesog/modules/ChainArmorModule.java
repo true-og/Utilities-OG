@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 // Authors: christianniehaus, NotAlexNoyle.
-package me.barny1094875.utilitiesog.modules;
+package net.trueog.utilitiesog.modules;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -8,8 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 
-// Import libraries.
-import me.barny1094875.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 // Declare the Chain Armor Module.
 public class ChainArmorModule {

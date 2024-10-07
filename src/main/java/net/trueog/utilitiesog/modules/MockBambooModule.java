@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 // Authors: christianniehaus, NotAlexNoyle.
-package me.barny1094875.utilitiesog.modules;
+package net.trueog.utilitiesog.modules;
 
 // Import libraries.
 import org.bukkit.Bukkit;
@@ -10,9 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.barny1094875.utilitiesog.UtilitiesOG;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 // Declare the Mock Bamboo Wood Module.
 public class MockBambooModule {
