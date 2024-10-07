@@ -1,3 +1,7 @@
+**1.5.1:**
+- Improve API documentation.
+- Fix trueogMessage().
+
 **1.5:**
 - Create audience, global, and relative MiniPlaceholders in one new, simple API.
 - Expand and format MiniPlaceholders within MiniPlaceholders.

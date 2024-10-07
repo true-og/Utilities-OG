@@ -164,7 +164,7 @@ UtilitiesOG.trueogMessage(playerUUID, expandedMessage);
 
 **[void] registerGlobalPlaceholder(String placeholderName, {String})**
 
-Registers a global MiniPlaceholder that can be used anywhere in your messages. The valueSupplier provides the placeholder's value at runtime.
+Registers a global MiniPlaceholder that can be used anywhere in your messages. The valueSupplier provides the placeholder's value at runtime. Prefixes are the values before the first underscore. For example, the prefix of server_name is server.
 
 Kotlin:
 ```kotlin
@@ -178,7 +178,7 @@ UtilitiesOG.registerGlobalPlaceholder("server_name", () -> "&aTrue&cOG &eNetwork
 
 **[void] registerAudiencePlaceholder(String name, player -> {String})**
 
-Registers an audience-specific MiniPlaceholder. The valueFunction uses the player's context to generate a dynamic value for the placeholder.
+Registers an audience-specific MiniPlaceholder. The valueFunction uses the player's context to generate a dynamic value for the placeholder. Prefixes are the values before the first underscore. For example, the prefix of player_display_name is player.
 
 Kotlin:
 ```kotlin
@@ -202,7 +202,7 @@ UtilitiesOG.registerAudiencePlaceholder("player_display_name", player -> {
 
 **[void] registerRelationalPlaceholder(String name, player, target -> {String})**
 
-Registers a relational MiniPlaceholder that depends on two players (e.g., viewer and target). The valueFunction provides a dynamic value based on both players' contexts.
+Registers a relational MiniPlaceholder that depends on two players (e.g., viewer and target). The valueFunction provides a dynamic value based on both players' contexts. Prefixes are the values before the first underscore. For example, the prefix of distance_between is distance.
 
 Kotlin:
 ```kotlin

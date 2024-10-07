@@ -21,9 +21,9 @@ public class TextUtils {
 	private static final Pattern MINIMESSAGE_TAG_PATTERN = Pattern.compile("<[^>]*>");
 
 	// Sends a formatted message to the player, expanding placeholders and color codes.
-	public static void utilitiesOGMessage(Player player, String message) {
+	public static void trueogMessage(Player player, String message) {
 
-		TextUtils.utilitiesOGMessage(player, message);
+		player.sendMessage(expandTextWithPlaceholders(message, player));
 
 	}
 

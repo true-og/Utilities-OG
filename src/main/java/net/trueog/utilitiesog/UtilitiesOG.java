@@ -258,9 +258,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	// Unified method for sending a message to a player with placeholders processed.
 	public static void trueogMessage(Player player, String message) {
 
-		TextComponent finalMessage = TextUtils.expandTextWithPlaceholders(message, player);
-
-		player.sendMessage(finalMessage);
+		TextUtils.trueogMessage(player, message);
 
 	}
 
@@ -270,7 +268,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		Player player = Bukkit.getPlayer(playerUUID);
 		if (player != null) {
 
-			trueogMessage(player, message);
+			TextUtils.trueogMessage(player, message);
 
 		}
 		else {
