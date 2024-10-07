@@ -178,7 +178,7 @@ public class TextUtils {
 	// Sends an error message to the player if they lack the required permission.
 	public static void permissionsErrorMessage(Player player, String command, String permission) {
 
-		utilitiesOGMessage(player, "&cERROR: You do not have permission to run /" + command + ". &6Required permission: &e" + permission);
+		trueogMessage(player, "&cERROR: You do not have permission to run /" + command + ". &6Required permission: &e" + permission);
 
 	}
 
