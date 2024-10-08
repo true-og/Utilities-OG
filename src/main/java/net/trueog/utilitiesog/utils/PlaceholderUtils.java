@@ -2,7 +2,9 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -25,9 +27,7 @@ public class PlaceholderUtils {
 	private final String miniPlaceholderSuffix;
 
 	// MiniPlaceholder functions.
-	private Supplier<String> globalPlaceholder;
-	private Function<Player, String> audiencePlaceholder;
-	private BiFunction<Player, Player, String> relationalPlaceholder;
+	private Consumer<Expansion.Builder> placeholderRegistration;
 
 	// Constructor for prefix and suffix.
 	public PlaceholderUtils(String placeholderPrefix, String placeholderSuffix) {
@@ -40,7 +40,13 @@ public class PlaceholderUtils {
 	// Setters for global, audience, and relational MiniPlaceholders.
 	public PlaceholderUtils setGlobalPlaceholder(Supplier<String> placeholder) {
 
-		this.globalPlaceholder = placeholder;
+		this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
+
+			TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.get());
+
+			return Tag.inserting(result);
+
+		});
 
 		return this;
 
@@ -48,7 +54,19 @@ public class PlaceholderUtils {
 
 	public PlaceholderUtils setAudiencePlaceholder(Function<Player, String> placeholder) {
 
-		this.audiencePlaceholder = placeholder;
+		this.placeholderRegistration = builder -> builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
+
+			if (audience instanceof Player player) {
+
+				TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.apply(player), player);
+
+				return Tag.inserting(result);
+
+			}
+
+			return Tag.inserting(Component.empty());
+
+		});
 
 		return this;
 
@@ -56,7 +74,19 @@ public class PlaceholderUtils {
 
 	public PlaceholderUtils setRelationalPlaceholder(BiFunction<Player, Player, String> placeholder) {
 
-		this.relationalPlaceholder = placeholder;
+		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+
+			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
+
+				TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.apply(player, targetPlayer), player, targetPlayer);
+
+				return Tag.inserting(result);
+
+			}
+
+			return Tag.inserting(Component.empty());
+
+		});
 
 		return this;
 
@@ -67,65 +97,8 @@ public class PlaceholderUtils {
 
 		ExpansionData data = expansionDataMap.computeIfAbsent(miniPlaceholderPrefix, k -> new ExpansionData(k));
 
-		// Add MiniPlaceholder to the builder.
-		if (globalPlaceholder != null) {
-
-			data.builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
-
-				TextComponent result = TextUtils.expandTextWithPlaceholders(globalPlaceholder.get());
-
-				return Tag.inserting(result);
-
-			});
-
-		}
-
-		if (audiencePlaceholder != null) {
-
-			data.builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
-
-				if (audience instanceof Player player) {
-
-					TextComponent result = TextUtils.expandTextWithPlaceholders(audiencePlaceholder.apply(player), player);
-
-					return Tag.inserting(result);
-
-				}
-
-				return Tag.inserting(Component.empty());
-
-			});
-
-		}
-
-		if (relationalPlaceholder != null) {
-
-			data.builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
-
-				if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
-
-					TextComponent result = TextUtils.expandTextWithPlaceholders(relationalPlaceholder.apply(player, targetPlayer), player, targetPlayer);
-
-					return Tag.inserting(result);
-
-				}
-
-				return Tag.inserting(Component.empty());
-
-			});
-
-		}
-
-		// Rebuild and re-register the expansion.
-		if (data.registered) {
-
-			data.expansion.unregister();
-
-		}
-
-		data.expansion = data.builder.build();
-		data.expansion.register();
-		data.registered = true;
+		// Add the MiniPlaceholder registration
+		data.addPlaceholderRegistration(placeholderRegistration);
 
 	}
 
@@ -149,7 +122,7 @@ public class PlaceholderUtils {
 		// Apply the provided configuration (lambda).
 		placeholderConfigurator.accept(placeholderUtils);
 
-		// Register the MiniPlaceholder and add it to the builder.
+		// Register the MiniPlaceholder.
 		placeholderUtils.register();
 
 	}
@@ -157,13 +130,44 @@ public class PlaceholderUtils {
 	// Inner class to hold expansion data.
 	private static class ExpansionData {
 
-		Expansion.Builder builder;
+		String prefix;
+		List<Consumer<Expansion.Builder>> placeholderRegistrations = new ArrayList<>();
 		Expansion expansion;
 		boolean registered = false;
 
 		public ExpansionData(String prefix) {
 
-			this.builder = Expansion.builder(prefix);
+			this.prefix = prefix;
+
+		}
+
+		public void addPlaceholderRegistration(Consumer<Expansion.Builder> placeholderRegistration) {
+
+			this.placeholderRegistrations.add(placeholderRegistration);
+
+			rebuildExpansion();
+
+		}
+
+		private void rebuildExpansion() {
+
+			if (registered) {
+
+				expansion.unregister();
+
+			}
+
+			Expansion.Builder builder = Expansion.builder(prefix);
+			for (Consumer<Expansion.Builder> registration : placeholderRegistrations) {
+
+				registration.accept(builder);
+
+			}
+
+			expansion = builder.build();
+			expansion.register();
+
+			registered = true;
 
 		}
 
@@ -176,6 +180,7 @@ public class PlaceholderUtils {
 			if (data.registered) {
 
 				data.expansion.unregister();
+
 				data.registered = false;
 
 			}
