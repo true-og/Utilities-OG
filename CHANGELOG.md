@@ -1,3 +1,6 @@
+**1.5.2:**
+- Fix declaring MiniPlaceholders from external plugins.
+
 **1.5.1:**
 - Improve API documentation.
 - Fix trueogMessage().

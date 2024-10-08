@@ -157,9 +157,6 @@ public final class UtilitiesOG extends JavaPlugin {
 
 			});
 
-			// Build and register all expansions after adding MiniPlaceholders.
-			PlaceholderUtils.buildAndRegisterExpansions();
-
 		}
 
 		if (this.getConfig().getBoolean("MockBamboo")) {

@@ -18,11 +18,8 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 
 public class PlaceholderUtils {
 
-	// Map to store Expansion Builders per prefix.
-	private static final Map<String, Expansion.Builder> expansionBuilders = new HashMap<>();
-
-	// Map to store registered expansions.
-	private static final Map<String, Expansion> expansions = new HashMap<>();
+	// Map to store Expansion Data per prefix.
+	private static final Map<String, ExpansionData> expansionDataMap = new HashMap<>();
 
 	private final String miniPlaceholderPrefix;
 	private final String miniPlaceholderSuffix;
@@ -65,22 +62,15 @@ public class PlaceholderUtils {
 
 	}
 
-	// Register the MiniPlaceholder with recursive expansion.
+	// Register the MiniPlaceholder.
 	public void register() {
 
-		Expansion.Builder builder = expansionBuilders.get(miniPlaceholderPrefix);
+		ExpansionData data = expansionDataMap.computeIfAbsent(miniPlaceholderPrefix, k -> new ExpansionData(k));
 
-		if (builder == null) {
-
-			builder = Expansion.builder(miniPlaceholderPrefix);
-			expansionBuilders.put(miniPlaceholderPrefix, builder);
-
-		}
-
-		// Global MiniPlaceholder with recursive expansion.
+		// Add MiniPlaceholder to the builder.
 		if (globalPlaceholder != null) {
 
-			builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
+			data.builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
 
 				TextComponent result = TextUtils.expandTextWithPlaceholders(globalPlaceholder.get());
 
@@ -90,10 +80,9 @@ public class PlaceholderUtils {
 
 		}
 
-		// Audience MiniPlaceholder with recursive expansion.
 		if (audiencePlaceholder != null) {
 
-			builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
+			data.builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
 
 				if (audience instanceof Player player) {
 
@@ -109,10 +98,9 @@ public class PlaceholderUtils {
 
 		}
 
-		// Relational MiniPlaceholder with recursive expansion.
 		if (relationalPlaceholder != null) {
 
-			builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+			data.builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
 
 				if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
 
@@ -128,22 +116,16 @@ public class PlaceholderUtils {
 
 		}
 
-	}
+		// Rebuild and re-register the expansion.
+		if (data.registered) {
 
-	// Build and register all expansions.
-	public static void buildAndRegisterExpansions() {
-
-		for (Map.Entry<String, Expansion.Builder> entry : expansionBuilders.entrySet()) {
-
-			Expansion expansion = entry.getValue().build();
-			expansion.register();
-
-			expansions.put(entry.getKey(), expansion);
+			data.expansion.unregister();
 
 		}
 
-		// Clean up the builders after they're done being used.
-		expansionBuilders.clear();
+		data.expansion = data.builder.build();
+		data.expansion.register();
+		data.registered = true;
 
 	}
 
@@ -167,20 +149,40 @@ public class PlaceholderUtils {
 		// Apply the provided configuration (lambda).
 		placeholderConfigurator.accept(placeholderUtils);
 
-		// Register the MiniPlaceholder and adds it to the builder.
+		// Register the MiniPlaceholder and add it to the builder.
 		placeholderUtils.register();
+
+	}
+
+	// Inner class to hold expansion data.
+	private static class ExpansionData {
+
+		Expansion.Builder builder;
+		Expansion expansion;
+		boolean registered = false;
+
+		public ExpansionData(String prefix) {
+
+			this.builder = Expansion.builder(prefix);
+
+		}
 
 	}
 
 	public static void unregisterAll() {
 
-		for (Expansion expansion : expansions.values()) {
+		for (ExpansionData data : expansionDataMap.values()) {
 
-			expansion.unregister();
+			if (data.registered) {
+
+				data.expansion.unregister();
+				data.registered = false;
+
+			}
 
 		}
 
-		expansions.clear();
+		expansionDataMap.clear();
 
 	}
 
