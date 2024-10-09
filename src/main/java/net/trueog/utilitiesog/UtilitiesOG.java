@@ -380,6 +380,14 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
+	// API to strip legacy and modern formatting in Strings.
+	public static String stripFormatting(String content) {
+
+		return TextUtils.stripColors(content);
+
+	}
+
+	// Console logging API that automatically strips legacy and modern formatting.
 	public static void logToConsole(Plugin plugin, String message) {
 
 		Bukkit.getLogger().info("[" + plugin.getName() + "] " + TextUtils.stripColors(message));

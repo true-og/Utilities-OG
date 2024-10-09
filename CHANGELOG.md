@@ -1,5 +1,6 @@
 **1.6:**
 - Add support for declaring MiniPlaceholders with arguments.
+- stripFormatting API.
 
 **1.5.2:**
 - Fix declaring MiniPlaceholders from external plugins.
