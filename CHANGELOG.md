@@ -1,3 +1,6 @@
+**1.6:**
+- Add support for declaring MiniPlaceholders with arguments.
+
 **1.5.2:**
 - Fix declaring MiniPlaceholders from external plugins.
 

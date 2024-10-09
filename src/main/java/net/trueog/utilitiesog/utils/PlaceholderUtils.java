@@ -17,6 +17,7 @@ import io.github.miniplaceholders.api.Expansion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class PlaceholderUtils {
 
@@ -37,7 +38,7 @@ public class PlaceholderUtils {
 
 	}
 
-	// Setters for global, audience, and relational MiniPlaceholders.
+	// Set global placeholder without arguments.
 	public PlaceholderUtils setGlobalPlaceholder(Supplier<String> placeholder) {
 
 		this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
@@ -52,6 +53,31 @@ public class PlaceholderUtils {
 
 	}
 
+	// Set global placeholder with arguments.
+	public PlaceholderUtils setGlobalPlaceholder(Function<List<String>, String> valueFunction) {
+
+		this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
+
+			List<String> args = new ArrayList<>();
+			while (queue.hasNext()) {
+
+				args.add(queue.pop().value());
+
+			}
+
+			String resultString = valueFunction.apply(args);
+
+			TextComponent result = TextUtils.expandTextWithPlaceholders(resultString);
+
+			return Tag.inserting(result);
+
+		});
+
+		return this;
+
+	}
+
+	// Set audience placeholder without arguments.
 	public PlaceholderUtils setAudiencePlaceholder(Function<Player, String> placeholder) {
 
 		this.placeholderRegistration = builder -> builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
@@ -64,7 +90,7 @@ public class PlaceholderUtils {
 
 			}
 
-			return Tag.inserting(Component.empty());
+			return Tag.inserting(Component.text(""));
 
 		});
 
@@ -72,19 +98,79 @@ public class PlaceholderUtils {
 
 	}
 
-	public PlaceholderUtils setRelationalPlaceholder(BiFunction<Player, Player, String> placeholder) {
+	// Set audience placeholder with arguments.
+	public PlaceholderUtils setAudiencePlaceholder(BiFunction<Player, List<String>, String> valueFunction) {
 
-		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+		this.placeholderRegistration = builder -> builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
 
-			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
+			if (audience instanceof Player player) {
 
-				TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.apply(player, targetPlayer), player, targetPlayer);
+				List<String> args = new ArrayList<>();
+				while (queue.hasNext()) {
+
+					args.add(queue.pop().value());
+				}
+
+				String resultString = valueFunction.apply(player, args);
+
+				TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player);
 
 				return Tag.inserting(result);
 
 			}
 
-			return Tag.inserting(Component.empty());
+			return Tag.inserting(Component.text(""));
+
+		});
+
+		return this;
+
+	}
+
+	// Set relational placeholder without arguments.
+	public PlaceholderUtils setRelationalPlaceholder(BiFunction<Player, Player, String> placeholder) {
+
+		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
+
+				String resultString = placeholder.apply(player, targetPlayer);
+
+				TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player, targetPlayer);
+
+				return Tag.inserting(result);
+
+			}
+
+			return Tag.inserting(Component.text(""));
+
+		});
+
+		return this;
+
+	}
+
+	// Set relational placeholder with arguments.
+	public PlaceholderUtils setRelationalPlaceholder(UtilitiesOG.TriFunction<Player, Player, List<String>, String> valueFunction) {
+
+		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
+
+				List<String> args = new ArrayList<>();
+				while (queue.hasNext()) {
+
+					args.add(queue.pop().value());
+
+				}
+
+				String resultString = valueFunction.apply(player, targetPlayer, args);
+
+				TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player, targetPlayer);
+
+				return Tag.inserting(result);
+
+			}
+
+			return Tag.inserting(Component.text(""));
 
 		});
 
@@ -97,19 +183,19 @@ public class PlaceholderUtils {
 
 		ExpansionData data = expansionDataMap.computeIfAbsent(miniPlaceholderPrefix, k -> new ExpansionData(k));
 
-		// Add the MiniPlaceholder registration
+		// Add the MiniPlaceholder registration.
 		data.addPlaceholderRegistration(placeholderRegistration);
 
 	}
 
-	// API for registering the MiniPlaceholder (global, audience, or relational).
+	// API for registering the MiniPlaceholder (global, audience, relational, or with args).
 	public static void trueogRegisterMiniPlaceholder(String placeholderName, Consumer<PlaceholderUtils> placeholderConfigurator) {
 
-		// Split placeholder name into prefix and suffix using the last underscore.
+		// Split the MiniPlaceholder name into prefix and suffix using the last underscore.
 		int lastIndex = placeholderName.lastIndexOf('_');
 		if (lastIndex == -1) {
 
-			throw new IllegalArgumentException("Placeholder name must contain an underscore separating prefix and suffix.");
+			throw new IllegalArgumentException("ERROR: MiniPlaceholder name must contain an underscore separating its prefix and suffix.");
 
 		}
 
@@ -180,7 +266,6 @@ public class PlaceholderUtils {
 			if (data.registered) {
 
 				data.expansion.unregister();
-
 				data.registered = false;
 
 			}

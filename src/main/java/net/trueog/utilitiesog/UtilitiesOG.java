@@ -4,6 +4,7 @@ package net.trueog.utilitiesog;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -110,7 +111,7 @@ public final class UtilitiesOG extends JavaPlugin {
 			registerGlobalPlaceholder("servers_name", () -> "&aTrue&cOG &eNetwork");
 
 			// Registering an Audience MiniPlaceholder.
-			registerAudiencePlaceholder("player_display_name", player -> {
+			registerAudiencePlaceholder("player_display_name", (Player player) -> {
 
 				LuckPerms luckPerms = LuckPermsProvider.get();
 				User user = luckPerms.getUserManager().getUser(player.getUniqueId());
@@ -313,6 +314,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
+	// Global placeholder without arguments.
 	public static void registerGlobalPlaceholder(String name, Supplier<String> valueSupplier) {
 
 		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
@@ -323,6 +325,18 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
+	// Global placeholder with arguments.
+	public static void registerGlobalPlaceholder(String name, Function<List<String>, String> valueFunction) {
+
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+
+			placeholder.setGlobalPlaceholder(valueFunction);
+
+		});
+
+	}
+
+	// Audience placeholder without arguments.
 	public static void registerAudiencePlaceholder(String name, Function<Player, String> valueFunction) {
 
 		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
@@ -333,7 +347,30 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
+	// Audience placeholder with arguments.
+	public static void registerAudiencePlaceholder(String name, BiFunction<Player, List<String>, String> valueFunction) {
+
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+
+			placeholder.setAudiencePlaceholder(valueFunction);
+
+		});
+
+	}
+
+	// Relational placeholder without arguments.
 	public static void registerRelationalPlaceholder(String name, BiFunction<Player, Player, String> valueFunction) {
+
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+
+			placeholder.setRelationalPlaceholder(valueFunction);
+
+		});
+
+	}
+
+	// Relational placeholder with arguments.
+	public static void registerRelationalPlaceholder(String name, TriFunction<Player, Player, List<String>, String> valueFunction) {
 
 		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
 
@@ -358,6 +395,14 @@ public final class UtilitiesOG extends JavaPlugin {
 	public static BukkitTask runTaskAsynchronously(final Runnable run) {
 
 		return getPlugin().getServer().getScheduler().runTaskAsynchronously(getPlugin(), run);
+
+	}
+
+	// Functional interface to support TriFunction.
+	@FunctionalInterface
+	public interface TriFunction<T, U, V, R> {
+
+		R apply(T t, U u, V v);
 
 	}
 
