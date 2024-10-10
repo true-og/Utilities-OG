@@ -1,3 +1,7 @@
+**1.6.1**
+- Log API MiniPlaceholder creation to the console.
+- trueogColorize API.
+
 **1.6:**
 - Add support for declaring MiniPlaceholders with arguments.
 - stripFormatting API.

@@ -1,5 +1,3 @@
-// This is free and unencumbered software released into the public domain.
-// Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.utils;
 
 import java.util.ArrayList;
@@ -20,6 +18,8 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.trueog.utilitiesog.UtilitiesOG;
 
 public class PlaceholderUtils {
+	
+	// TODO: Document new MiniPlaceholder registration API with arguments.
 
 	// Map to store Expansion Data per prefix.
 	private static final Map<String, ExpansionData> expansionDataMap = new HashMap<>();
@@ -49,6 +49,9 @@ public class PlaceholderUtils {
 
 		});
 
+		// Log global placeholder registration without arguments.
+		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+
 		return this;
 
 	}
@@ -73,6 +76,9 @@ public class PlaceholderUtils {
 
 		});
 
+		// Log global placeholder registration with arguments.
+		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+
 		return this;
 
 	}
@@ -94,6 +100,9 @@ public class PlaceholderUtils {
 
 		});
 
+		// Log audience placeholder registration without arguments.
+		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+
 		return this;
 
 	}
@@ -109,6 +118,7 @@ public class PlaceholderUtils {
 				while (queue.hasNext()) {
 
 					args.add(queue.pop().value());
+
 				}
 
 				String resultString = valueFunction.apply(player, args);
@@ -123,6 +133,9 @@ public class PlaceholderUtils {
 
 		});
 
+		// Log audience placeholder registration with arguments.
+		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+
 		return this;
 
 	}
@@ -131,6 +144,7 @@ public class PlaceholderUtils {
 	public PlaceholderUtils setRelationalPlaceholder(BiFunction<Player, Player, String> placeholder) {
 
 		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+
 			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
 
 				String resultString = placeholder.apply(player, targetPlayer);
@@ -145,6 +159,9 @@ public class PlaceholderUtils {
 
 		});
 
+		// Log relational placeholder registration without arguments
+		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+
 		return this;
 
 	}
@@ -153,6 +170,7 @@ public class PlaceholderUtils {
 	public PlaceholderUtils setRelationalPlaceholder(UtilitiesOG.TriFunction<Player, Player, List<String>, String> valueFunction) {
 
 		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+
 			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
 
 				List<String> args = new ArrayList<>();
@@ -174,6 +192,9 @@ public class PlaceholderUtils {
 
 		});
 
+		// Log relational placeholder registration with arguments.
+		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+
 		return this;
 
 	}
@@ -183,7 +204,6 @@ public class PlaceholderUtils {
 
 		ExpansionData data = expansionDataMap.computeIfAbsent(miniPlaceholderPrefix, k -> new ExpansionData(k));
 
-		// Add the MiniPlaceholder registration.
 		data.addPlaceholderRegistration(placeholderRegistration);
 
 	}
@@ -191,7 +211,6 @@ public class PlaceholderUtils {
 	// API for registering the MiniPlaceholder (global, audience, relational, or with args).
 	public static void trueogRegisterMiniPlaceholder(String placeholderName, Consumer<PlaceholderUtils> placeholderConfigurator) {
 
-		// Split the MiniPlaceholder name into prefix and suffix using the last underscore.
 		int lastIndex = placeholderName.lastIndexOf('_');
 		if (lastIndex == -1) {
 
@@ -202,13 +221,10 @@ public class PlaceholderUtils {
 		String placeholderPrefix = placeholderName.substring(0, lastIndex);
 		String placeholderSuffix = placeholderName.substring(lastIndex + 1);
 
-		// Create a new PlaceholderUtils instance.
 		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix);
 
-		// Apply the provided configuration (lambda).
 		placeholderConfigurator.accept(placeholderUtils);
 
-		// Register the MiniPlaceholder.
 		placeholderUtils.register();
 
 	}
@@ -251,6 +267,7 @@ public class PlaceholderUtils {
 			}
 
 			expansion = builder.build();
+
 			expansion.register();
 
 			registered = true;
@@ -266,6 +283,7 @@ public class PlaceholderUtils {
 			if (data.registered) {
 
 				data.expansion.unregister();
+
 				data.registered = false;
 
 			}

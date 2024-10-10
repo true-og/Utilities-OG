@@ -84,23 +84,23 @@ UUID playerUUID = UUID.fromString("player_uuid");
 UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");
 ```
 
-**[TextComponent] trueogExpandMiniPlaceholders(String message)**
+**[TextComponent] trueogExpand(String message)**
 
 Expands MiniPlaceholders within a message string without any player context. Supports color code processing via TrueOG's formatting.
 
 Kotlin:
 ```kotlin
 val message = "Welcome to the server, everyone!"
-val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message)
+val expandedMessage = UtilitiesOG.trueogExpand(message)
 ```
 
 Java:
 ```java
 String message = "Welcome to the server, everyone!";
-TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message);
+TextComponent expandedMessage = UtilitiesOG.trueogExpand(message);
 ```
 
-**[TextComponent] trueogExpandMiniPlaceholders(String message, Player player)**
+**[TextComponent] trueogExpand(String message, Player player)**
 
 Expands MiniPlaceholders within a message string using the provided player's context. Supports color code processing.
 
@@ -108,7 +108,7 @@ Kotlin:
 ```kotlin
 val targetPlayer = Bukkit.getPlayer("SomePlayer")
 val message = "Welcome back, <player_display_name>!"
-val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, targetPlayer)
+val expandedMessage = UtilitiesOG.trueogExpand(message, targetPlayer)
 UtilitiesOG.trueogMessage(targetPlayer, expandedMessage)
 ```
 
@@ -116,11 +116,11 @@ Java:
 ```java
 Player targetPlayer = Bukkit.getPlayer("SomePlayer");
 String message = "Welcome back, <player_display_name>!";
-TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, targetPlayer);
+TextComponent expandedMessage = UtilitiesOG.trueogExpand(message, targetPlayer);
 UtilitiesOG.trueogMessage(targetPlayer, expandedMessage);
 ```
 
-**[TextComponent] trueogExpandMiniPlaceholders(String message, Player player, Player target)**
+**[TextComponent] trueogExpand(String message, Player player, Player target)**
 
 Expands MiniPlaceholders within a message string using both the sender's and the target's player contexts, which is useful for relational placeholders. Supports color code processing.
 
@@ -129,7 +129,7 @@ Kotlin:
 val player = Bukkit.getPlayer("Player")
 val target = Bukkit.getPlayer("TargetPlayer")
 val message = "<player_display_name> is sending a message to <target_display_name>"
-val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, player, target)
+val expandedMessage = UtilitiesOG.trueogExpand(message, player, target)
 UtilitiesOG.trueogMessage(player, expandedMessage)
 ```
 
@@ -138,11 +138,11 @@ Java:
 Player player = Bukkit.getPlayer("Player");
 Player target = Bukkit.getPlayer("TargetPlayer");
 String message = "<player_display_name> is sending a message to <target_display_name>";
-TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, player, target);
+TextComponent expandedMessage = UtilitiesOG.trueogExpand(message, player, target);
 UtilitiesOG.trueogMessage(player, expandedMessage);
 ```
 
-**[TextComponent] trueogExpandMiniPlaceholders(String message, UUID playerUUID)**
+**[TextComponent] trueogExpand(String message, UUID playerUUID)**
 
 Expands MiniPlaceholders within a message string using a player's UUID, useful when the Player object isn't available. Supports color code processing.
 
@@ -150,7 +150,7 @@ Kotlin:
 ```kotlin
 val playerUUID = UUID.fromString("player_uuid")
 val message = "Welcome back, <player_display_name>!"
-val expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, playerUUID)
+val expandedMessage = UtilitiesOG.trueogExpand(message, playerUUID)
 UtilitiesOG.trueogMessage(playerUUID, expandedMessage)
 ```
 
@@ -158,7 +158,7 @@ Java:
 ```java
 UUID playerUUID = UUID.fromString("player_uuid");
 String message = "Welcome back, <player_display_name>!";
-TextComponent expandedMessage = UtilitiesOG.trueogExpandMiniPlaceholders(message, playerUUID);
+TextComponent expandedMessage = UtilitiesOG.trueogExpand(message, playerUUID);
 UtilitiesOG.trueogMessage(playerUUID, expandedMessage);
 ```
 
@@ -218,6 +218,34 @@ UtilitiesOG.registerRelationalPlaceholder("distance_between", (player, target) -
     double distance = player.getLocation().distance(target.getLocation());
     return "Distance: " + (int) distance + " blocks";
 });
+```
+
+**[TextComponent] trueogColorize(String message)**
+
+Formats a String into a TextComponent. Supports modern and legacy color codes. Does not include custom MiniPlaceholder Expansion logic.
+
+Kotlin:
+```kotlin
+val colorized = UtilitiesOG.trueogColorize(message)
+```
+
+Java:
+```java
+TextComponent colorized = UtilitiesOG.trueogColorize(message);
+```
+
+**[String] stripFormatting(String content)**
+
+Strips legacy and modern color codes and formatting from a String.
+
+Kotlin:
+```kotlin
+val unformatted = UtilitiesOG.stripFormatting(content)
+```
+
+Java:
+```java
+String unformatted = UtilitiesOG.stripFormatting(content);
 ```
 
 **[void] logToConsole(Plugin plugin, String message)**

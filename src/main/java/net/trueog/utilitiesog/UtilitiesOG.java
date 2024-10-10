@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
@@ -277,26 +278,39 @@ public final class UtilitiesOG extends JavaPlugin {
 
 	}
 
-	public static TextComponent trueogExpandMiniPlaceholders(String message) {
+	// Formats a message without MiniPlaceholder expansion.
+	public static TextComponent trueogColorize(String message) {
 
+		return (TextComponent) MiniMessage.miniMessage().deserialize(TextUtils.processColorCodes(message));
+
+	}
+
+	// Expands Global MiniPlaceholders.
+	public static TextComponent trueogExpand(String message) {
+
+		// MiniPlaceholder expansion with legacy and modern formatting.
 		return TextUtils.expandTextWithPlaceholders(message);
 
 	}
 
-	public static TextComponent trueogExpandMiniPlaceholders(String message, Player player) {
+	// Expands Audience MiniPlaceholders.
+	public static TextComponent trueogExpand(String message, Player player) {
 
+		// MiniPlaceholder expansion with legacy and modern formatting.
 		return TextUtils.expandTextWithPlaceholders(message, player);
 
 	}
 
-	public static TextComponent trueogExpandMiniPlaceholders(String message, Player player, Player target) {
+	// Expands Relational MiniPlaceholders.
+	public static TextComponent trueogExpand(String message, Player player, Player target) {
 
+		// MiniPlaceholder expansion with legacy and modern formatting.
 		return TextUtils.expandTextWithPlaceholders(message, player, target);
 
 	}
 
-	// Variation for when Bukkit API is unavailable.
-	public static TextComponent trueogExpandMiniPlaceholders(String message, UUID playerUUID) {
+	// Variation of MiniPlaceholder expansion for when Bukkit API is unavailable.
+	public static TextComponent trueogExpand(String message, UUID playerUUID) {
 
 		Player player = Bukkit.getPlayer(playerUUID);
 		if (player != null) {
