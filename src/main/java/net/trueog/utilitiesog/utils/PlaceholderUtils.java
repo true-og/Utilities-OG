@@ -19,9 +19,7 @@ import net.trueog.utilitiesog.UtilitiesOG;
 
 public class PlaceholderUtils {
 
-	// TODO: Document new MiniPlaceholder registration API with arguments.
-
-	private static String prefixConsole = "[Utilities-OG]";
+	private static String prefixConsole = "[Utilities-OG] ";
 
 	// Map to store Expansion Data per prefix.
 	private static final Map<String, ExpansionData> expansionDataMap = new HashMap<>();

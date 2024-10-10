@@ -166,6 +166,8 @@ UtilitiesOG.trueogMessage(playerUUID, expandedMessage);
 
 Registers a global MiniPlaceholder that can be used anywhere in your messages. The valueSupplier provides the placeholder's value at runtime. Prefixes are the values before the first underscore. For example, the prefix of server_name is server.
 
+Examples Without Arguments:
+
 Kotlin:
 ```kotlin
 UtilitiesOG.registerGlobalPlaceholder("server_name") { "&aTrue&cOG &eNetwork" }
@@ -176,9 +178,41 @@ Java:
 UtilitiesOG.registerGlobalPlaceholder("server_name", () -> "&aTrue&cOG &eNetwork");
 ```
 
+Examples With Arguments:
+
+Kotlin:
+```kotlin
+UtilitiesOG.registerGlobalPlaceholder("server_stat") { args ->
+    val statName = args.getOrNull(0)?.lowercase() ?: return@registerGlobalPlaceholder "Invalid stat name"
+    when (statName) {
+        "uptime" -> "Up for 5 hours"
+        "playercount" -> Bukkit.getOnlinePlayers().size.toString()
+        else -> "Unknown stat"
+    }
+}
+```
+
+Java:
+```java
+UtilitiesOG.registerGlobalPlaceholder("server_stat", args -> {
+    if (args.isEmpty()) return "Invalid stat name";
+    String statName = args.get(0).toLowerCase();
+    switch (statName) {
+        case "uptime":
+            return "Up for 5 hours";
+        case "playercount":
+            return String.valueOf(Bukkit.getOnlinePlayers().size());
+        default:
+            return "Unknown stat";
+    }
+});
+```
+
 **[void] registerAudiencePlaceholder(String name, player -> {String})**
 
 Registers an audience-specific MiniPlaceholder. The valueFunction uses the player's context to generate a dynamic value for the placeholder. Prefixes are the values before the first underscore. For example, the prefix of player_display_name is player.
+
+Examples Without Arguments:
 
 Kotlin:
 ```kotlin
@@ -200,9 +234,43 @@ UtilitiesOG.registerAudiencePlaceholder("player_display_name", player -> {
 });
 ```
 
+Examples With Arguments:
+
+Kotlin:
+```kotlin
+UtilitiesOG.registerAudiencePlaceholder("essentials_kit_last_use") { player, args ->
+    val kitName = args.getOrNull(0)?.lowercase() ?: return@registerAudiencePlaceholder "Invalid kit name"
+    val kit = try {
+        Kit(kitName, essentials) // Assume 'essentials' is properly initialized
+    } catch (e: Exception) {
+        return@registerAudiencePlaceholder "Invalid kit name"
+    }
+    val time = essentials.getUser(player.uniqueId).getKitTimestamp(kit.name)
+    if (time <= 0) "Never used" else DateFormat.getDateInstance().format(Date(time))
+}
+```
+
+Java:
+```java
+UtilitiesOG.registerAudiencePlaceholder("essentials_kit_last_use", (player, args) -> {
+    if (args.isEmpty()) return "Invalid kit name";
+    String kitName = args.get(0).toLowerCase();
+    Kit kit;
+    try {
+        kit = new Kit(kitName, essentials); // Assume 'essentials' is properly initialized
+    } catch (Exception e) {
+        return "Invalid kit name";
+    }
+    long time = essentials.getUser(player.getUniqueId()).getKitTimestamp(kit.getName());
+    return time <= 0 ? "Never used" : DateFormat.getDateInstance().format(new Date(time));
+});
+```
+
 **[void] registerRelationalPlaceholder(String name, player, target -> {String})**
 
 Registers a relational MiniPlaceholder that depends on two players (e.g., viewer and target). The valueFunction provides a dynamic value based on both players' contexts. Prefixes are the values before the first underscore. For example, the prefix of distance_between is distance.
+
+Examples Without Arguments:
 
 Kotlin:
 ```kotlin
@@ -217,6 +285,49 @@ Java:
 UtilitiesOG.registerRelationalPlaceholder("distance_between", (player, target) -> {
     double distance = player.getLocation().distance(target.getLocation());
     return "Distance: " + (int) distance + " blocks";
+});
+```
+
+Examples With Arguments:
+
+Kotlin:
+```kotlin
+UtilitiesOG.registerRelationalPlaceholder("relation_compare_stat") { player, target, args ->
+    val stat = args.getOrNull(0)?.lowercase() ?: return@registerRelationalPlaceholder "No stat provided"
+    when (stat) {
+        "balance" -> {
+            val playerBalance = getBalance(player) // Implement getBalance accordingly
+            val targetBalance = getBalance(target) // Implement getBalance accordingly
+            when {
+                playerBalance > targetBalance -> "You have more money than ${target.name}"
+                playerBalance < targetBalance -> "${target.name} has more money than you"
+                else -> "You and ${target.name} have the same amount of money"
+            }
+        }
+        else -> "Unknown stat"
+    }
+}
+```
+
+Java:
+```java
+UtilitiesOG.registerRelationalPlaceholder("relation_compare_stat", (player, target, args) -> {
+    if (args.isEmpty()) return "No stat provided";
+    String stat = args.get(0).toLowerCase();
+    switch (stat) {
+        case "balance":
+            double playerBalance = getBalance(player); // Implement getBalance accordingly
+            double targetBalance = getBalance(target); // Implement getBalance accordingly
+            if (playerBalance > targetBalance) {
+                return "You have more money than " + target.getName();
+            } else if (playerBalance < targetBalance) {
+                return target.getName() + " has more money than you";
+            } else {
+                return "You and " + target.getName() + " have the same amount of money";
+            }
+        default:
+            return "Unknown stat";
+    }
 });
 ```
 
