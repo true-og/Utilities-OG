@@ -14,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -272,7 +271,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		}
 		else {
 
-			logToConsole(getPlugin(), "Player with UUID " + playerUUID + " is not online.");
+			logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
 
 		}
 
@@ -320,7 +319,7 @@ public final class UtilitiesOG extends JavaPlugin {
 		}
 		else {
 
-			logToConsole(getPlugin(), "Player with UUID " + playerUUID + " is not online.");
+			logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
 
 			return TextUtils.expandTextWithPlaceholders(message);
 
@@ -402,9 +401,9 @@ public final class UtilitiesOG extends JavaPlugin {
 	}
 
 	// Console logging API that automatically strips legacy and modern formatting.
-	public static void logToConsole(Plugin plugin, String message) {
+	public static void logToConsole(String prefix, String message) {
 
-		Bukkit.getLogger().info("[" + plugin.getName() + "] " + TextUtils.stripColors(message));
+		Bukkit.getLogger().info(TextUtils.stripColors(prefix + message));
 
 	}
 

@@ -248,18 +248,18 @@ Java:
 String unformatted = UtilitiesOG.stripFormatting(content);
 ```
 
-**[void] logToConsole(Plugin plugin, String message)**
+**[void] logToConsole(String prefix, String message)**
 
-Logs a message to the server console with the prefix of the calling plugin. The message will have color codes and formatting stripped.
+Logs a message to the server console with a prefix. The message and prefix will have modern and legacy color codes and formatting stripped.
 
 Kotlin:
 ```kotlin
-UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!")
+UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>color codes!")
 ```
 
 Java:
 ```java
-UtilitiesOG.logToConsole(plugin, "&6This is a &*message with <green>color codes!");
+UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>color codes!");
 ```
 
 **[BukkitTask] runTaskAsynchronously(final Runnable run)**

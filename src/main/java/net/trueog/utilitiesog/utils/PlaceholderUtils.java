@@ -18,8 +18,10 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.trueog.utilitiesog.UtilitiesOG;
 
 public class PlaceholderUtils {
-	
+
 	// TODO: Document new MiniPlaceholder registration API with arguments.
+
+	private static String prefixConsole = "[Utilities-OG]";
 
 	// Map to store Expansion Data per prefix.
 	private static final Map<String, ExpansionData> expansionDataMap = new HashMap<>();
@@ -50,7 +52,7 @@ public class PlaceholderUtils {
 		});
 
 		// Log global placeholder registration without arguments.
-		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+		UtilitiesOG.logToConsole(prefixConsole, "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
 
 		return this;
 
@@ -77,7 +79,7 @@ public class PlaceholderUtils {
 		});
 
 		// Log global placeholder registration with arguments.
-		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+		UtilitiesOG.logToConsole(prefixConsole, "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
 
 		return this;
 
@@ -101,7 +103,7 @@ public class PlaceholderUtils {
 		});
 
 		// Log audience placeholder registration without arguments.
-		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+		UtilitiesOG.logToConsole(prefixConsole, "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
 
 		return this;
 
@@ -134,7 +136,7 @@ public class PlaceholderUtils {
 		});
 
 		// Log audience placeholder registration with arguments.
-		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+		UtilitiesOG.logToConsole(prefixConsole, "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
 
 		return this;
 
@@ -160,7 +162,7 @@ public class PlaceholderUtils {
 		});
 
 		// Log relational placeholder registration without arguments
-		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+		UtilitiesOG.logToConsole(prefixConsole, "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
 
 		return this;
 
@@ -193,7 +195,7 @@ public class PlaceholderUtils {
 		});
 
 		// Log relational placeholder registration with arguments.
-		UtilitiesOG.logToConsole(UtilitiesOG.getPlugin(), "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+		UtilitiesOG.logToConsole(prefixConsole, "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
 
 		return this;
 

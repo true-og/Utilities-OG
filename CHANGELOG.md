@@ -1,3 +1,6 @@
+**1.6.2:**
+- Fix console logging API.
+
 **1.6.1**
 - Log API MiniPlaceholder creation to the console.
 - trueogColorize API.
