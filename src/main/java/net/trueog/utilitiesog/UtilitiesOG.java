@@ -403,7 +403,7 @@ public final class UtilitiesOG extends JavaPlugin {
 	// Console logging API that automatically strips legacy and modern formatting.
 	public static void logToConsole(String prefix, String message) {
 
-		Bukkit.getLogger().info(TextUtils.stripColors(prefix + message));
+		Bukkit.getLogger().info(TextUtils.stripColors(prefix + " " + message));
 
 	}
 
