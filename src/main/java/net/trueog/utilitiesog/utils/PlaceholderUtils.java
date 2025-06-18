@@ -1,5 +1,6 @@
 package net.trueog.utilitiesog.utils;
 
+import io.github.miniplaceholders.api.Expansion;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,290 +9,273 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import org.bukkit.entity.Player;
-
-import io.github.miniplaceholders.api.Expansion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.trueog.utilitiesog.UtilitiesOG;
+import org.bukkit.entity.Player;
 
 public class PlaceholderUtils {
 
-	private static String prefixConsole = "[Utilities-OG] ";
+    private static String prefixConsole = "[Utilities-OG] ";
 
-	// Map to store Expansion Data per prefix.
-	private static final Map<String, ExpansionData> expansionDataMap = new HashMap<>();
+    // Map to store Expansion Data per prefix.
+    private static final Map<String, ExpansionData> expansionDataMap = new HashMap<>();
 
-	private final String miniPlaceholderPrefix;
-	private final String miniPlaceholderSuffix;
+    private final String miniPlaceholderPrefix;
+    private final String miniPlaceholderSuffix;
 
-	// MiniPlaceholder functions.
-	private Consumer<Expansion.Builder> placeholderRegistration;
+    // MiniPlaceholder functions.
+    private Consumer<Expansion.Builder> placeholderRegistration;
 
-	// Constructor for prefix and suffix.
-	public PlaceholderUtils(String placeholderPrefix, String placeholderSuffix) {
+    // Constructor for prefix and suffix.
+    public PlaceholderUtils(String placeholderPrefix, String placeholderSuffix) {
 
-		this.miniPlaceholderPrefix = placeholderPrefix;
-		this.miniPlaceholderSuffix = placeholderSuffix;
+        this.miniPlaceholderPrefix = placeholderPrefix;
+        this.miniPlaceholderSuffix = placeholderSuffix;
+    }
 
-	}
+    // Set global placeholder without arguments.
+    public PlaceholderUtils setGlobalPlaceholder(Supplier<String> placeholder) {
 
-	// Set global placeholder without arguments.
-	public PlaceholderUtils setGlobalPlaceholder(Supplier<String> placeholder) {
+        this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
+            TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.get());
 
-		this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
+            return Tag.inserting(result);
+        });
 
-			TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.get());
+        // Log global placeholder registration without arguments.
+        UtilitiesOG.logToConsole(
+                prefixConsole,
+                "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix
+                        + " without arguments");
 
-			return Tag.inserting(result);
+        return this;
+    }
 
-		});
+    // Set global placeholder with arguments.
+    public PlaceholderUtils setGlobalPlaceholder(Function<List<String>, String> valueFunction) {
 
-		// Log global placeholder registration without arguments.
-		UtilitiesOG.logToConsole(prefixConsole, "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+        this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
+            List<String> args = new ArrayList<>();
+            while (queue.hasNext()) {
 
-		return this;
+                args.add(queue.pop().value());
+            }
 
-	}
+            String resultString = valueFunction.apply(args);
 
-	// Set global placeholder with arguments.
-	public PlaceholderUtils setGlobalPlaceholder(Function<List<String>, String> valueFunction) {
+            TextComponent result = TextUtils.expandTextWithPlaceholders(resultString);
 
-		this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix, (queue, ctx) -> {
+            return Tag.inserting(result);
+        });
 
-			List<String> args = new ArrayList<>();
-			while (queue.hasNext()) {
+        // Log global placeholder registration with arguments.
+        UtilitiesOG.logToConsole(
+                prefixConsole,
+                "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix
+                        + " with arguments");
 
-				args.add(queue.pop().value());
+        return this;
+    }
 
-			}
+    // Set audience placeholder without arguments.
+    public PlaceholderUtils setAudiencePlaceholder(Function<Player, String> placeholder) {
 
-			String resultString = valueFunction.apply(args);
+        this.placeholderRegistration =
+                builder -> builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
+                    if (audience instanceof Player player) {
 
-			TextComponent result = TextUtils.expandTextWithPlaceholders(resultString);
+                        TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.apply(player), player);
 
-			return Tag.inserting(result);
+                        return Tag.inserting(result);
+                    }
 
-		});
+                    return Tag.inserting(Component.text(""));
+                });
 
-		// Log global placeholder registration with arguments.
-		UtilitiesOG.logToConsole(prefixConsole, "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+        // Log audience placeholder registration without arguments.
+        UtilitiesOG.logToConsole(
+                prefixConsole,
+                "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix
+                        + " without arguments");
 
-		return this;
+        return this;
+    }
 
-	}
+    // Set audience placeholder with arguments.
+    public PlaceholderUtils setAudiencePlaceholder(BiFunction<Player, List<String>, String> valueFunction) {
 
-	// Set audience placeholder without arguments.
-	public PlaceholderUtils setAudiencePlaceholder(Function<Player, String> placeholder) {
+        this.placeholderRegistration =
+                builder -> builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
+                    if (audience instanceof Player player) {
 
-		this.placeholderRegistration = builder -> builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
+                        List<String> args = new ArrayList<>();
+                        while (queue.hasNext()) {
 
-			if (audience instanceof Player player) {
+                            args.add(queue.pop().value());
+                        }
 
-				TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.apply(player), player);
+                        String resultString = valueFunction.apply(player, args);
 
-				return Tag.inserting(result);
+                        TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player);
 
-			}
+                        return Tag.inserting(result);
+                    }
 
-			return Tag.inserting(Component.text(""));
+                    return Tag.inserting(Component.text(""));
+                });
 
-		});
+        // Log audience placeholder registration with arguments.
+        UtilitiesOG.logToConsole(
+                prefixConsole,
+                "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix
+                        + " with arguments");
 
-		// Log audience placeholder registration without arguments.
-		UtilitiesOG.logToConsole(prefixConsole, "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+        return this;
+    }
 
-		return this;
+    // Set relational placeholder without arguments.
+    public PlaceholderUtils setRelationalPlaceholder(BiFunction<Player, Player, String> placeholder) {
 
-	}
+        this.placeholderRegistration = builder ->
+                builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+                    if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
 
-	// Set audience placeholder with arguments.
-	public PlaceholderUtils setAudiencePlaceholder(BiFunction<Player, List<String>, String> valueFunction) {
+                        String resultString = placeholder.apply(player, targetPlayer);
 
-		this.placeholderRegistration = builder -> builder.audiencePlaceholder(miniPlaceholderSuffix, (audience, queue, ctx) -> {
+                        TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player, targetPlayer);
 
-			if (audience instanceof Player player) {
+                        return Tag.inserting(result);
+                    }
 
-				List<String> args = new ArrayList<>();
-				while (queue.hasNext()) {
+                    return Tag.inserting(Component.text(""));
+                });
 
-					args.add(queue.pop().value());
+        // Log relational placeholder registration without arguments
+        UtilitiesOG.logToConsole(
+                prefixConsole,
+                "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix
+                        + " without arguments");
 
-				}
+        return this;
+    }
 
-				String resultString = valueFunction.apply(player, args);
+    // Set relational placeholder with arguments.
+    public PlaceholderUtils setRelationalPlaceholder(
+            UtilitiesOG.TriFunction<Player, Player, List<String>, String> valueFunction) {
 
-				TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player);
+        this.placeholderRegistration = builder ->
+                builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+                    if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
 
-				return Tag.inserting(result);
+                        List<String> args = new ArrayList<>();
+                        while (queue.hasNext()) {
 
-			}
+                            args.add(queue.pop().value());
+                        }
 
-			return Tag.inserting(Component.text(""));
+                        String resultString = valueFunction.apply(player, targetPlayer, args);
 
-		});
+                        TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player, targetPlayer);
 
-		// Log audience placeholder registration with arguments.
-		UtilitiesOG.logToConsole(prefixConsole, "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+                        return Tag.inserting(result);
+                    }
 
-		return this;
+                    return Tag.inserting(Component.text(""));
+                });
 
-	}
+        // Log relational placeholder registration with arguments.
+        UtilitiesOG.logToConsole(
+                prefixConsole,
+                "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix
+                        + " with arguments");
 
-	// Set relational placeholder without arguments.
-	public PlaceholderUtils setRelationalPlaceholder(BiFunction<Player, Player, String> placeholder) {
+        return this;
+    }
 
-		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+    // Register the MiniPlaceholder.
+    public void register() {
 
-			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
+        ExpansionData data = expansionDataMap.computeIfAbsent(miniPlaceholderPrefix, k -> new ExpansionData(k));
 
-				String resultString = placeholder.apply(player, targetPlayer);
+        data.addPlaceholderRegistration(placeholderRegistration);
+    }
 
-				TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player, targetPlayer);
+    // API for registering the MiniPlaceholder (global, audience, relational, or with args).
+    public static void trueogRegisterMiniPlaceholder(
+            String placeholderName, Consumer<PlaceholderUtils> placeholderConfigurator) {
 
-				return Tag.inserting(result);
+        int lastIndex = placeholderName.lastIndexOf('_');
+        if (lastIndex == -1) {
 
-			}
+            throw new IllegalArgumentException(
+                    "ERROR: MiniPlaceholder name must contain an underscore separating its prefix and suffix.");
+        }
 
-			return Tag.inserting(Component.text(""));
+        String placeholderPrefix = placeholderName.substring(0, lastIndex);
+        String placeholderSuffix = placeholderName.substring(lastIndex + 1);
 
-		});
+        PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix);
 
-		// Log relational placeholder registration without arguments
-		UtilitiesOG.logToConsole(prefixConsole, "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+        placeholderConfigurator.accept(placeholderUtils);
 
-		return this;
+        placeholderUtils.register();
+    }
 
-	}
+    // Inner class to hold expansion data.
+    private static class ExpansionData {
 
-	// Set relational placeholder with arguments.
-	public PlaceholderUtils setRelationalPlaceholder(UtilitiesOG.TriFunction<Player, Player, List<String>, String> valueFunction) {
+        String prefix;
+        List<Consumer<Expansion.Builder>> placeholderRegistrations = new ArrayList<>();
+        Expansion expansion;
+        boolean registered = false;
 
-		this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix, (audience, otherAudience, queue, ctx) -> {
+        public ExpansionData(String prefix) {
 
-			if (audience instanceof Player player && otherAudience instanceof Player targetPlayer) {
+            this.prefix = prefix;
+        }
 
-				List<String> args = new ArrayList<>();
-				while (queue.hasNext()) {
+        public void addPlaceholderRegistration(Consumer<Expansion.Builder> placeholderRegistration) {
 
-					args.add(queue.pop().value());
+            this.placeholderRegistrations.add(placeholderRegistration);
 
-				}
+            rebuildExpansion();
+        }
 
-				String resultString = valueFunction.apply(player, targetPlayer, args);
+        private void rebuildExpansion() {
 
-				TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player, targetPlayer);
+            if (registered) {
 
-				return Tag.inserting(result);
+                expansion.unregister();
+            }
 
-			}
+            Expansion.Builder builder = Expansion.builder(prefix);
+            for (Consumer<Expansion.Builder> registration : placeholderRegistrations) {
 
-			return Tag.inserting(Component.text(""));
+                registration.accept(builder);
+            }
 
-		});
+            expansion = builder.build();
 
-		// Log relational placeholder registration with arguments.
-		UtilitiesOG.logToConsole(prefixConsole, "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+            expansion.register();
 
-		return this;
+            registered = true;
+        }
+    }
 
-	}
+    public static void unregisterAll() {
 
-	// Register the MiniPlaceholder.
-	public void register() {
+        for (ExpansionData data : expansionDataMap.values()) {
 
-		ExpansionData data = expansionDataMap.computeIfAbsent(miniPlaceholderPrefix, k -> new ExpansionData(k));
+            if (data.registered) {
 
-		data.addPlaceholderRegistration(placeholderRegistration);
+                data.expansion.unregister();
 
-	}
+                data.registered = false;
+            }
+        }
 
-	// API for registering the MiniPlaceholder (global, audience, relational, or with args).
-	public static void trueogRegisterMiniPlaceholder(String placeholderName, Consumer<PlaceholderUtils> placeholderConfigurator) {
-
-		int lastIndex = placeholderName.lastIndexOf('_');
-		if (lastIndex == -1) {
-
-			throw new IllegalArgumentException("ERROR: MiniPlaceholder name must contain an underscore separating its prefix and suffix.");
-
-		}
-
-		String placeholderPrefix = placeholderName.substring(0, lastIndex);
-		String placeholderSuffix = placeholderName.substring(lastIndex + 1);
-
-		PlaceholderUtils placeholderUtils = new PlaceholderUtils(placeholderPrefix, placeholderSuffix);
-
-		placeholderConfigurator.accept(placeholderUtils);
-
-		placeholderUtils.register();
-
-	}
-
-	// Inner class to hold expansion data.
-	private static class ExpansionData {
-
-		String prefix;
-		List<Consumer<Expansion.Builder>> placeholderRegistrations = new ArrayList<>();
-		Expansion expansion;
-		boolean registered = false;
-
-		public ExpansionData(String prefix) {
-
-			this.prefix = prefix;
-
-		}
-
-		public void addPlaceholderRegistration(Consumer<Expansion.Builder> placeholderRegistration) {
-
-			this.placeholderRegistrations.add(placeholderRegistration);
-
-			rebuildExpansion();
-
-		}
-
-		private void rebuildExpansion() {
-
-			if (registered) {
-
-				expansion.unregister();
-
-			}
-
-			Expansion.Builder builder = Expansion.builder(prefix);
-			for (Consumer<Expansion.Builder> registration : placeholderRegistrations) {
-
-				registration.accept(builder);
-
-			}
-
-			expansion = builder.build();
-
-			expansion.register();
-
-			registered = true;
-
-		}
-
-	}
-
-	public static void unregisterAll() {
-
-		for (ExpansionData data : expansionDataMap.values()) {
-
-			if (data.registered) {
-
-				data.expansion.unregister();
-
-				data.registered = false;
-
-			}
-
-		}
-
-		expansionDataMap.clear();
-
-	}
-
+        expansionDataMap.clear();
+    }
 }

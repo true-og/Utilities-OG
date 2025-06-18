@@ -3,57 +3,54 @@
 package net.trueog.utilitiesog.commands;
 
 // Import libraries.
+import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.utils.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.trueog.utilitiesog.UtilitiesOG;
-import net.trueog.utilitiesog.utils.TextUtils;
-
 // Declare the About Module with Bukkit Commands.
 public class AboutCommand implements CommandExecutor {
 
-	// Command execution event handler using Bukkit's CommandManager.
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    // Command execution event handler using Bukkit's CommandManager.
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-		// Store the required permission for the "about" (root /utilities) command for later reference.
-		String aboutPermission = "utilities.about";
+        // Store the required permission for the "about" (root /utilities) command for later reference.
+        String aboutPermission = "utilities.about";
 
-		// If the command was sent by an in-game player, do this...
-		if (sender instanceof Player) {
+        // If the command was sent by an in-game player, do this...
+        if (sender instanceof Player) {
 
-			// Get the player object from the sender.
-			Player player = (Player) sender;
+            // Get the player object from the sender.
+            Player player = (Player) sender;
 
-			// If the player has permission to use /about, do this...
-			if (player.hasPermission(aboutPermission)) {
+            // If the player has permission to use /about, do this...
+            if (player.hasPermission(aboutPermission)) {
 
-				// Send a formatted about message to the player using the TrueOG Message API.
-				UtilitiesOG.trueogMessage(player, "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>A collection of utilities and APIs used by <#00AA00>True<#AA0000>OG<#FFAA00> <#FFFF55>Network<#FFAA00>. Developed by <#FFFF55>christianniehaus <#FFAA00>& <#FFFF55>NotAlexNoyle<#FFAA00>.");
+                // Send a formatted about message to the player using the TrueOG Message API.
+                UtilitiesOG.trueogMessage(
+                        player,
+                        "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>A collection of utilities and APIs used by <#00AA00>True<#AA0000>OG<#FFAA00> <#FFFF55>Network<#FFAA00>. Developed by <#FFFF55>christianniehaus <#FFAA00>& <#FFFF55>NotAlexNoyle<#FFAA00>.");
 
-			}
-			// If the player does not have permission to use /about, do this...
-			else {
+            }
+            // If the player does not have permission to use /about, do this...
+            else {
 
-				// Send a detailed, formatted permissions error message to the player.
-				TextUtils.permissionsErrorMessage(player, cmd.getName(), aboutPermission);
+                // Send a detailed, formatted permissions error message to the player.
+                TextUtils.permissionsErrorMessage(player, cmd.getName(), aboutPermission);
+            }
 
-			}
+        }
+        // If the command was sent by the server console, do this...
+        else {
 
-		}
-		// If the command was sent by the server console, do this...
-		else {
+            // Send a detailed error message to the server console.
+            TextUtils.logToConsole(cmd.getName() + " " + aboutPermission);
+        }
 
-			// Send a detailed error message to the server console.
-			TextUtils.logToConsole(cmd.getName() + " " + aboutPermission);
-
-		}
-
-		// Healthy exit status.
-		return true;
-
-	}
-
+        // Healthy exit status.
+        return true;
+    }
 }

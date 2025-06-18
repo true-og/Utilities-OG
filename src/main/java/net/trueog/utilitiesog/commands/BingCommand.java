@@ -3,57 +3,52 @@
 package net.trueog.utilitiesog.commands;
 
 // Import libraries.
+import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.utils.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.trueog.utilitiesog.UtilitiesOG;
-import net.trueog.utilitiesog.utils.TextUtils;
-
 // Declare the /bing command in the Ping Module with Bukkit Commands.
 public class BingCommand implements CommandExecutor {
 
-	// Command execution event handler using Bukkit's CommandManager.
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    // Command execution event handler using Bukkit's CommandManager.
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-		// Store the required permission for the /ping command for later reference.
-		String pingPermission = "utilities.ping";
+        // Store the required permission for the /ping command for later reference.
+        String pingPermission = "utilities.ping";
 
-		// If the command was sent by an in-game player, do this...
-		if (sender instanceof Player) {
+        // If the command was sent by an in-game player, do this...
+        if (sender instanceof Player) {
 
-			// Get the player object from the sender.
-			Player player = (Player) sender;
+            // Get the player object from the sender.
+            Player player = (Player) sender;
 
-			// If the player has permission to use the Ping Module, do this...
-			if (player.hasPermission(pingPermission)) {
+            // If the player has permission to use the Ping Module, do this...
+            if (player.hasPermission(pingPermission)) {
 
-				// Send player a connection confirmation message with formatting using the TrueOG Message API.
-				UtilitiesOG.trueogMessage(player, "<#FFFFFF> Bong!");
+                // Send player a connection confirmation message with formatting using the TrueOG Message API.
+                UtilitiesOG.trueogMessage(player, "<#FFFFFF> Bong!");
 
-			}
-			// If the player does not have permission to use the Ping Module, do this...
-			else {
+            }
+            // If the player does not have permission to use the Ping Module, do this...
+            else {
 
-				// Send a detailed, formatted permissions error message to the player.
-				TextUtils.permissionsErrorMessage(player, cmd.getName(), pingPermission);
+                // Send a detailed, formatted permissions error message to the player.
+                TextUtils.permissionsErrorMessage(player, cmd.getName(), pingPermission);
+            }
 
-			}
+        }
+        // If the command was sent by the server console, do this...
+        else {
 
-		}
-		// If the command was sent by the server console, do this...
-		else {
+            // Send a detailed error message to the server console.
+            TextUtils.logToConsole(cmd.getName() + " " + pingPermission);
+        }
 
-			// Send a detailed error message to the server console.
-			TextUtils.logToConsole(cmd.getName() + " " + pingPermission);
-
-		}
-
-		// Healthy exit status.
-		return true;
-
-	}
-
+        // Healthy exit status.
+        return true;
+    }
 }
