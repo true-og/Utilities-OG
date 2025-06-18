@@ -12,21 +12,17 @@ java {
 }
 
 group = "net.trueog.utilities-og" // Declare bundle identifier.
+
 version = "1.6.2" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 
 tasks.named<ProcessResources>("processResources") {
-    val props = mapOf(
-        "version" to version,
-        "apiVersion" to apiVersion
-    )
+    val props = mapOf("version" to version, "apiVersion" to apiVersion)
 
     inputs.properties(props) // Indicates to rerun if version changes.
 
-    filesMatching("plugin.yml") {
-        expand(props)
-    }
+    filesMatching("plugin.yml") { expand(props) }
     from("LICENSE") { // Bundle license into .jars.
         into("/")
     }
@@ -39,10 +35,10 @@ repositories {
         url = uri("https://repo.purpurmc.org/snapshots") // Import the PurpurMC Maven Repository.
     }
     maven {
-    	url = uri("https://repo.codemc.io/repository/maven-public/") // Import the CodeMC Maven Repository.
+        url = uri("https://repo.codemc.io/repository/maven-public/") // Import the CodeMC Maven Repository.
     }
     maven {
-    	url = uri("https://maven.enginehub.org/repo/") // Import the EngineHub Maven Repository.
+        url = uri("https://maven.enginehub.org/repo/") // Import the EngineHub Maven Repository.
     }
 }
 
@@ -71,9 +67,7 @@ tasks.build {
     dependsOn(tasks.shadowJar)
 }
 
-tasks.jar {
-    archiveClassifier.set("part")
-}
+tasks.jar { archiveClassifier.set("part") }
 
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-parameters")
@@ -93,5 +87,9 @@ spotless {
     java {
         removeUnusedImports()
         palantirJavaFormat()
+    }
+    kotlinGradle {
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) }
+        target("build.gradle.kts", "settings.gradle.kts")
     }
 }
