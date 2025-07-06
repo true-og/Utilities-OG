@@ -17,3 +17,5 @@ TogglePhantoms: true
 Ping: true
 # Displays information to the player about the ranks available at the TrueOG Network Store (https://store.true-og.net/). Default: true.
 RanksMenu: true
+# Should players earn advancements in non survival game modes?
+NoAdvancementsInCreative: true
