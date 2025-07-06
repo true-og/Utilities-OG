@@ -19,6 +19,7 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.types.PrefixNode;
 import net.trueog.utilitiesog.Listeners.DisableEntityCrammingListener;
+import net.trueog.utilitiesog.Listeners.NoAdvancementsInCreativeListener;
 import net.trueog.utilitiesog.Listeners.NoFlippyListener;
 import net.trueog.utilitiesog.Listeners.TogglePhantomsListener;
 import net.trueog.utilitiesog.commands.AboutCommand;
@@ -181,6 +182,11 @@ public final class UtilitiesOG extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new TogglePhantomsListener(), this);
 
             this.getCommand("togglephantoms").setExecutor(new TogglePhantomsCommand());
+        }
+
+        if (this.getConfig().getBoolean("NoAdvancementsInCreative")) {
+
+            getServer().getPluginManager().registerEvents(new NoAdvancementsInCreativeListener(), this);
         }
 
         this.getCommand("utilities").setExecutor(new AboutCommand());
