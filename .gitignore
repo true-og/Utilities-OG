@@ -35,3 +35,13 @@ build/
 .project
 .classpath
 bin/
+
+# User-specific stuff
+.idea/
+.kotlin
+*.iml
+*.ipr
+*.iws
+
+# IntelliJ
+out/
