@@ -3,6 +3,7 @@
 package net.trueog.utilitiesog.utils;
 
 import io.github.miniplaceholders.api.MiniPlaceholders;
+import java.util.List;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -16,7 +17,30 @@ public class TextUtils {
 
     // Regular expressions to match color codes starting with § or & in Strings.
     private static final Pattern LEGACY_COLOR_PATTERN = Pattern.compile("(?i)[§&][0-9A-FK-OR]");
-    private static final Pattern MINIMESSAGE_TAG_PATTERN = Pattern.compile("<[^>]*>");
+    private static final List<String> MINIMESSAGE_TAGS = List.of(
+            "<black>",
+            "<dark_blue>",
+            "<dark_green>",
+            "<dark_aqua>",
+            "<dark_red>",
+            "<dark_purple>",
+            "<gold>",
+            "<gray>",
+            "<dark_gray>",
+            "<blue>",
+            "<green>",
+            "<aqua>",
+            "<red>",
+            "<light_purple>",
+            "<yellow>",
+            "<white>",
+            "<obfuscated>",
+            "<bold>",
+            "<strikethrough>",
+            "<underlined>",
+            "<italic>",
+            "<reset>",
+            "<rainbow>");
 
     // Sends a formatted message to the player, expanding placeholders and color codes.
     public static void trueogMessage(Player player, String message) {
@@ -153,7 +177,12 @@ public class TextUtils {
             return null;
         }
 
-        String stripped = MINIMESSAGE_TAG_PATTERN.matcher(input).replaceAll("");
+        String stripped = input;
+
+        for (String tag : MINIMESSAGE_TAGS) {
+
+            stripped = stripped.replace(tag, "");
+        }
 
         return LEGACY_COLOR_PATTERN.matcher(stripped).replaceAll("");
     }
