@@ -1,4 +1,4 @@
-package net.trueog.utilitiesog.Listeners;
+package net.trueog.utilitiesog.listeners;
 // Import libraries.
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import org.bukkit.GameMode;

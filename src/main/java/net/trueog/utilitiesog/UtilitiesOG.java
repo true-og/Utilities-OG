@@ -2,7 +2,6 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog;
 
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -10,6 +9,16 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import com.sk89q.worldguard.protection.flags.StateFlag;
+
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
@@ -18,10 +27,6 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.types.PrefixNode;
-import net.trueog.utilitiesog.Listeners.DisableEntityCrammingListener;
-import net.trueog.utilitiesog.Listeners.NoAdvancementsInCreativeListener;
-import net.trueog.utilitiesog.Listeners.NoFlippyListener;
-import net.trueog.utilitiesog.Listeners.TogglePhantomsListener;
 import net.trueog.utilitiesog.commands.AboutCommand;
 import net.trueog.utilitiesog.commands.BingCommand;
 import net.trueog.utilitiesog.commands.ColorCodesCommand;
@@ -30,347 +35,351 @@ import net.trueog.utilitiesog.commands.RanksCommand;
 import net.trueog.utilitiesog.commands.ToggleCrammingCommand;
 import net.trueog.utilitiesog.commands.TogglePhantomsCommand;
 import net.trueog.utilitiesog.internal.FlagRegistrationException;
+import net.trueog.utilitiesog.listeners.DisableEntityCrammingListener;
+import net.trueog.utilitiesog.listeners.NoAdvancementsInCreativeListener;
+import net.trueog.utilitiesog.listeners.NoFlippyListener;
+import net.trueog.utilitiesog.listeners.TogglePhantomsListener;
 import net.trueog.utilitiesog.modules.ChainArmorModule;
 import net.trueog.utilitiesog.modules.MockBambooModule;
 import net.trueog.utilitiesog.utils.PlaceholderUtils;
 import net.trueog.utilitiesog.utils.TextUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 // Declare main plugin class.
 public final class UtilitiesOG extends JavaPlugin {
 
-    private File file;
-    private static UtilitiesOG plugin;
-    private static FileConfiguration config;
-    private static File phantomPreferencesFile;
-    private static YamlConfiguration phantomPreferences;
-    private static StateFlag FlippyFlag;
+	private File file;
+	private static UtilitiesOG plugin;
+	private static FileConfiguration config;
+	private static File phantomPreferencesFile;
+	private static YamlConfiguration phantomPreferences;
+	private static StateFlag FlippyFlag;
 
-    @Override
-    public void onEnable() {
+	@Override
+	public void onEnable() {
 
-        plugin = this;
+		plugin = this;
 
-        this.file = new File(this.getDataFolder(), "config.yml");
-        if (!this.file.exists()) {
+		this.file = new File(this.getDataFolder(), "config.yml");
+		if (!this.file.exists()) {
 
-            this.saveDefaultConfig();
-        }
+			this.saveDefaultConfig();
+		}
 
-        config = this.getConfig();
-        phantomPreferencesFile = new File(this.getDataFolder(), "phantomDisabledUsers.yml");
+		config = this.getConfig();
+		phantomPreferencesFile = new File(this.getDataFolder(), "phantomDisabledUsers.yml");
 
-        try {
+		try {
 
-            if (!phantomPreferencesFile.exists()) {
+			if (!phantomPreferencesFile.exists()) {
 
-                phantomPreferencesFile.createNewFile();
-            }
+				phantomPreferencesFile.createNewFile();
+			}
 
-        } catch (IOException error) {
+		} catch (IOException error) {
 
-            this.getLogger().severe("ERROR: Failed to create the phantom toggle cache file! " + error.getMessage());
-        }
+			this.getLogger().severe("ERROR: Failed to create the phantom toggle cache file! " + error.getMessage());
+		}
 
-        phantomPreferences = YamlConfiguration.loadConfiguration(phantomPreferencesFile);
+		phantomPreferences = YamlConfiguration.loadConfiguration(phantomPreferencesFile);
 
-        if (this.getConfig().getBoolean("ChainArmor")) {
+		if (this.getConfig().getBoolean("ChainArmor")) {
 
-            ChainArmorModule.Enable();
-        }
+			ChainArmorModule.Enable();
+		}
 
-        if (this.getConfig().getBoolean("ColorCodes")) {
+		if (this.getConfig().getBoolean("ColorCodes")) {
 
-            this.getCommand("colorcodes").setExecutor(new ColorCodesCommand());
-        }
+			this.getCommand("colorcodes").setExecutor(new ColorCodesCommand());
+		}
 
-        if (this.getConfig().getBoolean("DisableEntityCramming")) {
+		if (this.getConfig().getBoolean("DisableEntityCramming")) {
 
-            getServer().getPluginManager().registerEvents(new DisableEntityCrammingListener(), this);
+			getServer().getPluginManager().registerEvents(new DisableEntityCrammingListener(), this);
 
-            this.getCommand("togglecramming").setExecutor(new ToggleCrammingCommand());
-        }
+			this.getCommand("togglecramming").setExecutor(new ToggleCrammingCommand());
+		}
 
-        if (this.getConfig().getBoolean("MiniPlaceholders")) {
+		if (this.getConfig().getBoolean("MiniPlaceholders")) {
 
-            // Registering a global MiniPlaceholder.
-            registerGlobalPlaceholder("servers_name", () -> "&aTrue&cOG &eNetwork");
+			// Registering a global MiniPlaceholder.
+			registerGlobalPlaceholder("servers_name", () -> "&aTrue&cOG &eNetwork");
 
-            // Registering an Audience MiniPlaceholder.
-            registerAudiencePlaceholder("player_display_name", (Player player) -> {
-                LuckPerms luckPerms = LuckPermsProvider.get();
-                User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-                if (user == null) {
+			// Registering an Audience MiniPlaceholder.
+			registerAudiencePlaceholder("player_display_name", (Player player) -> {
+				LuckPerms luckPerms = LuckPermsProvider.get();
+				User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+				if (user == null) {
 
-                    getPlugin()
-                            .getLogger()
-                            .info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
-                                    + " has no User object in LuckPerms!");
+					getPlugin()
+					.getLogger()
+					.info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
+					+ " has no User object in LuckPerms!");
 
-                    return player.getName();
-                }
+					return player.getName();
+				}
 
-                String primaryGroup = user.getPrimaryGroup();
-                Group group = luckPerms.getGroupManager().getGroup(primaryGroup);
-                if (group == null) {
+				String primaryGroup = user.getPrimaryGroup();
+				Group group = luckPerms.getGroupManager().getGroup(primaryGroup);
+				if (group == null) {
 
-                    getPlugin()
-                            .getLogger()
-                            .info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
-                                    + " has no Group assignment in LuckPerms!");
+					getPlugin()
+					.getLogger()
+					.info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
+					+ " has no Group assignment in LuckPerms!");
 
-                    return player.getName();
-                }
+					return player.getName();
+				}
 
-                String prefix = null;
-                for (Node node : group.getNodes()) {
+				String prefix = null;
+				for (Node node : group.getNodes()) {
 
-                    if (node instanceof PrefixNode) {
+					if (node instanceof PrefixNode) {
 
-                        prefix = ((PrefixNode) node).getMetaValue();
+						prefix = ((PrefixNode) node).getMetaValue();
 
-                        break;
-                    }
-                }
+						break;
+					}
+				}
 
-                if (prefix == null) {
+				if (prefix == null) {
 
-                    return player.getName();
-                }
+					return player.getName();
+				}
 
-                String colorCode = prefix.replaceAll(".*\\](.*)", "$1");
+				String colorCode = prefix.replaceAll(".*\\](.*)", "$1");
 
-                return "<luckperms_prefix>" + colorCode + " " + player.getName();
-            });
-        }
+				return "<luckperms_prefix>" + colorCode + " " + player.getName();
+			});
+		}
 
-        if (this.getConfig().getBoolean("MockBamboo")) {
+		if (this.getConfig().getBoolean("MockBamboo")) {
 
-            MockBambooModule.Enable();
-        }
+			MockBambooModule.Enable();
+		}
 
-        if (this.getConfig().getBoolean("NoFlippy")) {
+		if (this.getConfig().getBoolean("NoFlippy")) {
 
-            if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+			if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
 
-                getServer().getPluginManager().registerEvents(new NoFlippyListener(), this);
+				getServer().getPluginManager().registerEvents(new NoFlippyListener(), this);
 
-            } else {
+			} else {
 
-                this.getLogger().severe("WorldGuard is not installed! Disabling NoFlippy...");
-            }
-        }
+				this.getLogger().severe("WorldGuard is not installed! Disabling NoFlippy...");
+			}
+		}
 
-        if (this.getConfig().getBoolean("Ping")) {
+		if (this.getConfig().getBoolean("Ping")) {
 
-            this.getCommand("ping").setExecutor(new PingCommand());
-            this.getCommand("bing").setExecutor(new BingCommand());
-        }
+			this.getCommand("ping").setExecutor(new PingCommand());
+			this.getCommand("bing").setExecutor(new BingCommand());
+		}
 
-        if (this.getConfig().getBoolean("RanksMenu")) {
+		if (this.getConfig().getBoolean("RanksMenu")) {
 
-            this.getCommand("ranks").setExecutor(new RanksCommand());
-        }
+			this.getCommand("ranks").setExecutor(new RanksCommand());
+		}
 
-        if (this.getConfig().getBoolean("TogglePhantoms")) {
+		if (this.getConfig().getBoolean("TogglePhantoms")) {
 
-            getServer().getPluginManager().registerEvents(new TogglePhantomsListener(), this);
+			getServer().getPluginManager().registerEvents(new TogglePhantomsListener(), this);
 
-            this.getCommand("togglephantoms").setExecutor(new TogglePhantomsCommand());
-        }
+			this.getCommand("togglephantoms").setExecutor(new TogglePhantomsCommand());
+		}
 
-        if (this.getConfig().getBoolean("NoAdvancementsInCreative")) {
+		if (this.getConfig().getBoolean("NoAdvancementsInCreative")) {
 
-            getServer().getPluginManager().registerEvents(new NoAdvancementsInCreativeListener(), this);
-        }
+			getServer().getPluginManager().registerEvents(new NoAdvancementsInCreativeListener(), this);
+		}
 
-        this.getCommand("utilities").setExecutor(new AboutCommand());
-    }
+		this.getCommand("utilities").setExecutor(new AboutCommand());
+	}
 
-    @Override
-    public void onLoad() {
+	@Override
+	public void onLoad() {
 
-        try {
+		try {
 
-            FlippyFlag = NoFlippyListener.registerNoFlippyWorldGuardFlag(FlippyFlag);
+			FlippyFlag = NoFlippyListener.registerNoFlippyWorldGuardFlag(FlippyFlag);
 
-        } catch (FlagRegistrationException error) {
+		} catch (FlagRegistrationException error) {
 
-            this.getLogger()
-                    .severe("ERROR: Failed to register the can-flippy Flag with WorldGuard. " + error.getMessage());
-        }
-    }
+			this.getLogger()
+			.severe("ERROR: Failed to register the can-flippy Flag with WorldGuard. " + error.getMessage());
+		}
+	}
 
-    @Override
-    public void onDisable() {
+	@Override
+	public void onDisable() {
 
-        PlaceholderUtils.unregisterAll();
-    }
+		PlaceholderUtils.unregisterAll();
+	}
 
-    public static FileConfiguration config() {
+	static FileConfiguration config() {
 
-        return config;
-    }
+		return config;
+	}
 
-    public static StateFlag getFlippyFlag() {
+	static String prefix() {
 
-        return FlippyFlag;
-    }
+		return "&7[&6Utilities&f-&4OG&7] ";
 
-    public static File getPhantomDisabledPlayersFile() {
+	}
 
-        return phantomPreferencesFile;
-    }
+    static StateFlag flippyFlag() {
 
-    public static YamlConfiguration getPhantomPreferences() {
+		return FlippyFlag;
+	}
 
-        return phantomPreferences;
-    }
+	static File phantomDisabledPlayersFile() {
 
-    // Unified method for sending a message to a player with placeholders processed.
-    public static void trueogMessage(Player player, String message) {
+		return phantomPreferencesFile;
+	}
 
-        TextUtils.trueogMessage(player, message);
-    }
+	static YamlConfiguration phantomPreferences() {
 
-    // Handle messages to offline players (based on UUID).
-    public static void trueogMessage(UUID playerUUID, String message) {
+		return phantomPreferences;
+	}
 
-        Player player = Bukkit.getPlayer(playerUUID);
-        if (player != null) {
+	// Unified method for sending a message to a player with placeholders processed.
+	public static void trueogMessage(Player player, String message) {
 
-            TextUtils.trueogMessage(player, message);
+		TextUtils.trueogMessage(player, message);
+	}
 
-        } else {
+	// Handle messages to offline players (based on UUID).
+	public static void trueogMessage(UUID playerUUID, String message) {
 
-            logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
-        }
-    }
+		Player player = Bukkit.getPlayer(playerUUID);
+		if (player != null) {
 
-    // Formats a message without MiniPlaceholder expansion.
-    public static TextComponent trueogColorize(String message) {
+			TextUtils.trueogMessage(player, message);
 
-        return (TextComponent) MiniMessage.miniMessage().deserialize(TextUtils.processColorCodes(message));
-    }
+		} else {
 
-    // Expands Global MiniPlaceholders.
-    public static TextComponent trueogExpand(String message) {
+			logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
+		}
+	}
 
-        // MiniPlaceholder expansion with legacy and modern formatting.
-        return TextUtils.expandTextWithPlaceholders(message);
-    }
+	// Formats a message without MiniPlaceholder expansion.
+	public static TextComponent trueogColorize(String message) {
 
-    // Expands Audience MiniPlaceholders.
-    public static TextComponent trueogExpand(String message, Player player) {
+		return (TextComponent) MiniMessage.miniMessage().deserialize(TextUtils.processColorCodes(message));
+	}
 
-        // MiniPlaceholder expansion with legacy and modern formatting.
-        return TextUtils.expandTextWithPlaceholders(message, player);
-    }
+	// Expands Global MiniPlaceholders.
+	public static TextComponent trueogExpand(String message) {
 
-    // Expands Relational MiniPlaceholders.
-    public static TextComponent trueogExpand(String message, Player player, Player target) {
+		// MiniPlaceholder expansion with legacy and modern formatting.
+		return TextUtils.expandTextWithPlaceholders(message);
+	}
 
-        // MiniPlaceholder expansion with legacy and modern formatting.
-        return TextUtils.expandTextWithPlaceholders(message, player, target);
-    }
+	// Expands Audience MiniPlaceholders.
+	public static TextComponent trueogExpand(String message, Player player) {
 
-    // Variation of MiniPlaceholder expansion for when Bukkit API is unavailable.
-    public static TextComponent trueogExpand(String message, UUID playerUUID) {
+		// MiniPlaceholder expansion with legacy and modern formatting.
+		return TextUtils.expandTextWithPlaceholders(message, player);
+	}
 
-        Player player = Bukkit.getPlayer(playerUUID);
-        if (player != null) {
+	// Expands Relational MiniPlaceholders.
+	public static TextComponent trueogExpand(String message, Player player, Player target) {
 
-            return TextUtils.expandTextWithPlaceholders(message, player);
+		// MiniPlaceholder expansion with legacy and modern formatting.
+		return TextUtils.expandTextWithPlaceholders(message, player, target);
+	}
 
-        } else {
+	// Variation of MiniPlaceholder expansion for when Bukkit API is unavailable.
+	public static TextComponent trueogExpand(String message, UUID playerUUID) {
 
-            logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
+		Player player = Bukkit.getPlayer(playerUUID);
+		if (player != null) {
 
-            return TextUtils.expandTextWithPlaceholders(message);
-        }
-    }
+			return TextUtils.expandTextWithPlaceholders(message, player);
 
-    // Global placeholder without arguments.
-    public static void registerGlobalPlaceholder(String name, Supplier<String> valueSupplier) {
+		} else {
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-            placeholder.setGlobalPlaceholder(valueSupplier);
-        });
-    }
+			logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
 
-    // Global placeholder with arguments.
-    public static void registerGlobalPlaceholder(String name, Function<List<String>, String> valueFunction) {
+			return TextUtils.expandTextWithPlaceholders(message);
+		}
+	}
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-            placeholder.setGlobalPlaceholder(valueFunction);
-        });
-    }
+	// Global placeholder without arguments.
+	public static void registerGlobalPlaceholder(String name, Supplier<String> valueSupplier) {
 
-    // Audience placeholder without arguments.
-    public static void registerAudiencePlaceholder(String name, Function<Player, String> valueFunction) {
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+			placeholder.setGlobalPlaceholder(valueSupplier);
+		});
+	}
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-            placeholder.setAudiencePlaceholder(valueFunction);
-        });
-    }
+	// Global placeholder with arguments.
+	public static void registerGlobalPlaceholder(String name, Function<List<String>, String> valueFunction) {
 
-    // Audience placeholder with arguments.
-    public static void registerAudiencePlaceholder(
-            String name, BiFunction<Player, List<String>, String> valueFunction) {
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+			placeholder.setGlobalPlaceholder(valueFunction);
+		});
+	}
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-            placeholder.setAudiencePlaceholder(valueFunction);
-        });
-    }
+	// Audience placeholder without arguments.
+	public static void registerAudiencePlaceholder(String name, Function<Player, String> valueFunction) {
 
-    // Relational placeholder without arguments.
-    public static void registerRelationalPlaceholder(String name, BiFunction<Player, Player, String> valueFunction) {
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+			placeholder.setAudiencePlaceholder(valueFunction);
+		});
+	}
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-            placeholder.setRelationalPlaceholder(valueFunction);
-        });
-    }
+	// Audience placeholder with arguments.
+	public static void registerAudiencePlaceholder(
+			String name, BiFunction<Player, List<String>, String> valueFunction) {
 
-    // Relational placeholder with arguments.
-    public static void registerRelationalPlaceholder(
-            String name, TriFunction<Player, Player, List<String>, String> valueFunction) {
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+			placeholder.setAudiencePlaceholder(valueFunction);
+		});
+	}
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-            placeholder.setRelationalPlaceholder(valueFunction);
-        });
-    }
+	// Relational placeholder without arguments.
+	public static void registerRelationalPlaceholder(String name, BiFunction<Player, Player, String> valueFunction) {
 
-    // API to strip legacy and modern formatting in Strings.
-    public static String stripFormatting(String content) {
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+			placeholder.setRelationalPlaceholder(valueFunction);
+		});
+	}
 
-        return TextUtils.stripColors(content);
-    }
+	// Relational placeholder with arguments.
+	public static void registerRelationalPlaceholder(
+			String name, TriFunction<Player, Player, List<String>, String> valueFunction) {
 
-    // Console logging API that automatically strips legacy and modern formatting.
-    public static void logToConsole(String prefix, String message) {
+		PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
+			placeholder.setRelationalPlaceholder(valueFunction);
+		});
+	}
 
-        Bukkit.getLogger().info(TextUtils.stripColors(prefix + " " + message));
-    }
+	// API to strip legacy and modern formatting in Strings.
+	public static String stripFormatting(String content) {
 
-    public static UtilitiesOG getPlugin() {
+		return TextUtils.stripColors(content);
+	}
 
-        return plugin;
-    }
+	// Console logging API that automatically strips legacy and modern formatting.
+	public static void logToConsole(String prefix, String message) {
 
-    public static BukkitTask runTaskAsynchronously(final Runnable run) {
+		Bukkit.getLogger().info(TextUtils.stripColors(prefix + " " + message));
+	}
 
-        return getPlugin().getServer().getScheduler().runTaskAsynchronously(getPlugin(), run);
-    }
+	public static UtilitiesOG getPlugin() {
 
-    // Functional interface to support TriFunction.
-    @FunctionalInterface
-    public interface TriFunction<T, U, V, R> {
+		return plugin;
+	}
 
-        R apply(T t, U u, V v);
-    }
+	public static BukkitTask runTaskAsynchronously(final Runnable run) {
+
+		return getPlugin().getServer().getScheduler().runTaskAsynchronously(getPlugin(), run);
+	}
+
+	// Functional interface to support TriFunction.
+	@FunctionalInterface
+	public interface TriFunction<T, U, V, R> {
+
+		R apply(T t, U u, V v);
+	}
 }
