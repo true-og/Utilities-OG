@@ -1,39 +1,34 @@
 package net.trueog.utilitiesog;
 
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import java.io.File;
-
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.sk89q.worldguard.protection.flags.StateFlag;
-
 public class InternalFunctions {
 
-	public static FileConfiguration getConfig() {
+    public static FileConfiguration getConfig() {
 
-		return UtilitiesOG.config();
+        return UtilitiesOG.config();
+    }
 
-	}
+    public static String getPrefix() {
 
-	public static String getPrefix() {
+        return UtilitiesOG.prefix();
+    }
 
-		return UtilitiesOG.prefix();
+    public static StateFlag getFlippyFlag() {
 
-	}
+        return UtilitiesOG.flippyFlag();
+    }
 
-	public static StateFlag getFlippyFlag() {
+    public static File getPhantomDisabledPlayersFile() {
 
-		return UtilitiesOG.flippyFlag();
-	}
+        return UtilitiesOG.phantomDisabledPlayersFile();
+    }
 
-	public static File getPhantomDisabledPlayersFile() {
+    public static YamlConfiguration getPhantomPreferences() {
 
-		return UtilitiesOG.phantomDisabledPlayersFile();
-	}
-
-	public static YamlConfiguration getPhantomPreferences() {
-
-		return UtilitiesOG.phantomPreferences();
-	}
-
+        return UtilitiesOG.phantomPreferences();
+    }
 }

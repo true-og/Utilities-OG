@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.trueog.utilitiesog.internal.ColorCodeMap;
+import net.trueog.utilitiesog.misc.ColorCodeMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

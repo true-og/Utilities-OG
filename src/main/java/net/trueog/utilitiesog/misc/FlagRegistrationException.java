@@ -1,6 +1,6 @@
 // This is free and unencumbered software released into the public domain.
 // Authors: christianniehaus, NotAlexNoyle.
-package net.trueog.utilitiesog.internal;
+package net.trueog.utilitiesog.misc;
 
 // Declare a custom exception for the case where a WorldGuard Flag fails to register for internal use by Utilities-OG.
 public class FlagRegistrationException extends Exception {
