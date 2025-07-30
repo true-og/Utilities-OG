@@ -22,7 +22,7 @@ java {
 /* ----------------------------- Metadata ------------------------------ */
 group = "net.trueog.utilities-og" // Declare bundle identifier.
 
-version = "1.6.3" // Declare plugin version (will be in .jar).
+version = "1.7" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 
@@ -36,9 +36,9 @@ tasks.named<ProcessResources>("processResources") {
 
 /* ---------------------------- Repos ---------------------------------- */
 repositories {
-    mavenCentral()
-    gradlePluginPortal()
-    maven { url = uri("https://repo.purpurmc.org/snapshots") }
+    mavenCentral() // Import the Maven Central Maven Repository.
+    gradlePluginPortal() // Import the Gradle Plugin Portal Maven Repository.
+    maven { url = uri("https://repo.purpurmc.org/snapshots") } // Import the PurpurMC Maven Repository.
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") } // Import the PaperMC Maven Repository.
     maven { url = uri("https://repo.codemc.io/repository/maven-public/") } // Import the CodeMC Maven Repository.
     maven { url = uri("https://maven.enginehub.org/repo/") } // Import the EngineHub Maven Repository.
@@ -46,7 +46,7 @@ repositories {
 
 /* ---------------------- Java project deps ---------------------------- */
 dependencies {
-    compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare purpur API version to be packaged.
+    compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare Purpur API version to be packaged.
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.8") // Import WorldGuard API.
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.11.2") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.

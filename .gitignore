@@ -37,12 +37,10 @@ build/
 .checkstyle
 bin/
 
-# User-specific stuff
+# IntelliJ files
 .idea/
 .kotlin
 *.iml
 *.ipr
 *.iws
-
-# IntelliJ
 out/
