@@ -4,14 +4,16 @@ package net.trueog.utilitiesog.commands;
 
 // Import libraries.
 import java.io.IOException;
-import net.trueog.utilitiesog.InternalFunctions;
-import net.trueog.utilitiesog.UtilitiesOG;
-import net.trueog.utilitiesog.utils.TextUtils;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import net.trueog.utilitiesog.InternalFunctions;
+import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.utils.TextUtils;
 
 // Declare the /togglephantoms command in the Ping Module with Bukkit Commands.
 public class TogglePhantomsCommand implements CommandExecutor {
@@ -20,24 +22,21 @@ public class TogglePhantomsCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        // Store the required permission for the /togglephantoms command for later reference.
-        String togglePhantomsPermission = "utilities.togglephantoms";
+        // Store the required permission for the /togglephantoms command for later
+        // reference.
+        final String togglePhantomsPermission = "utilities.togglephantoms";
 
         // If the command was sent by an in-game player, do this...
-        if (sender instanceof Player) {
-
-            // Get the player object from the sender.
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             // If the player has permission to use /togglephantoms, do this...
             if (player.hasPermission(togglePhantomsPermission)) {
 
                 // Store the contents of phantomDisabledUsers.yml file as a YAML object.
-                YamlConfiguration phantomPreferences = InternalFunctions.getPhantomPreferences();
+                final YamlConfiguration phantomPreferences = InternalFunctions.getPhantomPreferences();
 
                 // Cherry pick the command runner's phantom status from the YAML data set.
-                boolean phantomToggleState =
-                        phantomPreferences.getBoolean(player.getUniqueId().toString());
+                final boolean phantomToggleState = phantomPreferences.getBoolean(player.getUniqueId().toString());
 
                 // Flip the true/false value to the opposite of what it currently is.
                 phantomPreferences.set(player.getUniqueId().toString(), !phantomToggleState);
@@ -46,18 +45,18 @@ public class TogglePhantomsCommand implements CommandExecutor {
                 if (phantomToggleState) {
 
                     // Send a formatted "true" message with formatting using the TrueOG Message API.
-                    UtilitiesOG.trueogMessage(
-                            player,
+                    UtilitiesOG.trueogMessage(player,
                             "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#55FF55>Phantom spawning turned <#00AA00>ON<#55FF55>.");
 
                 }
                 // If the command sender's phantom spawning is turned off, do this...
                 else {
 
-                    // Send a formatted "false" message with formatting using the TrueOG Message API.
-                    UtilitiesOG.trueogMessage(
-                            player,
+                    // Send a formatted "false" message with formatting using the TrueOG Message
+                    // API.
+                    UtilitiesOG.trueogMessage(player,
                             "<#AAAAAA>[<#00AA00>Utilities<#AA0000>-OG<#AAAAAA>] <#FFAA00>Phantom spawning turned <#FF5555>OFF<#FFAA00>.");
+
                 }
 
                 try {
@@ -69,6 +68,7 @@ public class TogglePhantomsCommand implements CommandExecutor {
 
                     // Throw a runtime error if the YAML data could not be saved to disk.
                     throw new RuntimeException(error);
+
                 }
 
             }
@@ -77,6 +77,7 @@ public class TogglePhantomsCommand implements CommandExecutor {
 
                 // Send a detailed, formatted permissions error message to the player.
                 TextUtils.permissionsErrorMessage(player, cmd.getName(), togglePhantomsPermission);
+
             }
 
         }
@@ -85,9 +86,12 @@ public class TogglePhantomsCommand implements CommandExecutor {
 
             // Send a detailed error message to the server console.
             TextUtils.logToConsole(cmd.getName() + " " + togglePhantomsPermission);
+
         }
 
         // Healthy exit status.
         return true;
+
     }
+
 }

@@ -2,13 +2,14 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.commands;
 
-// Import libraries.
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.trueog.utilitiesog.utils.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+// Import libraries.
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.trueog.utilitiesog.utils.TextUtils;
 
 // Declare the ColorCodes Module with Bukkit Commands.
 public class ColorCodesCommand implements CommandExecutor {
@@ -21,29 +22,28 @@ public class ColorCodesCommand implements CommandExecutor {
 
         // Forwards the class instance to the caller.
         return instance;
+
     }
 
     // Command execution event handler using Bukkit's CommandManager.
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        // Store the required permission for the /colorcodes command for later reference.
-        String colorCodesPermission = "utilities.colorcodes";
+        // Store the required permission for the /colorcodes command for later
+        // reference.
+        final String colorCodesPermission = "utilities.colorcodes";
 
         // If the command was sent by an in-game player, do this...
-        if (sender instanceof Player) {
-
-            // Cast the sender to a player object safely.
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             // If the player has permission to use /colorcodes, do this...
             if (player.hasPermission(colorCodesPermission)) {
 
                 // Send the color code cheat sheet to the player.
-                // Uses MiniMessage directly so that the legacy color codes in the key are not processed.
-                player.sendMessage(
-                        MiniMessage.miniMessage()
-                                .deserialize(
-                                        "<dark_aqua><bold>-=-=-=-=- <dark_purple>C<dark_aqua>o<green>l<yellow>o<red>r <aqua>C<light_purple>o<white>d<light_purple>e<aqua>s: -=-=-=-=-"));
+                // Uses MiniMessage directly so that the legacy color codes in the key are not
+                // processed.
+                player.sendMessage(MiniMessage.miniMessage().deserialize(
+                        "<dark_aqua><bold>-=-=-=-=- <dark_purple>C<dark_aqua>o<green>l<yellow>o<red>r <aqua>C<light_purple>o<white>d<light_purple>e<aqua>s: -=-=-=-=-"));
                 player.sendMessage(MiniMessage.miniMessage()
                         .deserialize("&0 = <black>Black               <reset> &1 = <dark_blue>Dark Blue"));
                 player.sendMessage(MiniMessage.miniMessage()
@@ -73,6 +73,7 @@ public class ColorCodesCommand implements CommandExecutor {
 
                 // Send a detailed, formatted permissions error message to the player.
                 TextUtils.permissionsErrorMessage(player, cmd.getName(), colorCodesPermission);
+
             }
 
         }
@@ -81,9 +82,12 @@ public class ColorCodesCommand implements CommandExecutor {
 
             // Send a detailed error message to the server console.
             TextUtils.logToConsole(cmd.getName() + " " + colorCodesPermission);
+
         }
 
         // Healthy exit status.
         return true;
+
     }
+
 }

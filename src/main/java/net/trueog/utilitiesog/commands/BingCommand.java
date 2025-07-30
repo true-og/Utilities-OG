@@ -2,13 +2,14 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.commands;
 
-// Import libraries.
-import net.trueog.utilitiesog.UtilitiesOG;
-import net.trueog.utilitiesog.utils.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+// Import libraries.
+import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.utils.TextUtils;
 
 // Declare the /bing command in the Ping Module with Bukkit Commands.
 public class BingCommand implements CommandExecutor {
@@ -18,18 +19,16 @@ public class BingCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         // Store the required permission for the /ping command for later reference.
-        String pingPermission = "utilities.ping";
+        final String pingPermission = "utilities.ping";
 
         // If the command was sent by an in-game player, do this...
-        if (sender instanceof Player) {
-
-            // Get the player object from the sender.
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             // If the player has permission to use the Ping Module, do this...
             if (player.hasPermission(pingPermission)) {
 
-                // Send player a connection confirmation message with formatting using the TrueOG Message API.
+                // Send player a connection confirmation message with formatting using the
+                // TrueOG Message API.
                 UtilitiesOG.trueogMessage(player, "<#FFFFFF> Bong!");
 
             }
@@ -38,6 +37,7 @@ public class BingCommand implements CommandExecutor {
 
                 // Send a detailed, formatted permissions error message to the player.
                 TextUtils.permissionsErrorMessage(player, cmd.getName(), pingPermission);
+
             }
 
         }
@@ -46,9 +46,12 @@ public class BingCommand implements CommandExecutor {
 
             // Send a detailed error message to the server console.
             TextUtils.logToConsole(cmd.getName() + " " + pingPermission);
+
         }
 
         // Healthy exit status.
         return true;
+
     }
+
 }

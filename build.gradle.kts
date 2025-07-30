@@ -2,11 +2,12 @@
 
 /* ------------------------------ Plugins ------------------------------ */
 plugins {
-    id("java") // Tell gradle this is a java project.
-    id("java-library") // Import helper for source-based libraries.
-    id("com.diffplug.spotless") version "7.0.4" // Import auto-formatter.
-    id("com.gradleup.shadow") version "8.3.6" // Import shadow API.
-    eclipse // Import eclipse plugin for IDE integration.
+    id("java") // Import Java plugin.
+    id("java-library") // Import Java Library plugin.
+    id("com.diffplug.spotless") version "7.0.4" // Import Spotless plugin.
+    id("com.gradleup.shadow") version "8.3.6" // Import Shadow plugin.
+    id("checkstyle") // Import Checkstyle plugin.
+    eclipse // Import Eclipse plugin.
 }
 
 /* ------------------------------- JDK --------------------------------- */
@@ -38,12 +39,9 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
     maven { url = uri("https://repo.purpurmc.org/snapshots") }
-    maven {
-        url = uri("https://repo.codemc.io/repository/maven-public/") // Import the CodeMC Maven Repository.
-    }
-    maven {
-        url = uri("https://maven.enginehub.org/repo/") // Import the EngineHub Maven Repository.
-    }
+    maven { url = uri("https://repo.papermc.io/repository/maven-public/") } // Import the PaperMC Maven Repository.
+    maven { url = uri("https://repo.codemc.io/repository/maven-public/") } // Import the CodeMC Maven Repository.
+    maven { url = uri("https://maven.enginehub.org/repo/") } // Import the EngineHub Maven Repository.
 }
 
 /* ---------------------- Java project deps ---------------------------- */
@@ -54,6 +52,7 @@ dependencies {
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
     compileOnly("net.luckperms:api:5.4") // Import LuckPerms API.
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Import JUnit 5 API.
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.19:2.29.0") // Import MockBukkit 1.19.
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") // Import JUnit's engine.
 }
 
@@ -72,36 +71,44 @@ tasks.shadowJar {
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
 
-tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) }
+tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends on spotless and shadow.
 
 /* --------------------------- Javac opts ------------------------------- */
 tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-Xlint:deprecation") // Triggers deprecation warning messages.
-    options.encoding = "UTF-8"
+    options.compilerArgs.add("-Xlint:deprecation") // Trigger deprecation warning messages.
+    options.encoding = "UTF-8" // Use UTF-8 file encoding.
     options.isFork = true
 }
 
 /* --------------------------------- Testing ---------------------------- */
-tasks.withType<Test>().configureEach { // Enable testing with JUnit 5.
-    useJUnitPlatform()
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform() // Enable testing with JUnit 5.
 }
 
 /* ----------------------------- Auto Formatting ------------------------ */
 spotless {
     java {
-        removeUnusedImports()
-        palantirJavaFormat()
+        eclipse().configFile("config/formatter/eclipse-java-formatter.xml") // Eclipse java formatting.
+        leadingTabsToSpaces() // Convert leftover leading tabs to spaces.
+        removeUnusedImports() // Remove imports that aren't being called.
     }
     kotlinGradle {
-        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) }
-        target("build.gradle.kts", "settings.gradle.kts")
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) } // JetBrains Kotlin formatting.
+        target("build.gradle.kts", "settings.gradle.kts") // Gradle files to format.
     }
 }
 
-// This can't be put in eclipse.gradle.kts because Gradle is weird.
-subprojects {
-    apply(plugin = "java-library")
-    apply(plugin = "eclipse")
-    eclipse.project.name = "${project.name}-${rootProject.name}"
-    tasks.withType<Jar>().configureEach { archiveBaseName.set("${project.name}-${rootProject.name}") }
+checkstyle {
+    toolVersion = "10.18.1" // Declare checkstyle version to use.
+    configFile = file("config/checkstyle/checkstyle.xml") // Point checkstyle to config file.
+    isIgnoreFailures = true // Don't fail the build if checkstyle does not pass.
+    isShowViolations = true // Show the violations in any IDE with the checkstyle plugin.
+}
+
+tasks.named("compileJava") {
+    dependsOn("spotlessApply") // Run spotless before compiling with the JDK.
+}
+
+tasks.named("spotlessCheck") {
+    dependsOn("spotlessApply") // Run spotless before checking if spotless ran.
 }

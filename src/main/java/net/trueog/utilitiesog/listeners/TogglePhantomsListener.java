@@ -2,7 +2,6 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.listeners;
 
-import net.trueog.utilitiesog.InternalFunctions;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -10,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+
+import net.trueog.utilitiesog.InternalFunctions;
 
 // Declare the DisablePhantomSpawns Module with Bukkit Listeners.
 public class TogglePhantomsListener implements Listener {
@@ -19,24 +20,32 @@ public class TogglePhantomsListener implements Listener {
     public void disablePhantomSpawns(CreatureSpawnEvent event) {
 
         // If the mob that spawned is a phantom, do this...
-        if (event.getEntityType().equals(EntityType.PHANTOM)) {
+        if (!event.getEntityType().equals(EntityType.PHANTOM)) {
 
-            // Store the contents of phantomDisabledUsers.yml file as a YAML object.
-            YamlConfiguration phantomsAreDisabled = InternalFunctions.getPhantomPreferences();
+            return;
 
-            // Get every player currently on the server in the world where the phantom spawned.
-            for (Player player : Bukkit.getServer().getOnlinePlayers().stream()
-                    .filter(p -> p.getWorld().equals(event.getEntity().getWorld()))
-                    .filter(p -> phantomsAreDisabled.getBoolean(p.getUniqueId().toString()))
-                    .toArray(Player[]::new)) {
-
-                // Check if the phantom is close enough to the player to count as being their spawn.
-                if (event.getEntity().getLocation().distance(player.getLocation()) < 48) {
-
-                    // Prevent the phantom from spawning.
-                    event.setCancelled(true);
-                }
-            }
         }
+
+        // Store the contents of phantomDisabledUsers.yml file as a YAML object.
+        final YamlConfiguration phantomsAreDisabled = InternalFunctions.getPhantomPreferences();
+        // Get every player currently on the server in the world where the phantom
+        // spawned.
+        for (Player player : Bukkit.getServer().getOnlinePlayers().stream()
+                .filter(p -> p.getWorld().equals(event.getEntity().getWorld()))
+                .filter(p -> phantomsAreDisabled.getBoolean(p.getUniqueId().toString())).toArray(Player[]::new))
+        {
+
+            // Check if the phantom is close enough to the player to count as being their
+            // spawn.
+            if (event.getEntity().getLocation().distance(player.getLocation()) < 48) {
+
+                // Prevent the phantom from spawning.
+                event.setCancelled(true);
+
+            }
+
+        }
+
     }
+
 }

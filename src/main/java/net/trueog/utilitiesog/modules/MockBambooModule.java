@@ -2,16 +2,17 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.modules;
 
-// Import libraries.
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.trueog.utilitiesog.UtilitiesOG;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+
+// Import libraries.
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 // Declare the Mock Bamboo Wood Module.
 public class MockBambooModule {
@@ -20,10 +21,10 @@ public class MockBambooModule {
     public static void Enable() {
 
         // Create a novel item, Bamboo Planks, based on Oak Planks.
-        ItemStack bambooPlanks = new ItemStack(Material.OAK_PLANKS);
+        final ItemStack bambooPlanks = new ItemStack(Material.OAK_PLANKS);
 
         // Fetch the meta of the mock Bamboo Planks for editing.
-        ItemMeta bambooPlanksMeta = bambooPlanks.getItemMeta();
+        final ItemMeta bambooPlanksMeta = bambooPlanks.getItemMeta();
 
         // Gives the mock Bamboo Planks a formatted title.
         bambooPlanksMeta.displayName(
@@ -33,9 +34,8 @@ public class MockBambooModule {
         bambooPlanks.setItemMeta(bambooPlanksMeta);
 
         // Defines a crafting recipe for Bamboo Planks.
-        ShapedRecipe BambooPlanks = new ShapedRecipe(
-                        new NamespacedKey(UtilitiesOG.getPlugin(), "Bamboo_Planks"), bambooPlanks)
-                .shape("bb", "bb")
+        final ShapedRecipe BambooPlanks = new ShapedRecipe(new NamespacedKey(UtilitiesOG.getPlugin(), "Bamboo_Planks"),
+                bambooPlanks).shape("bb", "bb")
                 // Use Bamboo as the base ingredient.
                 .setIngredient('b', Material.BAMBOO);
 
@@ -43,10 +43,10 @@ public class MockBambooModule {
         Bukkit.addRecipe(BambooPlanks);
 
         // Create a novel item, Bamboo Wood, based on Birch Wood.
-        ItemStack imitationBambooWood = new ItemStack(Material.BIRCH_WOOD);
+        final ItemStack imitationBambooWood = new ItemStack(Material.BIRCH_WOOD);
 
         // Fetch the meta of the mock Bamboo Wood for editing.
-        ItemMeta imitationBambooWoodMeta = imitationBambooWood.getItemMeta();
+        final ItemMeta imitationBambooWoodMeta = imitationBambooWood.getItemMeta();
 
         // Gives the mock Bamboo Wood a formatted title.
         imitationBambooWoodMeta.displayName(
@@ -56,13 +56,15 @@ public class MockBambooModule {
         imitationBambooWood.setItemMeta(imitationBambooWoodMeta);
 
         // Define a crafting recipe for mock Bamboo Wood.
-        ShapedRecipe imitationBambooWoodRecipe = new ShapedRecipe(
-                        new NamespacedKey(UtilitiesOG.getPlugin(), "Imitation_Bamboo_Wood"), imitationBambooWood)
+        final ShapedRecipe imitationBambooWoodRecipe = new ShapedRecipe(
+                new NamespacedKey(UtilitiesOG.getPlugin(), "Imitation_Bamboo_Wood"), imitationBambooWood)
                 .shape("bb", "bb")
                 // Use the previously created bamboo planks as the base ingredient.
                 .setIngredient('b', bambooPlanks);
 
         // Add the crafting recipe for mock Bamboo Wood to the server.
         Bukkit.addRecipe(imitationBambooWoodRecipe);
+
     }
+
 }
