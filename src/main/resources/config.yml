@@ -19,3 +19,10 @@ Ping: true
 RanksMenu: true
 # Should players earn advancements in non survival game modes?
 NoAdvancementsInCreative: true
+# PostgreSQL Setup for FastOfflinePlayer database.
+postgresUrl: jdbc:postgresql://localhost:5432/fastofflineplayer
+postgresUser: postgres
+postgresPassword: postgresPassword
+postgresTable: fastofflineplayer
+postgresLogTable: fastofflineplayer_log
+postgresLogLimit: 500

@@ -14,9 +14,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
+import com.github.jasync.sql.db.pool.ConnectionPool;
+import com.github.jasync.sql.db.postgresql.PostgreSQLConnection;
+import com.github.jasync.sql.db.postgresql.PostgreSQLConnectionBuilder;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 
 import net.kyori.adventure.text.TextComponent;
@@ -48,16 +51,17 @@ import net.trueog.utilitiesog.utils.TextUtils;
 public final class UtilitiesOG extends JavaPlugin {
 
     private File file;
-    private static UtilitiesOG plugin;
+    private static Plugin instance;
     private static FileConfiguration config;
     private static File phantomPreferencesFile;
     private static YamlConfiguration phantomPreferences;
     private static StateFlag FlippyFlag;
+    private static ConnectionPool<PostgreSQLConnection> POOL;
 
     @Override
     public void onEnable() {
 
-        plugin = this;
+        instance = this;
 
         this.file = new File(this.getDataFolder(), "config.yml");
         if (!this.file.exists()) {
@@ -67,6 +71,9 @@ public final class UtilitiesOG extends JavaPlugin {
         }
 
         config = this.getConfig();
+
+        POOL = initPsql();
+
         phantomPreferencesFile = new File(this.getDataFolder(), "phantomDisabledUsers.yml");
 
         try {
@@ -117,7 +124,7 @@ public final class UtilitiesOG extends JavaPlugin {
                 final User user = luckPerms.getUserManager().getUser(player.getUniqueId());
                 if (user == null) {
 
-                    getPlugin().getLogger().info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
+                    getLogger().info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
                             + " has no User object in LuckPerms!");
 
                     return player.getName();
@@ -128,7 +135,7 @@ public final class UtilitiesOG extends JavaPlugin {
                 final Group group = luckPerms.getGroupManager().getGroup(primaryGroup);
                 if (group == null) {
 
-                    getPlugin().getLogger().info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
+                    getLogger().info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
                             + " has no Group assignment in LuckPerms!");
 
                     return player.getName();
@@ -266,6 +273,12 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
+    static Plugin plugin() {
+
+        return instance;
+
+    }
+
     // Unified method for sending a message to a player with placeholders processed.
     public static void trueogMessage(Player player, String message) {
 
@@ -341,33 +354,24 @@ public final class UtilitiesOG extends JavaPlugin {
     // Global placeholder without arguments.
     public static void registerGlobalPlaceholder(String name, Supplier<String> valueSupplier) {
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-
-            placeholder.setGlobalPlaceholder(valueSupplier);
-
-        });
+        PlaceholderUtils.trueogRegisterMiniPlaceholder(name,
+                placeholder -> placeholder.setGlobalPlaceholder(valueSupplier));
 
     }
 
     // Global placeholder with arguments.
     public static void registerGlobalPlaceholder(String name, Function<List<String>, String> valueFunction) {
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-
-            placeholder.setGlobalPlaceholder(valueFunction);
-
-        });
+        PlaceholderUtils.trueogRegisterMiniPlaceholder(name,
+                placeholder -> placeholder.setGlobalPlaceholder(valueFunction));
 
     }
 
     // Audience placeholder without arguments.
     public static void registerAudiencePlaceholder(String name, Function<Player, String> valueFunction) {
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-
-            placeholder.setAudiencePlaceholder(valueFunction);
-
-        });
+        PlaceholderUtils.trueogRegisterMiniPlaceholder(name,
+                placeholder -> placeholder.setAudiencePlaceholder(valueFunction));
 
     }
 
@@ -376,22 +380,16 @@ public final class UtilitiesOG extends JavaPlugin {
             BiFunction<Player, List<String>, String> valueFunction)
     {
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-
-            placeholder.setAudiencePlaceholder(valueFunction);
-
-        });
+        PlaceholderUtils.trueogRegisterMiniPlaceholder(name,
+                placeholder -> placeholder.setAudiencePlaceholder(valueFunction));
 
     }
 
     // Relational placeholder without arguments.
     public static void registerRelationalPlaceholder(String name, BiFunction<Player, Player, String> valueFunction) {
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-
-            placeholder.setRelationalPlaceholder(valueFunction);
-
-        });
+        PlaceholderUtils.trueogRegisterMiniPlaceholder(name,
+                placeholder -> placeholder.setRelationalPlaceholder(valueFunction));
 
     }
 
@@ -400,11 +398,8 @@ public final class UtilitiesOG extends JavaPlugin {
             TriFunction<Player, Player, List<String>, String> valueFunction)
     {
 
-        PlaceholderUtils.trueogRegisterMiniPlaceholder(name, placeholder -> {
-
-            placeholder.setRelationalPlaceholder(valueFunction);
-
-        });
+        PlaceholderUtils.trueogRegisterMiniPlaceholder(name,
+                placeholder -> placeholder.setRelationalPlaceholder(valueFunction));
 
     }
 
@@ -422,15 +417,25 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    public static UtilitiesOG getPlugin() {
+    // Initialize postgres connection;
+    private ConnectionPool<PostgreSQLConnection> initPsql() {
 
-        return plugin;
+        // Reads the values from config.yml;
+        final String baseUrl = getConfig().getString("postgresUrl"); // e.g. jdbc:postgresql://localhost:5432/diamond
+        final String user = getConfig().getString("postgresUser"); // e.g. postgres
+        final String password = getConfig().getString("postgresPassword"); // e.g. postgresPassword
+
+        // Appends credentials to the URL (only if they are not already present)
+        final String jdbcUrl = "%s?user=%s&password=%s".formatted(baseUrl, user, password);
+
+        // Create postgres connection.
+        return PostgreSQLConnectionBuilder.createConnectionPool(jdbcUrl);
 
     }
 
-    public static BukkitTask runTaskAsynchronously(final Runnable run) {
+    public static ConnectionPool<PostgreSQLConnection> getPostgres() {
 
-        return getPlugin().getServer().getScheduler().runTaskAsynchronously(getPlugin(), run);
+        return POOL;
 
     }
 

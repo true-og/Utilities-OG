@@ -128,7 +128,7 @@ public class NoFlippyListener implements Listener {
         catch (FlagConflictException error) {
 
             // Log the WorldGuard Flag conflict to the server console.
-            UtilitiesOG.getPlugin().getLogger().severe(
+            UtilitiesOG.logToConsole(InternalFunctions.getPrefix(),
                     "ERROR: can-flippy of the NoFlippy Module has a WorldGuard Flag conflict! " + error.getMessage());
 
             // Pulls the WorldGuard Flag from the registry that some other plugin registered

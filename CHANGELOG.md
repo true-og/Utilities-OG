@@ -1,3 +1,8 @@
+**1.6.3:**
+- Initial implementation of FastOfflinePlayer: serialize(), deserialize(), getName(), getUniqueID().
+- Populate initial FastOfflinePlayer database with jasync Postgres.
+- Unit testing for complete FastOfflinePlayer functions.
+
 **1.6.2:**
 - Fix console logging API.
 

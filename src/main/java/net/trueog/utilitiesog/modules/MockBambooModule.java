@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 // Import libraries.
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.InternalFunctions;
 
 // Declare the Mock Bamboo Wood Module.
 public class MockBambooModule {
@@ -34,8 +34,8 @@ public class MockBambooModule {
         bambooPlanks.setItemMeta(bambooPlanksMeta);
 
         // Defines a crafting recipe for Bamboo Planks.
-        final ShapedRecipe BambooPlanks = new ShapedRecipe(new NamespacedKey(UtilitiesOG.getPlugin(), "Bamboo_Planks"),
-                bambooPlanks).shape("bb", "bb")
+        final ShapedRecipe BambooPlanks = new ShapedRecipe(
+                new NamespacedKey(InternalFunctions.getPlugin(), "Bamboo_Planks"), bambooPlanks).shape("bb", "bb")
                 // Use Bamboo as the base ingredient.
                 .setIngredient('b', Material.BAMBOO);
 
@@ -57,7 +57,7 @@ public class MockBambooModule {
 
         // Define a crafting recipe for mock Bamboo Wood.
         final ShapedRecipe imitationBambooWoodRecipe = new ShapedRecipe(
-                new NamespacedKey(UtilitiesOG.getPlugin(), "Imitation_Bamboo_Wood"), imitationBambooWood)
+                new NamespacedKey(InternalFunctions.getPlugin(), "Imitation_Bamboo_Wood"), imitationBambooWood)
                 .shape("bb", "bb")
                 // Use the previously created bamboo planks as the base ingredient.
                 .setIngredient('b', bambooPlanks);

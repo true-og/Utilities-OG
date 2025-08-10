@@ -8,9 +8,10 @@ plugins {
     id("com.gradleup.shadow") version "8.3.6" // Import Shadow plugin.
     id("checkstyle") // Import Checkstyle plugin.
     eclipse // Import Eclipse plugin.
+    kotlin("jvm") version "2.1.21" // Import Kotlin JVM plugin.
 }
 
-/* ------------------------------- JDK --------------------------------- */
+/* --------------------------- JDK / Kotlin ---------------------------- */
 java {
     sourceCompatibility = JavaVersion.VERSION_17 // Compile with JDK 17 compatibility.
     toolchain { // Select Java toolchain.
@@ -18,6 +19,8 @@ java {
         vendor.set(JvmVendorSpec.GRAAL_VM) // Use GraalVM CE.
     }
 }
+
+kotlin { jvmToolchain(17) }
 
 /* ----------------------------- Metadata ------------------------------ */
 group = "net.trueog.utilities-og" // Declare bundle identifier.
@@ -51,9 +54,14 @@ dependencies {
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.11.2") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
     compileOnly("net.luckperms:api:5.4") // Import LuckPerms API.
-    testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Import JUnit 5 API.
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.19:2.29.0") // Import MockBukkit 1.19.
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher") // Import JUnit's engine.
+    implementation(kotlin("stdlib")) // Import and package Kotlin standard library.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import and package Kotlin async library.
+    implementation("com.github.jasync-sql:jasync-postgresql:2.2.4") // Import and package Jasync API.
+    testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Add JUnit API to testing environment.
+    testImplementation("org.mockito:mockito-core:5.18.0") // Add Mockito API to testing environment.
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.19:2.29.0") // Add MockBukkit API to testing environment.
+    testImplementation(kotlin("stdlib")) // Add Kotlin to testing environment.
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher") // Add JUnit engine to the testing runtime.
 }
 
 /* ---------------------- Reproducible jars ---------------------------- */

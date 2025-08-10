@@ -1,3 +1,5 @@
+// This is free and unencumbered software released into the public domain.
+// Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.utils;
 
 import java.util.ArrayList;

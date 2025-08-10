@@ -1,11 +1,13 @@
+// This is free and unencumbered software released into the public domain.
+// Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.listeners;
 
-import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
-import net.trueog.utilitiesog.FastOfflinePlayer;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+
+import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 
 public class NoAdvancementsInCreativeListener implements Listener {
 
@@ -17,8 +19,6 @@ public class NoAdvancementsInCreativeListener implements Listener {
             event.setCancelled(true);
 
         }
-
-        final FastOfflinePlayer fop = new FastOfflinePlayer(event.getPlayer().getUniqueId());
 
     }
 
