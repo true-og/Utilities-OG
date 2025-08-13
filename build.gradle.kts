@@ -71,6 +71,11 @@ tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible .ja
 }
 
 /* ----------------------------- Shadow -------------------------------- */
+tasks.build {
+    dependsOn(tasks.spotlessApply)
+    dependsOn(tasks.shadowJar)
+}
+
 tasks.shadowJar {
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     archiveClassifier.set("") // Use empty string instead of null.
@@ -83,9 +88,10 @@ tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends
 
 /* --------------------------- Javac opts ------------------------------- */
 tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-parameters") // Enable reflection for java code.
+    options.isFork = true // Run javac in its own process.
     options.compilerArgs.add("-Xlint:deprecation") // Trigger deprecation warning messages.
     options.encoding = "UTF-8" // Use UTF-8 file encoding.
-    options.isFork = true
 }
 
 /* --------------------------------- Testing ---------------------------- */
