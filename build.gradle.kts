@@ -71,11 +71,6 @@ tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible .ja
 }
 
 /* ----------------------------- Shadow -------------------------------- */
-tasks.build {
-    dependsOn(tasks.spotlessApply)
-    dependsOn(tasks.shadowJar)
-}
-
 tasks.shadowJar {
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     archiveClassifier.set("") // Use empty string instead of null.
