@@ -11,15 +11,15 @@ import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent
 
 public class AdvancementsOnlyInSurvivalListener implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onAdvancementProgress(PlayerAdvancementCriterionGrantEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onAdvancementProgress(PlayerAdvancementCriterionGrantEvent event) {
 
-		if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
+        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
 
-			event.setCancelled(true);
+            event.setCancelled(true);
 
-		}
+        }
 
-	}
+    }
 
 }
