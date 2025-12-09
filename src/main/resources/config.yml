@@ -1,4 +1,4 @@
-# Pre-1.20 Mock Bamboo Planks and Bamboo Wood. Mock Bamboo Planks are crafted from 2x2 Bamboo. Mock Bamboo Wood is crafted from 2x2 mock Bamboo Planks. Default: true. 
+# Pre-1.20 Mock Bamboo Planks and Bamboo Wood. Mock Bamboo Planks are crafted from 2x2 Bamboo. Mock Bamboo Wood is crafted from 2x2 mock Bamboo Planks. Default: true.
 MockBamboo: true
 # Crafting chain armor using chains. Default: true.
 ChainArmor: true
@@ -17,12 +17,12 @@ TogglePhantoms: true
 Ping: true
 # Displays information to the player about the ranks available at the TrueOG Network Store (https://store.true-og.net/). Default: true.
 RanksMenu: true
-# Should players earn advancements in non survival game modes?
-NoAdvancementsInCreative: true
+# Should advancements be restricted to survival mode? Default: true.
+AdvancementsOnlyInSurvival: true
 # PostgreSQL Setup for FastOfflinePlayer database.
 postgresUrl: jdbc:postgresql://localhost:5432/fastofflineplayer
-postgresUser: postgres
-postgresPassword: postgresPassword
+postgresUser: $POSTGRES_USER
+postgresPassword: $POSTGRES_PASSWORD
 postgresTable: fastofflineplayer
 postgresLogTable: fastofflineplayer_log
 postgresLogLimit: 500

@@ -1,3 +1,7 @@
+**1.6.4:**
+- Track live config file on git using [SubstAgent](https://github.com/true-og/SubstAgent).
+- Rename NoAdvancementsInCreativeListener to AdvancementsOnlyInSurvivalListener.
+
 **1.6.3:**
 - Initial implementation of FastOfflinePlayer: serialize(), deserialize(), getName(), getUniqueID().
 - Populate initial FastOfflinePlayer database with jasync Postgres.
