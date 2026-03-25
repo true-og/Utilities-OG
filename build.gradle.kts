@@ -51,7 +51,7 @@ repositories {
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare Purpur API version to be packaged.
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.8") // Import WorldGuard API.
-    compileOnly("de.tr7zw:item-nbt-api-plugin:2.11.2") // Import NBT API.
+    compileOnly("de.tr7zw:item-nbt-api-plugin:2.14.1") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
     compileOnly("net.luckperms:api:5.4") // Import LuckPerms API.
     implementation(kotlin("stdlib")) // Import and package Kotlin standard library.
