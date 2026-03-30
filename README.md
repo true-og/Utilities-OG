@@ -12,12 +12,14 @@ The resulting .jar file will be in build/libs
 
 At the moment, any config change requires a server restart to take effect.
 
+MiniPlaceholders support is always enabled. There is no config toggle for disabling the built-in placeholder registration.
+
 ## Features:
 
 * **Mock Bamboo:** Enables crafting mock bamboo planks from 2x2 bamboo and mock bamboo wood from 2x2 mock bamboo planks.
 * **Chain Armor:** Enables crafting chain armor from chains.
 * **Color Codes:** Displays information to players about Bukkit's chat color codes and their syntax.
-* **MiniPlaceholderAPI:** Enables a custom, easy-to-use MiniPlaceholders API (**Note:** May require additional configuration for specific placeholders).
+* **MiniPlaceholders:** Includes MiniPlaceholders-based expansion helpers and registration utilities. MiniPlaceholders is the only supported placeholder provider.
 * **NoFlippy:** Prevents trapdoors from being flipped in WorldGuard regions where the "can-flippy" flag is set to DENY (Requires WorldGuard plugin).
 * **TogglePhantoms:** Allows players to use the `/togglephantoms` command to turn phantom spawning on or off for themselves.
 * **Ping:** Provides two commands: `/ping` (displays real player ping) and `/bing` (replicates vanilla /ping functionality).
@@ -54,7 +56,7 @@ At the moment, any config change requires a server restart to take effect.
 
 **[void] trueogMessage(Player player, String message)**
 
-Sends a message to the specified player with TrueOG formatting. Supports both modern color codes and legacy Bukkit color codes (case-insensitive). Automatically expands MiniPlaceholders within the message.
+Sends a message to the specified player with TrueOG formatting on the caller's current thread. Supports both modern color codes and legacy Bukkit color codes (case-insensitive). Automatically expands MiniPlaceholders within the message.
 
 Kotlin:
 ```kotlin
@@ -68,9 +70,27 @@ Player targetPlayer = Bukkit.getPlayer("USERNAME");
 UtilitiesOG.trueogMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
+**[void] trueogMessage(Player player, Component message)**
+
+Sends a pre-built Adventure Component to the specified player on the caller's current thread. This overload does not perform placeholder expansion or color-code processing.
+
+Kotlin:
+```kotlin
+val targetPlayer = Bukkit.getPlayer("USERNAME")
+val component = MiniMessage.miniMessage().deserialize("<green>Ready.")
+UtilitiesOG.trueogMessage(targetPlayer, component)
+```
+
+Java:
+```java
+Player targetPlayer = Bukkit.getPlayer("USERNAME");
+Component component = MiniMessage.miniMessage().deserialize("<green>Ready.");
+UtilitiesOG.trueogMessage(targetPlayer, component);
+```
+
 **[void] trueogMessage(UUID playerUUID, String message)**
 
-Sends a message to a player identified by their UUID with TrueOG formatting. Useful when the Bukkit Player object is not available. Supports modern color codes and legacy Bukkit color codes (case-insensitive), and expands MiniPlaceholders within the message.
+Sends a message to a player identified by their UUID with TrueOG formatting. Useful when the Bukkit Player object is not available. Supports modern color codes and legacy Bukkit color codes (case-insensitive), and expands MiniPlaceholders within the message. If the UUID resolves to an online player, the message is sent immediately on the caller's current thread.
 
 Kotlin:
 ```kotlin
@@ -371,22 +391,4 @@ UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>col
 Java:
 ```java
 UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>color codes!");
-```
-
-**[BukkitTask] runTaskAsynchronously(final Runnable run)**
-
-Schedules a task to run asynchronously using the Bukkit scheduler under the UtilitiesOG plugin.
-
-Kotlin:
-```kotlin
-val asyncTask = UtilitiesOG.runTaskAsynchronously {
-    // Your async code here
-}
-```
-
-Java:
-```java
-BukkitTask asyncTask = UtilitiesOG.runTaskAsynchronously(() -> {
-    // Your async code here
-});
 ```

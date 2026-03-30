@@ -32,6 +32,13 @@ public class TextUtils {
 
     }
 
+    // Sends a pre-built component to the player immediately on the caller's current thread.
+    public static void trueogMessage(Player player, Component message) {
+
+        player.sendMessage(message);
+
+    }
+
     // Expand global MiniPlaceholders recursively.
     public static TextComponent expandTextWithPlaceholders(String message) {
 

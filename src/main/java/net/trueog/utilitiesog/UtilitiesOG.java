@@ -22,6 +22,7 @@ import com.github.jasync.sql.db.postgresql.PostgreSQLConnection;
 import com.github.jasync.sql.db.postgresql.PostgreSQLConnectionBuilder;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
@@ -112,62 +113,58 @@ public final class UtilitiesOG extends JavaPlugin {
 
         }
 
-        if (this.getConfig().getBoolean("MiniPlaceholders")) {
+        // Registering a global MiniPlaceholder.
+        registerGlobalPlaceholder("servers_name", () -> "&aTrue&cOG &eNetwork");
 
-            // Registering a global MiniPlaceholder.
-            registerGlobalPlaceholder("servers_name", () -> "&aTrue&cOG &eNetwork");
+        // Registering an Audience MiniPlaceholder.
+        registerAudiencePlaceholder("player_display_name", (Player player) -> {
 
-            // Registering an Audience MiniPlaceholder.
-            registerAudiencePlaceholder("player_display_name", (Player player) -> {
+            final LuckPerms luckPerms = LuckPermsProvider.get();
+            final User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+            if (user == null) {
 
-                final LuckPerms luckPerms = LuckPermsProvider.get();
-                final User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-                if (user == null) {
+                getLogger().info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
+                        + " has no User object in LuckPerms!");
 
-                    getLogger().info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
-                            + " has no User object in LuckPerms!");
+                return player.getName();
 
-                    return player.getName();
+            }
 
-                }
+            final String primaryGroup = user.getPrimaryGroup();
+            final Group group = luckPerms.getGroupManager().getGroup(primaryGroup);
+            if (group == null) {
 
-                final String primaryGroup = user.getPrimaryGroup();
-                final Group group = luckPerms.getGroupManager().getGroup(primaryGroup);
-                if (group == null) {
+                getLogger().info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
+                        + " has no Group assignment in LuckPerms!");
 
-                    getLogger().info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
-                            + " has no Group assignment in LuckPerms!");
+                return player.getName();
 
-                    return player.getName();
+            }
 
-                }
+            String prefix = null;
+            for (Node node : group.getNodes()) {
 
-                String prefix = null;
-                for (Node node : group.getNodes()) {
+                if (node instanceof PrefixNode) {
 
-                    if (node instanceof PrefixNode) {
+                    prefix = ((PrefixNode) node).getMetaValue();
 
-                        prefix = ((PrefixNode) node).getMetaValue();
-
-                        break;
-
-                    }
+                    break;
 
                 }
 
-                if (prefix == null) {
+            }
 
-                    return player.getName();
+            if (prefix == null) {
 
-                }
+                return player.getName();
 
-                final String colorCode = prefix.replaceAll(".*\\](.*)", "$1");
+            }
 
-                return "<luckperms_prefix>" + colorCode + " " + player.getName();
+            final String colorCode = prefix.replaceAll(".*\\](.*)", "$1");
 
-            });
+            return "<luckperms_prefix>" + colorCode + " " + player.getName();
 
-        }
+        });
 
         if (this.getConfig().getBoolean("MockBamboo")) {
 
@@ -281,6 +278,13 @@ public final class UtilitiesOG extends JavaPlugin {
 
     // Unified method for sending a message to a player with placeholders processed.
     public static void trueogMessage(Player player, String message) {
+
+        TextUtils.trueogMessage(player, message);
+
+    }
+
+    // Unified method for sending a pre-built component to a player on the caller's current thread.
+    public static void trueogMessage(Player player, Component message) {
 
         TextUtils.trueogMessage(player, message);
 

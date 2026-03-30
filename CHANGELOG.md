@@ -1,3 +1,10 @@
+**1.6.5**
+- Remove all PlaceholderAPI references and support MiniPlaceholders only.
+- Always register built-in MiniPlaceholders without a config toggle.
+- Ensure trueogMessage and other player-facing message helpers send on the caller's current thread.
+- Add trueogMessage(Player, Component) for direct Adventure component sends.
+- Remove the public async task API from the documented plugin surface.
+
 **1.6.4:**
 - Track live config file on git using [SubstAgent](https://github.com/true-og/SubstAgent).
 - Rename NoAdvancementsInCreativeListener to AdvancementsOnlyInSurvivalListener.
@@ -54,14 +61,13 @@
 **1.4.1:**
 - Implemented AUDIENCE type MiniPlaceholder registration API.
 - Implemented MiniPlaceholder unregistration API.
-- Implemented runTaskAsynchronously API.
 - Implemented trueogColorize API.
 - Refactored existing APIs.
 
 **1.4:**
 
 - Added TrueOG Message API (supports modern + legacy formatting in the same message, &* for rainbow, and MiniPlaceholder expansion).
-- Added TrueOG MiniPlaceholderAPI (currently supports expansion. Creation coming later.)
+- Added TrueOG MiniPlaceholders support (currently supports expansion. Creation coming later.)
 - Added MiniPlaceholder <player_display_name> (LuckPerms colors coming later.)
 - Added mock Bamboo Planks.
 - Mock Bamboo Wood is now crafted from 2x2 mock Bamboo Planks.

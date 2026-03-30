@@ -161,7 +161,7 @@ public class RanksCommand implements CommandExecutor {
         clickableText = clickableText.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, command));
 
         // Send the clickable text to the player.
-        player.sendMessage(clickableText);
+        UtilitiesOG.trueogMessage(player, clickableText);
 
     }
 

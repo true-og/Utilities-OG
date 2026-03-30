@@ -42,29 +42,29 @@ public class ColorCodesCommand implements CommandExecutor {
                 // Send the color code cheat sheet to the player.
                 // Uses MiniMessage directly so that the legacy color codes in the key are not
                 // processed.
-                player.sendMessage(MiniMessage.miniMessage().deserialize(
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage().deserialize(
                         "<dark_aqua><bold>-=-=-=-=- <dark_purple>C<dark_aqua>o<green>l<yellow>o<red>r <aqua>C<light_purple>o<white>d<light_purple>e<aqua>s: -=-=-=-=-"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&0 = <black>Black               <reset> &1 = <dark_blue>Dark Blue"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&2 = <dark_green>Dark Green       <reset> &3 = <dark_aqua>Dark Aqua"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&4 = <dark_red>Dark Red          <reset> &5 = <dark_purple>Dark Purple"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&6 = <gold>Gold                <reset> &7 = <gray>Grey"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&8 = <dark_gray>Dark Grey         <reset> &9 = <blue>Blue"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&a = <green>Green              <reset> &b = <aqua>Aqua"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&c = <red>Red                 <reset> &d = <light_purple>Light Purple"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&e = <yellow>Yellow              <reset> &f = <white>White"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&k = <obfuscated>Magic               <reset> &l = <bold>Bold"));
-                player.sendMessage(MiniMessage.miniMessage()
+                TextUtils.trueogMessage(player, MiniMessage.miniMessage()
                         .deserialize("&m = <strikethrough>Strikethrough <reset>    &n = <underlined>Underline"));
-                player.sendMessage(
+                TextUtils.trueogMessage(player,
                         MiniMessage.miniMessage().deserialize("&o = <italic>Italic               <reset> &r = Reset"));
 
             }
