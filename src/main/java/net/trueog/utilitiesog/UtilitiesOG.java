@@ -283,7 +283,8 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    // Unified method for sending a pre-built component to a player on the caller's current thread.
+    // Unified method for sending a pre-built component to a player on the caller's
+    // current thread.
     public static void trueogMessage(Player player, Component message) {
 
         TextUtils.trueogMessage(player, message);
