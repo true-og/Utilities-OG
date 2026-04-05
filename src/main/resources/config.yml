@@ -19,8 +19,8 @@ RanksMenu: true
 AdvancementsOnlyInSurvival: true
 # PostgreSQL Setup for FastOfflinePlayer database.
 postgresUrl: jdbc:postgresql://localhost:5432/fastofflineplayer
-postgresUser: $POSTGRES_USER
-postgresPassword: $POSTGRES_PASSWORD
+postgresUser: ^{POSTGRES_USER}
+postgresPassword: ^{POSTGRES_PASSWORD}
 postgresTable: fastofflineplayer
 postgresLogTable: fastofflineplayer_log
 postgresLogLimit: 500
