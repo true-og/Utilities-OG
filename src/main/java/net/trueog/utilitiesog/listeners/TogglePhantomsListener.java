@@ -19,8 +19,8 @@ public class TogglePhantomsListener implements Listener {
     @EventHandler
     public void disablePhantomSpawns(CreatureSpawnEvent event) {
 
-        // If the mob that spawned is a phantom, do this...
-        if (!event.getEntityType().equals(EntityType.PHANTOM)) {
+        // If the mob that spawned is not a phantom, do nothing.
+        if (event.getEntityType() != EntityType.PHANTOM) {
 
             return;
 

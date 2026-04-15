@@ -1,3 +1,6 @@
+**1.6.7**
+- MiniPlaceholder output now bleeds formatting into surrounding text like legacy color codes, unless explicitly reset or stripped.
+
 **1.6.6**
 - Disabled entity cramming now that true-og/ChunkCap-OG and true-og/MobLimiter-OG establish a ceiling.
 - Split string-based player messaging into miniplaceholder expanding and non-expanding APIs.

@@ -16,18 +16,13 @@ public class DisableEntityCrammingListener implements Listener {
     @EventHandler
     public void disableEntityCramming(EntityDamageEvent event) {
 
+        final boolean condition = event.getCause() == DamageCause.CRAMMING
+                && InternalFunctions.getConfig().getBoolean("EntityCrammingDisable") == true;
         // If the Disable Entity Cramming Module is enabled in config.yml, do this...
-        // Cancel damage from entity cramming.
-        // If the damage is caused by entity cramming, do this...
-        if (event.getCause() == DamageCause.CRAMMING) {
+        if (condition) {
 
-            // If the Disable Entity Cramming Module is enabled in config.yml, do this...
-            if (InternalFunctions.getConfig().getBoolean("EntityCrammingDisable") == true) {
-
-                // Cancel damage from entity cramming.
-                event.setCancelled(true);
-
-            }
+            // Cancel damage from entity cramming.
+            event.setCancelled(true);
 
         }
 

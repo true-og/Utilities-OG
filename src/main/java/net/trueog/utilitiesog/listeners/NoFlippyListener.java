@@ -67,39 +67,31 @@ public class NoFlippyListener implements Listener {
 
         }
 
+        final boolean condition = StringUtils.contains(blockContainerAsString, "TRAPDOOR") && action.isRightClick()
+                && !player.hasPermission("noflippy.bypass");
+        // If the interaction was a right click, do this...
+        // If the player does not have permission to flip trap doors, do this...
         // If the interaction was with a trap door, do this...
-        if (StringUtils.contains(blockContainerAsString, "TRAPDOOR")) {
+        if (!condition) {
 
-            // If the interaction was a right click, do this...
-            if (action.isRightClick()) {
+            return;
 
-                // If the player does not have permission to flip trap doors, do this...
-                if (!player.hasPermission("noflippy.bypass")) {
+        }
 
-                    // Get the location of the block the player tried to flip.
-                    final Location blockLocation = BukkitAdapter.adapt(blockClicked.getLocation());
+        // Get the location of the block the player tried to flip.
+        final Location blockLocation = BukkitAdapter.adapt(blockClicked.getLocation());
+        // Instantiate a WorldGuard Region Container.
+        final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        // Instantiate a WorldGuard Region Query.
+        final RegionQuery query = container.createQuery();
+        // Get all regions at the location of the block.
+        final ApplicableRegionSet set = query.getApplicableRegions(blockLocation);
+        // If the can-flippy WorldGuard Flag is set to DENY, for any region in the set,
+        // do this...
+        if (!set.testState(null, InternalFunctions.getFlippyFlag())) {
 
-                    // Instantiate a WorldGuard Region Container.
-                    final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-
-                    // Instantiate a WorldGuard Region Query.
-                    final RegionQuery query = container.createQuery();
-
-                    // Get all regions at the location of the block.
-                    final ApplicableRegionSet set = query.getApplicableRegions(blockLocation);
-
-                    // If the can-flippy WorldGuard Flag is set to DENY, for any region in the set,
-                    // do this...
-                    if (!set.testState(null, InternalFunctions.getFlippyFlag())) {
-
-                        // Cancel the trapdoor flip event.
-                        event.setCancelled(true);
-
-                    }
-
-                }
-
-            }
+            // Cancel the trapdoor flip event.
+            event.setCancelled(true);
 
         }
 

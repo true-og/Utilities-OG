@@ -5,6 +5,7 @@ package net.trueog.utilitiesog.utils;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -224,7 +225,7 @@ public class TextUtils {
     // Detects if a Bukkit color code is uppercase (e.g., &C, &L).
     private static boolean isUpperBukkitCode(char input) {
 
-        return "ABCDEFKLMNOR".indexOf(Character.toUpperCase(input)) != -1;
+        return StringUtils.indexOf("ABCDEFKLMNOR", Character.toUpperCase(input)) != -1;
 
     }
 
@@ -233,7 +234,7 @@ public class TextUtils {
 
         if (index >= 0 && index < original.length()) {
 
-            return original.substring(0, index) + newString + original.substring(index + 1);
+            return StringUtils.substring(original, 0, index) + newString + StringUtils.substring(original, index + 1);
 
         }
 

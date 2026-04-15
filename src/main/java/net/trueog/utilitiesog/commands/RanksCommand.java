@@ -12,6 +12,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trueog.utilitiesog.UtilitiesOG;
 import net.trueog.utilitiesog.utils.TextUtils;
+import org.apache.commons.lang3.StringUtils;
 
 // Declare the Ranks Module with Bukkit Commands.
 public class RanksCommand implements CommandExecutor {
@@ -60,7 +61,7 @@ public class RanksCommand implements CommandExecutor {
                 else if (args.length == 1) {
 
                     // If the "OG" message was clicked, do this...
-                    if (args[0].equalsIgnoreCase("og")) {
+                    if (StringUtils.equalsIgnoreCase(args[0], "og")) {
 
                         // Share "OG" benefits with the player with formatting using the TrueOG Message
                         // API.
@@ -77,7 +78,7 @@ public class RanksCommand implements CommandExecutor {
 
                     }
                     // If the "OG Pro" message was clicked, do this...
-                    else if (args[0].equalsIgnoreCase("og-pro")) {
+                    else if (StringUtils.equalsIgnoreCase(args[0], "og-pro")) {
 
                         // Share "OG Pro" benefits with the player with formatting using the TrueOG
                         // Message API.
@@ -99,7 +100,7 @@ public class RanksCommand implements CommandExecutor {
 
                     }
                     // If the "OG Master" message was clicked, do this...
-                    else if (args[0].equalsIgnoreCase("og-master")) {
+                    else if (StringUtils.equalsIgnoreCase(args[0], "og-master")) {
 
                         // Share "OG Master" benefits with the player with formatting using the TrueOG
                         // Message API.

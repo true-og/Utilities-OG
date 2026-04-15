@@ -29,7 +29,6 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
 import net.luckperms.api.node.types.PrefixNode;
 import net.trueog.utilitiesog.commands.AboutCommand;
 import net.trueog.utilitiesog.commands.BingCommand;
@@ -141,18 +140,8 @@ public final class UtilitiesOG extends JavaPlugin {
 
             }
 
-            String prefix = null;
-            for (Node node : group.getNodes()) {
-
-                if (node instanceof PrefixNode) {
-
-                    prefix = ((PrefixNode) node).getMetaValue();
-
-                    break;
-
-                }
-
-            }
+            final String prefix = group.getNodes().stream().filter(node -> node instanceof PrefixNode).findFirst()
+                    .map(node -> ((PrefixNode) node).getMetaValue()).orElse(null);
 
             if (prefix == null) {
 

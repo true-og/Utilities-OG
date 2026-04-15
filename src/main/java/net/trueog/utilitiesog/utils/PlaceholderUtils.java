@@ -15,8 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
 
 import io.github.miniplaceholders.api.Expansion;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.trueog.utilitiesog.InternalFunctions;
 import net.trueog.utilitiesog.UtilitiesOG;
@@ -44,7 +42,7 @@ public class PlaceholderUtils {
     public PlaceholderUtils setGlobalPlaceholder(Supplier<String> placeholder) {
 
         this.placeholderRegistration = builder -> builder.globalPlaceholder(miniPlaceholderSuffix,
-                (queue, ctx) -> Tag.inserting(TextUtils.expandTextWithPlaceholders(placeholder.get())));
+                (queue, ctx) -> Tag.preProcessParsed(TextUtils.processColorCodes(placeholder.get())));
 
         // Log global placeholder registration without arguments.
         UtilitiesOG.logToConsole(InternalFunctions.getPrefix(), "Registered Global MiniPlaceholder: "
@@ -68,9 +66,7 @@ public class PlaceholderUtils {
 
             final String resultString = valueFunction.apply(args);
 
-            final TextComponent result = TextUtils.expandTextWithPlaceholders(resultString);
-
-            return Tag.inserting(result);
+            return Tag.preProcessParsed(TextUtils.processColorCodes(resultString));
 
         });
 
@@ -91,14 +87,11 @@ public class PlaceholderUtils {
 
                     if (audience instanceof Player player) {
 
-                        final TextComponent result = TextUtils.expandTextWithPlaceholders(placeholder.apply(player),
-                                player);
-
-                        return Tag.inserting(result);
+                        return Tag.preProcessParsed(TextUtils.processColorCodes(placeholder.apply(player)));
 
                     }
 
-                    return Tag.inserting(Component.text(""));
+                    return Tag.preProcessParsed("");
 
                 });
 
@@ -128,13 +121,11 @@ public class PlaceholderUtils {
 
                         final String resultString = valueFunction.apply(player, args);
 
-                        final TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player);
-
-                        return Tag.inserting(result);
+                        return Tag.preProcessParsed(TextUtils.processColorCodes(resultString));
 
                     }
 
-                    return Tag.inserting(Component.text(""));
+                    return Tag.preProcessParsed("");
 
                 });
 
@@ -157,14 +148,11 @@ public class PlaceholderUtils {
 
                         final String resultString = placeholder.apply(player, targetPlayer);
 
-                        final TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player,
-                                targetPlayer);
-
-                        return Tag.inserting(result);
+                        return Tag.preProcessParsed(TextUtils.processColorCodes(resultString));
 
                     }
 
-                    return Tag.inserting(Component.text(""));
+                    return Tag.preProcessParsed("");
 
                 });
 
@@ -196,14 +184,11 @@ public class PlaceholderUtils {
 
                         final String resultString = valueFunction.apply(player, targetPlayer, args);
 
-                        final TextComponent result = TextUtils.expandTextWithPlaceholders(resultString, player,
-                                targetPlayer);
-
-                        return Tag.inserting(result);
+                        return Tag.preProcessParsed(TextUtils.processColorCodes(resultString));
 
                     }
 
-                    return Tag.inserting(Component.text(""));
+                    return Tag.preProcessParsed("");
 
                 });
 
@@ -295,17 +280,13 @@ public class PlaceholderUtils {
 
     public static void unregisterAll() {
 
-        for (ExpansionData data : expansionDataMap.values()) {
+        expansionDataMap.values().stream().filter(data -> data.registered).forEach(data -> {
 
-            if (data.registered) {
+            data.expansion.unregister();
 
-                data.expansion.unregister();
+            data.registered = false;
 
-                data.registered = false;
-
-            }
-
-        }
+        });
 
         expansionDataMap.clear();
 
