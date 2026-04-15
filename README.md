@@ -70,6 +70,22 @@ Player targetPlayer = Bukkit.getPlayer("USERNAME");
 UtilitiesOG.trueogMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
+**[void] trueogRawMessage(Player player, String message)**
+
+Sends a message to the specified player with TrueOG formatting on the caller's current thread without expanding MiniPlaceholders within the message. Supports both modern color codes and legacy Bukkit color codes (case-insensitive).
+
+Kotlin:
+```kotlin
+val targetPlayer = Bukkit.getPlayer("USERNAME")
+UtilitiesOG.trueogRawMessage(targetPlayer, "&6Literal placeholder: <player_display_name>")
+```
+
+Java:
+```java
+Player targetPlayer = Bukkit.getPlayer("USERNAME");
+UtilitiesOG.trueogRawMessage(targetPlayer, "&6Literal placeholder: <player_display_name>");
+```
+
 **[void] trueogMessage(Player player, Component message)**
 
 Sends a pre-built Adventure Component to the specified player on the caller's current thread. This overload does not perform placeholder expansion or color-code processing.
@@ -94,14 +110,30 @@ Sends a message to a player identified by their UUID with TrueOG formatting. Use
 
 Kotlin:
 ```kotlin
-UUID playerUUID = UUID.fromString("player_uuid");
-UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");
+val playerUUID = UUID.fromString("player_uuid")
+UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!")
 ```
 
 Java:
 ```java
 UUID playerUUID = UUID.fromString("player_uuid");
 UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");
+```
+
+**[void] trueogRawMessage(UUID playerUUID, String message)**
+
+Sends a message to a player identified by their UUID with TrueOG formatting but without MiniPlaceholder expansion. Useful when the Bukkit Player object is not available. Supports modern color codes and legacy Bukkit color codes (case-insensitive). If the UUID resolves to an online player, the message is sent immediately on the caller's current thread.
+
+Kotlin:
+```kotlin
+val playerUUID = UUID.fromString("player_uuid")
+UtilitiesOG.trueogRawMessage(playerUUID, "&6Literal placeholder: <player_display_name>")
+```
+
+Java:
+```java
+UUID playerUUID = UUID.fromString("player_uuid");
+UtilitiesOG.trueogRawMessage(playerUUID, "&6Literal placeholder: <player_display_name>");
 ```
 
 **[TextComponent] trueogExpand(String message)**

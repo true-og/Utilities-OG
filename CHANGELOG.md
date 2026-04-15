@@ -1,3 +1,8 @@
+**1.6.6**
+- Disabled entity cramming now that true-og/ChunkCap-OG and true-og/MobLimiter-OG establish a ceiling.
+- Split string-based player messaging into miniplaceholder expanding and non-expanding APIs.
+- Add `trueogRawMessage(Player, String)` and `trueogRawMessage(UUID, String)` for sending unexpanded or pre-expanded text with TrueOG formatting.
+
 **1.6.5**
 - Remove all PlaceholderAPI references and support MiniPlaceholders only.
 - Always register built-in MiniPlaceholders without a config toggle.

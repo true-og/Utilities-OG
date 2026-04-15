@@ -5,8 +5,8 @@ ChainArmor: true
 # Displays information to the player about the syntax for bukkit's color codes. Default: true.
 ColorCodes: true
 # Turn off entity cramming damage server-wide. Entity cramming is when mobs pile up and cause damage to each other. Default: false.
-# WARNING: Make sure there is another plugin that establishes entity limits if this module is enabled. Otherwise the server will lag.
-DisableEntityCramming: false
+# WARNING: Make sure there are other plugins (such as true-og/ChunkCap-OG and true-og/MobLimiter-OG) that establish entity limits if this module is enabled. Otherwise the server will lag.
+DisableEntityCramming: true
 # Prevents trap doors from being flipped in any WorldGuard regions with the "can-flippy" flag set to DENY. Default: true.
 NoFlippy: true
 # Empowers individual players to toggle phantom spawning on or off with the command /togglephantoms. Default: true.

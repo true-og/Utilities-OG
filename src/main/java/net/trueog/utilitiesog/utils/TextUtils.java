@@ -32,6 +32,13 @@ public class TextUtils {
 
     }
 
+    // Sends a formatted message to the player without expanding MiniPlaceholders.
+    public static void trueogRawMessage(Player player, String message) {
+
+        player.sendMessage(MiniMessage.miniMessage().deserialize(processColorCodes(message)));
+
+    }
+
     // Sends a pre-built component to the player immediately on the caller's current
     // thread.
     public static void trueogMessage(Player player, Component message) {

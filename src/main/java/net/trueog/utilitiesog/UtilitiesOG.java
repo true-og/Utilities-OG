@@ -283,6 +283,14 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
+    // Sends a message to a player with TrueOG formatting but without expanding
+    // MiniPlaceholders.
+    public static void trueogRawMessage(Player player, String message) {
+
+        TextUtils.trueogRawMessage(player, message);
+
+    }
+
     // Unified method for sending a pre-built component to a player on the caller's
     // current thread.
     public static void trueogMessage(Player player, Component message) {
@@ -298,6 +306,22 @@ public final class UtilitiesOG extends JavaPlugin {
         if (player != null) {
 
             TextUtils.trueogMessage(player, message);
+
+        } else {
+
+            logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
+
+        }
+
+    }
+
+    // Handle non-expanded messages to offline players (based on UUID).
+    public static void trueogRawMessage(UUID playerUUID, String message) {
+
+        final Player player = Bukkit.getPlayer(playerUUID);
+        if (player != null) {
+
+            TextUtils.trueogRawMessage(player, message);
 
         } else {
 
