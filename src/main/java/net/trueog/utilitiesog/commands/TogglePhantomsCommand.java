@@ -11,8 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import net.trueog.utilitiesog.InternalFunctions;
 import net.trueog.utilitiesog.UtilitiesOG;
+import net.trueog.utilitiesog.listeners.PhantomState;
 import net.trueog.utilitiesog.utils.TextUtils;
 
 // Declare the /togglephantoms command in the Ping Module with Bukkit Commands.
@@ -33,7 +33,7 @@ public class TogglePhantomsCommand implements CommandExecutor {
             if (player.hasPermission(togglePhantomsPermission)) {
 
                 // Store the contents of phantomDisabledUsers.yml file as a YAML object.
-                final YamlConfiguration phantomPreferences = InternalFunctions.getPhantomPreferences();
+                final YamlConfiguration phantomPreferences = PhantomState.getPreferences();
 
                 // Cherry pick the command runner's phantom status from the YAML data set.
                 final boolean phantomToggleState = phantomPreferences.getBoolean(player.getUniqueId().toString());
@@ -62,7 +62,7 @@ public class TogglePhantomsCommand implements CommandExecutor {
                 try {
 
                     // Save changes to YAML data to disk.
-                    phantomPreferences.save(InternalFunctions.getPhantomDisabledPlayersFile());
+                    phantomPreferences.save(PhantomState.getFile());
 
                 } catch (IOException error) {
 

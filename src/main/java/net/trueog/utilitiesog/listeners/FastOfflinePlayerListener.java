@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.github.jasync.sql.db.QueryResult;
 
+import net.trueog.utilitiesog.Internal;
 import net.trueog.utilitiesog.UtilitiesOG;
 
 // A class for storing and caching FastOfflinePlayers during player join and player leave.
@@ -49,7 +50,7 @@ public class FastOfflinePlayerListener {
     private CompletableFuture<QueryResult> query(String sql, Object... params) {
 
         // Gift wrap around jasync’s sendPreparedStatement.
-        return UtilitiesOG.getPostgres().sendPreparedStatement(sql, Arrays.asList(params));
+        return Internal.getPostgres().sendPreparedStatement(sql, Arrays.asList(params));
 
     }
 

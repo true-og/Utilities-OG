@@ -54,6 +54,43 @@ MiniPlaceholders support is always enabled. There is no config toggle for disabl
 
 ### API Documentation:
 
+**Controlling which MiniMessage tags render: `MessageFormat`**
+
+Every messaging and formatting API below accepts an optional final `MessageFormat` argument that decides which MiniMessage `StandardTags` families get resolved. `MessageFormat` is immutable and fluent, so call sites read naturally and bad tag references become compile-time errors.
+
+Supported tag families:
+
+| Method | MiniMessage tags honored |
+| --- | --- |
+| `withColor` / `withoutColor` | `<color:...>`, `<red>`, `<#ff00aa>`, `&0`-`&f` |
+| `withDecorations` / `withoutDecorations` | `<bold>`, `<italic>`, `<underlined>`, `<strikethrough>`, `<obfuscated>`, `<!bold>`, `&k`-`&o` |
+| `withRainbow` / `withoutRainbow` | `<rainbow>`, `<rainbow:phase>`, `&*` |
+| `withGradient` / `withoutGradient` | `<gradient:color1:color2:...>` |
+| `withReset` / `withoutReset` | `<reset>`, `&r` |
+
+Presets:
+
+* `MessageFormat.full()` — every supported tag enabled. This is the default for `trueogMessage`, `trueogRawMessage`, `trueogColorize`, and `trueogExpand` when no format is passed.
+* `MessageFormat.none()` — every supported tag disabled.
+
+Semantics: tags enabled on the format are resolved as usual; tags disabled on the format stay as literal MiniMessage text in the rendered output. `MessageFormat` only applies to the send / format APIs — `stripFormatting` and `logToConsole` always strip everything and have no format overload.
+
+Kotlin:
+```kotlin
+val noGradient = MessageFormat.full().withoutGradient()
+UtilitiesOG.trueogMessage(player, "<gradient:red:blue>kept as markup</gradient> <red>rendered</red>", noGradient)
+```
+
+Java:
+```java
+MessageFormat noGradient = MessageFormat.full().withoutGradient();
+UtilitiesOG.trueogMessage(player, "<gradient:red:blue>kept as markup</gradient> <red>rendered</red>", noGradient);
+```
+
+`MessageFormat` instances are immutable and safe to share across threads. MiniMessage instances are cached internally per format.
+
+Note: `StandardTags.shadowColor()` was added in Adventure 4.18+ and is **not** available in the Adventure 4.13.1 bundled with Purpur 1.19.4. It is therefore not part of `MessageFormat` in this release.
+
 **[void] trueogMessage(Player player, String message)**
 
 Sends a message to the specified player with TrueOG formatting on the caller's current thread. Supports both modern color codes and legacy Bukkit color codes (case-insensitive). Automatically expands MiniPlaceholders within the message.
@@ -70,6 +107,20 @@ Player targetPlayer = Bukkit.getPlayer("USERNAME");
 UtilitiesOG.trueogMessage(targetPlayer, "&6This is a &*message with <green>True&4OG <bold>formatting!");
 ```
 
+**[void] trueogMessage(Player player, String message, MessageFormat format)**
+
+Sends a message with the given `MessageFormat` controlling which tag families are resolved. Tags that the format disables remain as literal MiniMessage markup.
+
+Kotlin:
+```kotlin
+UtilitiesOG.trueogMessage(targetPlayer, "<rainbow>colorful</rainbow>", MessageFormat.full().withoutRainbow())
+```
+
+Java:
+```java
+UtilitiesOG.trueogMessage(targetPlayer, "<rainbow>colorful</rainbow>", MessageFormat.full().withoutRainbow());
+```
+
 **[void] trueogRawMessage(Player player, String message)**
 
 Sends a message to the specified player with TrueOG formatting on the caller's current thread without expanding MiniPlaceholders within the message. Supports both modern color codes and legacy Bukkit color codes (case-insensitive).
@@ -84,6 +135,20 @@ Java:
 ```java
 Player targetPlayer = Bukkit.getPlayer("USERNAME");
 UtilitiesOG.trueogRawMessage(targetPlayer, "&6Literal placeholder: <player_display_name>");
+```
+
+**[void] trueogRawMessage(Player player, String message, MessageFormat format)**
+
+Format-aware raw send. Tags disabled by the format stay literal.
+
+Kotlin:
+```kotlin
+UtilitiesOG.trueogRawMessage(targetPlayer, "&6<gradient:red:blue>hi</gradient>", MessageFormat.full().withoutGradient())
+```
+
+Java:
+```java
+UtilitiesOG.trueogRawMessage(targetPlayer, "&6<gradient:red:blue>hi</gradient>", MessageFormat.full().withoutGradient());
 ```
 
 **[void] trueogMessage(Player player, Component message)**
@@ -104,6 +169,22 @@ Component component = MiniMessage.miniMessage().deserialize("<green>Ready.");
 UtilitiesOG.trueogMessage(targetPlayer, component);
 ```
 
+**[void] trueogMessage(Player player, Component message, MessageFormat format)**
+
+Sends a pre-built Component after clearing styles that the format disables. `withoutColor` clears `TextColor`; `withoutDecorations` clears every `TextDecoration`. Rainbow and gradient are not distinguishable from color at the Component level, so those flags have no additional effect on this overload — use the `String` overloads to keep rainbow/gradient markup unresolved.
+
+Kotlin:
+```kotlin
+val colorless = MessageFormat.full().withoutColor()
+UtilitiesOG.trueogMessage(targetPlayer, component, colorless)
+```
+
+Java:
+```java
+MessageFormat colorless = MessageFormat.full().withoutColor();
+UtilitiesOG.trueogMessage(targetPlayer, component, colorless);
+```
+
 **[void] trueogMessage(UUID playerUUID, String message)**
 
 Sends a message to a player identified by their UUID with TrueOG formatting. Useful when the Bukkit Player object is not available. Supports modern color codes and legacy Bukkit color codes (case-insensitive), and expands MiniPlaceholders within the message. If the UUID resolves to an online player, the message is sent immediately on the caller's current thread.
@@ -118,6 +199,20 @@ Java:
 ```java
 UUID playerUUID = UUID.fromString("player_uuid");
 UtilitiesOG.trueogMessage(playerUUID, "&6Hello there!");
+```
+
+**[void] trueogMessage(UUID playerUUID, String message, MessageFormat format)**
+
+Format-aware UUID message send. Same semantics as `trueogMessage(Player, String, MessageFormat)`.
+
+Kotlin:
+```kotlin
+UtilitiesOG.trueogMessage(playerUUID, "&6Hi!", MessageFormat.full().withoutDecorations())
+```
+
+Java:
+```java
+UtilitiesOG.trueogMessage(playerUUID, "&6Hi!", MessageFormat.full().withoutDecorations());
 ```
 
 **[void] trueogRawMessage(UUID playerUUID, String message)**
@@ -136,6 +231,20 @@ UUID playerUUID = UUID.fromString("player_uuid");
 UtilitiesOG.trueogRawMessage(playerUUID, "&6Literal placeholder: <player_display_name>");
 ```
 
+**[void] trueogRawMessage(UUID playerUUID, String message, MessageFormat format)**
+
+Format-aware UUID raw send. Same semantics as `trueogRawMessage(Player, String, MessageFormat)`.
+
+Kotlin:
+```kotlin
+UtilitiesOG.trueogRawMessage(playerUUID, "&6<rainbow>hi</rainbow>", MessageFormat.full().withoutRainbow())
+```
+
+Java:
+```java
+UtilitiesOG.trueogRawMessage(playerUUID, "&6<rainbow>hi</rainbow>", MessageFormat.full().withoutRainbow());
+```
+
 **[TextComponent] trueogExpand(String message)**
 
 Expands MiniPlaceholders within a message string without any player context. Supports color code processing via TrueOG's formatting.
@@ -150,6 +259,20 @@ Java:
 ```java
 String message = "Welcome to the server, everyone!";
 TextComponent expandedMessage = UtilitiesOG.trueogExpand(message);
+```
+
+**[TextComponent] trueogExpand(String message, MessageFormat format)**
+
+Format-aware global expansion. Tags disabled by the format stay literal.
+
+Kotlin:
+```kotlin
+val expandedMessage = UtilitiesOG.trueogExpand(message, MessageFormat.full().withoutGradient())
+```
+
+Java:
+```java
+TextComponent expandedMessage = UtilitiesOG.trueogExpand(message, MessageFormat.full().withoutGradient());
 ```
 
 **[TextComponent] trueogExpand(String message, Player player)**
@@ -170,6 +293,20 @@ Player targetPlayer = Bukkit.getPlayer("SomePlayer");
 String message = "Welcome back, <player_display_name>!";
 TextComponent expandedMessage = UtilitiesOG.trueogExpand(message, targetPlayer);
 UtilitiesOG.trueogMessage(targetPlayer, expandedMessage);
+```
+
+**[TextComponent] trueogExpand(String message, Player player, MessageFormat format)**
+
+Format-aware audience expansion.
+
+Kotlin:
+```kotlin
+val expanded = UtilitiesOG.trueogExpand(message, targetPlayer, MessageFormat.full().withoutRainbow())
+```
+
+Java:
+```java
+TextComponent expanded = UtilitiesOG.trueogExpand(message, targetPlayer, MessageFormat.full().withoutRainbow());
 ```
 
 **[TextComponent] trueogExpand(String message, Player player, Player target)**
@@ -194,6 +331,20 @@ TextComponent expandedMessage = UtilitiesOG.trueogExpand(message, player, target
 UtilitiesOG.trueogMessage(player, expandedMessage);
 ```
 
+**[TextComponent] trueogExpand(String message, Player player, Player target, MessageFormat format)**
+
+Format-aware relational expansion.
+
+Kotlin:
+```kotlin
+val expanded = UtilitiesOG.trueogExpand(message, player, target, MessageFormat.full().withoutGradient())
+```
+
+Java:
+```java
+TextComponent expanded = UtilitiesOG.trueogExpand(message, player, target, MessageFormat.full().withoutGradient());
+```
+
 **[TextComponent] trueogExpand(String message, UUID playerUUID)**
 
 Expands MiniPlaceholders within a message string using a player's UUID, useful when the Player object isn't available. Supports color code processing.
@@ -212,6 +363,20 @@ UUID playerUUID = UUID.fromString("player_uuid");
 String message = "Welcome back, <player_display_name>!";
 TextComponent expandedMessage = UtilitiesOG.trueogExpand(message, playerUUID);
 UtilitiesOG.trueogMessage(playerUUID, expandedMessage);
+```
+
+**[TextComponent] trueogExpand(String message, UUID playerUUID, MessageFormat format)**
+
+Format-aware UUID expansion. Falls back to the global context when the player is offline.
+
+Kotlin:
+```kotlin
+val expanded = UtilitiesOG.trueogExpand(message, playerUUID, MessageFormat.full().withoutRainbow())
+```
+
+Java:
+```java
+TextComponent expanded = UtilitiesOG.trueogExpand(message, playerUUID, MessageFormat.full().withoutRainbow());
 ```
 
 **[void] registerGlobalPlaceholder(String placeholderName, {String})**
@@ -397,9 +562,23 @@ Java:
 TextComponent colorized = UtilitiesOG.trueogColorize(message);
 ```
 
+**[TextComponent] trueogColorize(String message, MessageFormat format)**
+
+Format-aware colorize. Tags disabled by the format stay as literal MiniMessage markup.
+
+Kotlin:
+```kotlin
+val colorized = UtilitiesOG.trueogColorize(message, MessageFormat.full().withoutGradient())
+```
+
+Java:
+```java
+TextComponent colorized = UtilitiesOG.trueogColorize(message, MessageFormat.full().withoutGradient());
+```
+
 **[String] stripFormatting(String content)**
 
-Strips legacy and modern color codes and formatting from a String.
+Strips every legacy Bukkit code and every supported MiniMessage tag from a String, returning plain text. Parsing goes through MiniMessage, so hex colors, closing tags, nested gradients, and rainbow phase arguments all collapse correctly.
 
 Kotlin:
 ```kotlin
@@ -411,9 +590,23 @@ Java:
 String unformatted = UtilitiesOG.stripFormatting(content);
 ```
 
+**[String] stripFormatting(Component component)**
+
+Flattens a Component tree to plain text, discarding every style and tag. Useful for passing player-visible messages into systems that only accept raw strings (logs, databases, web APIs).
+
+Kotlin:
+```kotlin
+val unformatted = UtilitiesOG.stripFormatting(component)
+```
+
+Java:
+```java
+String unformatted = UtilitiesOG.stripFormatting(component);
+```
+
 **[void] logToConsole(String prefix, String message)**
 
-Logs a message to the server console with a prefix. The message and prefix will have modern and legacy color codes and formatting stripped.
+Logs a message to the server console with a prefix. The message and prefix have every legacy Bukkit code and every supported MiniMessage tag stripped before logging.
 
 Kotlin:
 ```kotlin

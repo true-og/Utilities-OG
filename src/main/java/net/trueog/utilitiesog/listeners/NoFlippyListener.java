@@ -21,126 +21,84 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 
-import net.trueog.utilitiesog.InternalFunctions;
+import net.trueog.utilitiesog.Internal;
 import net.trueog.utilitiesog.UtilitiesOG;
 import net.trueog.utilitiesog.misc.FlagRegistrationException;
 
 // Declare the NoFlippy Module with Bukkit Listeners.
 public class NoFlippyListener implements Listener {
 
-    // Declare instance of class as static so multiple players can use it.
-    private static NoFlippyListener instance;
-
-    // Return instance of class as static so multiple players can use it.
-    public static NoFlippyListener getInstance() {
-
-        // Pass back Listeners to main.
-        return instance;
-
-    }
+    // The can-flippy StateFlag owned by this module. Registered in onLoad via
+    // registerFlag() and consulted on every trap-door interaction.
+    private static StateFlag flippyFlag;
 
     // Listen for a player interacting with a trap-door.
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
 
-        // Get the nature of the interaction and store it.
         final Action action = event.getAction();
-        // Get the block that was interacted with and store it.
         final Block blockClicked = event.getClickedBlock();
-        // Get the player who interacted and store them.
         final Player player = event.getPlayer();
 
-        // Declare a container for the block type for null checking.
         String blockContainerAsString = null;
         try {
 
-            // Try storing the block type as a string. Throws NullPointerException if not
-            // applicable.
             blockContainerAsString = blockClicked.getType().toString();
 
-        }
-        // If the block type was null, do this...
-        catch (NullPointerException error) {
+        } catch (NullPointerException error) {
 
-            // Do nothing.
             return;
 
         }
 
         final boolean condition = StringUtils.contains(blockContainerAsString, "TRAPDOOR") && action.isRightClick()
                 && !player.hasPermission("noflippy.bypass");
-        // If the interaction was a right click, do this...
-        // If the player does not have permission to flip trap doors, do this...
-        // If the interaction was with a trap door, do this...
         if (!condition) {
 
             return;
 
         }
 
-        // Get the location of the block the player tried to flip.
         final Location blockLocation = BukkitAdapter.adapt(blockClicked.getLocation());
-        // Instantiate a WorldGuard Region Container.
         final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        // Instantiate a WorldGuard Region Query.
         final RegionQuery query = container.createQuery();
-        // Get all regions at the location of the block.
         final ApplicableRegionSet set = query.getApplicableRegions(blockLocation);
-        // If the can-flippy WorldGuard Flag is set to DENY, for any region in the set,
-        // do this...
-        if (!set.testState(null, InternalFunctions.getFlippyFlag())) {
+        if (!set.testState(null, flippyFlag)) {
 
-            // Cancel the trapdoor flip event.
             event.setCancelled(true);
 
         }
 
     }
 
-    // Registers the WorldGuard Flag "can-flippy". Throws a custom exception in case
-    // of error.
-    public static StateFlag registerNoFlippyWorldGuardFlag(StateFlag FlippyFlags) throws FlagRegistrationException {
+    // Register the can-flippy WorldGuard StateFlag. Must be called from
+    // JavaPlugin.onLoad — WorldGuard refuses flag registration after its own
+    // onEnable completes. On conflict the already-registered flag is reused
+    // when it is a StateFlag.
+    public static void registerFlag() throws FlagRegistrationException {
 
-        // Add the WorldGuard flag for an area where NoFlippy is active.
         final FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
 
         try {
 
-            // Create a flag with the name "my-custom-flag", defaulting to true.
             final StateFlag flag = new StateFlag("can-flippy", true);
 
-            // Register the new flag with WorldGuard.
             registry.register(flag);
 
-            // Only return the flag if there was no error.
-            return flag;
+            flippyFlag = flag;
 
-        }
-        // If there was a WorldGuard Flag conflict, do this...
-        catch (FlagConflictException error) {
+        } catch (FlagConflictException error) {
 
-            // Log the WorldGuard Flag conflict to the server console.
-            UtilitiesOG.logToConsole(InternalFunctions.getPrefix(),
+            UtilitiesOG.logToConsole(Internal.getPrefix(),
                     "ERROR: can-flippy of the NoFlippy Module has a WorldGuard Flag conflict! " + error.getMessage());
 
-            // Pulls the WorldGuard Flag from the registry that some other plugin registered
-            // by the same name.
-            // Developer Note: You CAN use the existing flag, but this may cause conflicts -
-            // be sure to check type.
             final Flag<?> existing = registry.get("can-flippy");
-            // If the existing WorldGuard Flag is a StateFlag, do this...
-            if (existing instanceof StateFlag) {
+            if (existing instanceof StateFlag stateFlag) {
 
-                // Return the existing WorldGuard Flag.
-                return (StateFlag) existing;
+                flippyFlag = stateFlag;
 
-            }
-            // If the existing WorldGuard Flag is not a StateFlag, do this...
-            else {
+            } else {
 
-                // Throw a custom exception that displays details about the issues with flag
-                // registration in the server
-                // console.
                 throw new FlagRegistrationException("Failed to register can-flippy flag due to conflict.", error);
 
             }

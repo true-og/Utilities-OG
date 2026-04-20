@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 
 import io.github.miniplaceholders.api.Expansion;
 import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.trueog.utilitiesog.InternalFunctions;
+import net.trueog.utilitiesog.Internal;
 import net.trueog.utilitiesog.UtilitiesOG;
 
 public class PlaceholderUtils {
@@ -45,8 +45,8 @@ public class PlaceholderUtils {
                 (queue, ctx) -> Tag.preProcessParsed(TextUtils.processColorCodes(placeholder.get())));
 
         // Log global placeholder registration without arguments.
-        UtilitiesOG.logToConsole(InternalFunctions.getPrefix(), "Registered Global MiniPlaceholder: "
-                + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+        UtilitiesOG.logToConsole(Internal.getPrefix(), "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix
+                + "_" + miniPlaceholderSuffix + " without arguments");
 
         return this;
 
@@ -71,8 +71,8 @@ public class PlaceholderUtils {
         });
 
         // Log global placeholder registration with arguments.
-        UtilitiesOG.logToConsole(InternalFunctions.getPrefix(), "Registered Global MiniPlaceholder: "
-                + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+        UtilitiesOG.logToConsole(Internal.getPrefix(), "Registered Global MiniPlaceholder: " + miniPlaceholderPrefix
+                + "_" + miniPlaceholderSuffix + " with arguments");
 
         return this;
 
@@ -96,8 +96,8 @@ public class PlaceholderUtils {
                 });
 
         // Log audience placeholder registration without arguments.
-        UtilitiesOG.logToConsole(InternalFunctions.getPrefix(), "Registered Audience MiniPlaceholder: "
-                + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+        UtilitiesOG.logToConsole(Internal.getPrefix(), "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix
+                + "_" + miniPlaceholderSuffix + " without arguments");
 
         return this;
 
@@ -130,8 +130,8 @@ public class PlaceholderUtils {
                 });
 
         // Log audience placeholder registration with arguments.
-        UtilitiesOG.logToConsole(InternalFunctions.getPrefix(), "Registered Audience MiniPlaceholder: "
-                + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+        UtilitiesOG.logToConsole(Internal.getPrefix(), "Registered Audience MiniPlaceholder: " + miniPlaceholderPrefix
+                + "_" + miniPlaceholderSuffix + " with arguments");
 
         return this;
 
@@ -156,9 +156,9 @@ public class PlaceholderUtils {
 
                 });
 
-        // Log relational placeholder registration without arguments
-        UtilitiesOG.logToConsole(InternalFunctions.getPrefix(), "Registered Relational MiniPlaceholder: "
-                + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " without arguments");
+        // Log relational placeholder registration without arguments.
+        UtilitiesOG.logToConsole(Internal.getPrefix(), "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix
+                + "_" + miniPlaceholderSuffix + " without arguments");
 
         return this;
 
@@ -166,7 +166,7 @@ public class PlaceholderUtils {
 
     // Set relational placeholder with arguments.
     public PlaceholderUtils setRelationalPlaceholder(
-            UtilitiesOG.TriFunction<Player, Player, List<String>, String> valueFunction)
+            Internal.TriFunction<Player, Player, List<String>, String> valueFunction)
     {
 
         this.placeholderRegistration = builder -> builder.relationalPlaceholder(miniPlaceholderSuffix,
@@ -193,8 +193,8 @@ public class PlaceholderUtils {
                 });
 
         // Log relational placeholder registration with arguments.
-        UtilitiesOG.logToConsole(InternalFunctions.getPrefix(), "Registered Relational MiniPlaceholder: "
-                + miniPlaceholderPrefix + "_" + miniPlaceholderSuffix + " with arguments");
+        UtilitiesOG.logToConsole(Internal.getPrefix(), "Registered Relational MiniPlaceholder: " + miniPlaceholderPrefix
+                + "_" + miniPlaceholderSuffix + " with arguments");
 
         return this;
 

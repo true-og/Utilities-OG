@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import net.trueog.utilitiesog.InternalFunctions;
 // Import libraries.
+import net.trueog.utilitiesog.Internal;
 import net.trueog.utilitiesog.UtilitiesOG;
 import net.trueog.utilitiesog.utils.TextUtils;
 
@@ -31,7 +31,7 @@ public class ToggleCrammingCommand implements CommandExecutor {
             if (player.hasPermission(toggleCrammingPermission)) {
 
                 // Fetch config file from data folder.
-                final FileConfiguration config = InternalFunctions.getPlugin().getConfig();
+                final FileConfiguration config = Internal.getPlugin().getConfig();
 
                 // Flip the true/false value to the opposite of what it currently is.
                 config.set("doEntityCramming", !config.getBoolean("doEntityCramming"));

@@ -50,15 +50,7 @@ public class FastOfflinePlayer implements OfflinePlayer {
 
         // If a test supplier is available, do this...
         final Supplier<Connection> s = connectionSupplier;
-        if (s != null) {
-
-            // Return the test supplier.
-            return s.get();
-
-        }
-
-        // Return the real provider.
-        return UtilitiesOG.getPostgres();
+        return s != null ? s.get() : Internal.getPostgres();
 
     }
 
@@ -189,7 +181,7 @@ public class FastOfflinePlayer implements OfflinePlayer {
                         // Set a placeholder name to avoid a crash.
                         cachedName = "usernameLookupError";
 
-                        UtilitiesOG.logToConsole(InternalFunctions.getPrefix(),
+                        UtilitiesOG.logToConsole(Internal.getPrefix(),
                                 "ERROR: FastOfflinePlayer getName() failed!" + ex.getMessage());
 
                         // Return the placeholder name.

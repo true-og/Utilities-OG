@@ -1,3 +1,12 @@
+**1.7**
+- Added `MessageFormat` as a selector for MiniMessage `StandardTags` families (`color`, `decorations`, `rainbow`, `gradient`, `reset`), and after Adventure 4.18 is shipped on TrueOG Network, also StandardTags.shadowColor().
+- Added optional `MessageFormat` parameter to `trueogMessage`, `trueogRawMessage`, `trueogColorize`, and `trueogExpand`. Existing single-argument calls keep legacy behavior (every formatting tag active unless stripped).
+- `MessageFormat` includes callables `none()` and `full()` which can be respectively paired with `withColor`/`withoutColor`, `withDecorations`/`withoutDecorations`, `withRainbow`/`withoutRainbow`, `withGradient`/`withoutGradient`, `withReset`/`withoutReset` .
+- `stripFormatting` is now more comprehensive, using MiniMessage instead of Regex.
+- Added `stripFormatting(Component)` overload that flattens a Component tree to plain text.
+- Non enabled tags are now rendered as literal text instead of being consumed without being passed on by Adventure.
+- Refactoring for efficiency and maintainability.
+
 **1.6.7**
 - MiniPlaceholder output now bleeds formatting into surrounding text like legacy color codes, unless explicitly reset or stripped.
 

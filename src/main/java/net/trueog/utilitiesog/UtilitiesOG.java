@@ -3,7 +3,6 @@
 package net.trueog.utilitiesog;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiFunction;
@@ -11,20 +10,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jasync.sql.db.pool.ConnectionPool;
 import com.github.jasync.sql.db.postgresql.PostgreSQLConnection;
 import com.github.jasync.sql.db.postgresql.PostgreSQLConnectionBuilder;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
@@ -40,57 +34,60 @@ import net.trueog.utilitiesog.commands.TogglePhantomsCommand;
 import net.trueog.utilitiesog.listeners.AdvancementsOnlyInSurvivalListener;
 import net.trueog.utilitiesog.listeners.DisableEntityCrammingListener;
 import net.trueog.utilitiesog.listeners.NoFlippyListener;
+import net.trueog.utilitiesog.listeners.PhantomState;
 import net.trueog.utilitiesog.listeners.TogglePhantomsListener;
 import net.trueog.utilitiesog.misc.FlagRegistrationException;
 import net.trueog.utilitiesog.modules.ChainArmorModule;
 import net.trueog.utilitiesog.modules.MockBambooModule;
+import net.trueog.utilitiesog.utils.MessageFormat;
 import net.trueog.utilitiesog.utils.PlaceholderUtils;
 import net.trueog.utilitiesog.utils.TextUtils;
 
 // Declare main plugin class.
 public final class UtilitiesOG extends JavaPlugin {
 
-    private File file;
-    private static Plugin instance;
-    private static FileConfiguration config;
-    private static File phantomPreferencesFile;
-    private static YamlConfiguration phantomPreferences;
-    private static StateFlag FlippyFlag;
+    // Formatted plugin prefix used on every console log line emitted from
+    // Utilities-OG API. Reached internally via Internal.getPrefix(),
+    private static final String PREFIX = "&7[&6Utilities&f-&4OG&7] ";
+
+    // Declare live plugin instance to be initialized in onEnable().
+    private static UtilitiesOG instance;
+
+    // Declare live PostgreSQL connection pool to be initialized in onEnable().
     private static ConnectionPool<PostgreSQLConnection> POOL;
+
+    // Package-private hooks consumed by net.trueog.utilitiesog.Internal.
+    static UtilitiesOG getPluginInstance() {
+
+        return instance;
+
+    }
+
+    static String getPluginPrefix() {
+
+        return PREFIX;
+
+    }
+
+    static ConnectionPool<PostgreSQLConnection> getPluginPostgres() {
+
+        return POOL;
+
+    }
 
     @Override
     public void onEnable() {
 
         instance = this;
 
-        this.file = new File(this.getDataFolder(), "config.yml");
-        if (!this.file.exists()) {
+        final File configFile = new File(this.getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
 
             this.saveDefaultConfig();
 
         }
 
-        config = this.getConfig();
-
         POOL = initPsql();
-
-        phantomPreferencesFile = new File(this.getDataFolder(), "phantomDisabledUsers.yml");
-
-        try {
-
-            if (!phantomPreferencesFile.exists()) {
-
-                phantomPreferencesFile.createNewFile();
-
-            }
-
-        } catch (IOException error) {
-
-            this.getLogger().severe("ERROR: Failed to create the phantom toggle cache file! " + error.getMessage());
-
-        }
-
-        phantomPreferences = YamlConfiguration.loadConfiguration(phantomPreferencesFile);
 
         if (this.getConfig().getBoolean("ChainArmor")) {
 
@@ -190,6 +187,8 @@ public final class UtilitiesOG extends JavaPlugin {
 
         if (this.getConfig().getBoolean("TogglePhantoms")) {
 
+            PhantomState.load(this);
+
             getServer().getPluginManager().registerEvents(new TogglePhantomsListener(), this);
 
             this.getCommand("togglephantoms").setExecutor(new TogglePhantomsCommand());
@@ -211,7 +210,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
         try {
 
-            FlippyFlag = NoFlippyListener.registerNoFlippyWorldGuardFlag(FlippyFlag);
+            NoFlippyListener.registerFlag();
 
         } catch (FlagRegistrationException error) {
 
@@ -229,72 +228,68 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    static FileConfiguration config() {
-
-        return config;
-
-    }
-
-    static String prefix() {
-
-        return "&7[&6Utilities&f-&4OG&7] ";
-
-    }
-
-    static StateFlag flippyFlag() {
-
-        return FlippyFlag;
-
-    }
-
-    static File phantomDisabledPlayersFile() {
-
-        return phantomPreferencesFile;
-
-    }
-
-    static YamlConfiguration phantomPreferences() {
-
-        return phantomPreferences;
-
-    }
-
-    static Plugin plugin() {
-
-        return instance;
-
-    }
-
-    // Unified method for sending a message to a player with placeholders processed.
+    // Sends a fully formatted message (every supported tag active).
     public static void trueogMessage(Player player, String message) {
 
         TextUtils.trueogMessage(player, message);
 
     }
 
-    // Sends a message to a player with TrueOG formatting but without expanding
-    // MiniPlaceholders.
+    // Sends a selectively formatted message. Disabled tags stay as literal
+    // MiniMessage
+    // markup in the rendered output.
+    public static void trueogMessage(Player player, String message, MessageFormat format) {
+
+        TextUtils.trueogMessage(player, message, format);
+
+    }
+
+    // Sends a fully formatted message (every supported tag active) without
+    // expanding MiniPlaceholders.
     public static void trueogRawMessage(Player player, String message) {
 
         TextUtils.trueogRawMessage(player, message);
 
     }
 
-    // Unified method for sending a pre-built component to a player on the caller's
-    // current thread.
+    // Sends a selectively formatted message without expanding MiniPlaceholders.
+    public static void trueogRawMessage(Player player, String message, MessageFormat format) {
+
+        TextUtils.trueogRawMessage(player, message, format);
+
+    }
+
+    // Sends a pre-built Component to a player on the caller's thread.
     public static void trueogMessage(Player player, Component message) {
 
         TextUtils.trueogMessage(player, message);
 
     }
 
-    // Handle messages to offline players (based on UUID).
+    // Sends a pre-built Component after selectively formatting.
+    // Rainbow and gradient are indistinguishable from color at the
+    // Component level, so those flags have no effect here beyond what color() does.
+    public static void trueogMessage(Player player, Component message, MessageFormat format) {
+
+        TextUtils.trueogMessage(player, message, format);
+
+    }
+
+    // Handle messages to players based on UUID. Useful when the caller doesn't have
+    // a Player object on hand.
     public static void trueogMessage(UUID playerUUID, String message) {
+
+        trueogMessage(playerUUID, message, MessageFormat.full());
+
+    }
+
+    // Format-aware UUID based message send.
+    public static void trueogMessage(UUID playerUUID, String message, MessageFormat format) {
 
         final Player player = Bukkit.getPlayer(playerUUID);
         if (player != null) {
 
-            TextUtils.trueogMessage(player, message);
+            TextUtils.trueogMessage(player, message, format);
 
         } else {
 
@@ -307,10 +302,17 @@ public final class UtilitiesOG extends JavaPlugin {
     // Handle non-expanded messages to offline players (based on UUID).
     public static void trueogRawMessage(UUID playerUUID, String message) {
 
+        trueogRawMessage(playerUUID, message, MessageFormat.full());
+
+    }
+
+    // Format-aware UUID raw send.
+    public static void trueogRawMessage(UUID playerUUID, String message, MessageFormat format) {
+
         final Player player = Bukkit.getPlayer(playerUUID);
         if (player != null) {
 
-            TextUtils.trueogRawMessage(player, message);
+            TextUtils.trueogRawMessage(player, message, format);
 
         } else {
 
@@ -320,50 +322,83 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    // Formats a message without MiniPlaceholder expansion.
+    // Formats a message without MiniPlaceholder expansion, every tag active.
     public static TextComponent trueogColorize(String message) {
 
-        return (TextComponent) MiniMessage.miniMessage().deserialize(TextUtils.processColorCodes(message));
+        return trueogColorize(message, MessageFormat.full());
 
     }
 
-    // Expands Global MiniPlaceholders.
+    // Format-aware colorize. Disabled tags stay literal in the output.
+    public static TextComponent trueogColorize(String message, MessageFormat format) {
+
+        return (TextComponent) TextUtils.miniMessage(format).deserialize(TextUtils.processColorCodes(message));
+
+    }
+
+    // Expands Global MiniPlaceholders with every tag active.
     public static TextComponent trueogExpand(String message) {
 
-        // MiniPlaceholder expansion with legacy and modern formatting.
         return TextUtils.expandTextWithPlaceholders(message);
 
     }
 
-    // Expands Audience MiniPlaceholders.
+    // Format-aware global expansion.
+    public static TextComponent trueogExpand(String message, MessageFormat format) {
+
+        return TextUtils.expandTextWithPlaceholders(message, format);
+
+    }
+
+    // Expands Audience MiniPlaceholders with every tag active.
     public static TextComponent trueogExpand(String message, Player player) {
 
-        // MiniPlaceholder expansion with legacy and modern formatting.
         return TextUtils.expandTextWithPlaceholders(message, player);
 
     }
 
-    // Expands Relational MiniPlaceholders.
+    // Format-aware audience expansion.
+    public static TextComponent trueogExpand(String message, Player player, MessageFormat format) {
+
+        return TextUtils.expandTextWithPlaceholders(message, player, format);
+
+    }
+
+    // Expands Relational MiniPlaceholders with every tag active.
     public static TextComponent trueogExpand(String message, Player player, Player target) {
 
-        // MiniPlaceholder expansion with legacy and modern formatting.
         return TextUtils.expandTextWithPlaceholders(message, player, target);
+
+    }
+
+    // Format-aware relational expansion.
+    public static TextComponent trueogExpand(String message, Player player, Player target, MessageFormat format) {
+
+        return TextUtils.expandTextWithPlaceholders(message, player, target, format);
 
     }
 
     // Variation of MiniPlaceholder expansion for when Bukkit API is unavailable.
     public static TextComponent trueogExpand(String message, UUID playerUUID) {
 
+        return trueogExpand(message, playerUUID, MessageFormat.full());
+
+    }
+
+    // Format-aware UUID expansion. Falls back to global context when the
+    // player is offline.
+    public static TextComponent trueogExpand(String message, UUID playerUUID, MessageFormat format) {
+
         final Player player = Bukkit.getPlayer(playerUUID);
         if (player != null) {
 
-            return TextUtils.expandTextWithPlaceholders(message, player);
+            return TextUtils.expandTextWithPlaceholders(message, player, format);
 
         } else {
 
             logToConsole("[Utilities-OG]", "Player with UUID " + playerUUID + " is not online.");
 
-            return TextUtils.expandTextWithPlaceholders(message);
+            return TextUtils.expandTextWithPlaceholders(message, format);
 
         }
 
@@ -413,7 +448,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
     // Relational placeholder with arguments.
     public static void registerRelationalPlaceholder(String name,
-            TriFunction<Player, Player, List<String>, String> valueFunction)
+            Internal.TriFunction<Player, Player, List<String>, String> valueFunction)
     {
 
         PlaceholderUtils.trueogRegisterMiniPlaceholder(name,
@@ -421,17 +456,25 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    // API to strip legacy and modern formatting in Strings.
+    // Strips every legacy Bukkit code and every supported MiniMessage tag,
+    // returning plain text.
     public static String stripFormatting(String content) {
 
-        return TextUtils.stripColors(content);
+        return TextUtils.stripFormatting(content);
 
     }
 
-    // Console logging API that automatically strips legacy and modern formatting.
+    // Flattens a Component to plain text, discarding every style and tag.
+    public static String stripFormatting(Component component) {
+
+        return TextUtils.stripFormatting(component);
+
+    }
+
+    // Console logging API that strips every supported tag and legacy code.
     public static void logToConsole(String prefix, String message) {
 
-        Bukkit.getLogger().info(TextUtils.stripColors(prefix + " " + message));
+        Bukkit.getLogger().info(TextUtils.stripFormatting(prefix + " " + message));
 
     }
 
@@ -448,20 +491,6 @@ public final class UtilitiesOG extends JavaPlugin {
 
         // Create postgres connection.
         return PostgreSQLConnectionBuilder.createConnectionPool(jdbcUrl);
-
-    }
-
-    public static ConnectionPool<PostgreSQLConnection> getPostgres() {
-
-        return POOL;
-
-    }
-
-    // Functional interface to support TriFunction.
-    @FunctionalInterface
-    public interface TriFunction<T, U, V, R> {
-
-        R apply(T t, U u, V v);
 
     }
 

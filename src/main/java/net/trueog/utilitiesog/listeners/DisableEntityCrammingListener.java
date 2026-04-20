@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import net.trueog.utilitiesog.InternalFunctions;
+import net.trueog.utilitiesog.Internal;
 
 // Declare the EntityCrammingToggle Module with Bukkit Listeners.
 public class DisableEntityCrammingListener implements Listener {
@@ -17,7 +17,7 @@ public class DisableEntityCrammingListener implements Listener {
     public void disableEntityCramming(EntityDamageEvent event) {
 
         final boolean condition = event.getCause() == DamageCause.CRAMMING
-                && InternalFunctions.getConfig().getBoolean("EntityCrammingDisable") == true;
+                && Internal.getPlugin().getConfig().getBoolean("EntityCrammingDisable") == true;
         // If the Disable Entity Cramming Module is enabled in config.yml, do this...
         if (condition) {
 

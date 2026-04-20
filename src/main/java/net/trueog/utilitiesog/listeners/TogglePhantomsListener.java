@@ -10,8 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import net.trueog.utilitiesog.InternalFunctions;
-
 // Declare the DisablePhantomSpawns Module with Bukkit Listeners.
 public class TogglePhantomsListener implements Listener {
 
@@ -27,7 +25,7 @@ public class TogglePhantomsListener implements Listener {
         }
 
         // Store the contents of phantomDisabledUsers.yml file as a YAML object.
-        final YamlConfiguration phantomsAreDisabled = InternalFunctions.getPhantomPreferences();
+        final YamlConfiguration phantomsAreDisabled = PhantomState.getPreferences();
         // Get every player currently on the server in the world where the phantom
         // spawned.
         for (Player player : Bukkit.getServer().getOnlinePlayers().stream()

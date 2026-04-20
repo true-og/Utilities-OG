@@ -2,8 +2,10 @@
 // Authors: christianniehaus, NotAlexNoyle.
 package net.trueog.utilitiesog.utils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -12,102 +14,136 @@ import org.bukkit.entity.Player;
 import io.github.miniplaceholders.api.MiniPlaceholders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trueog.utilitiesog.misc.ColorCodeMap;
 
 public class TextUtils {
 
-    // Regular expressions to match color codes starting with § or & in Strings.
-    private static final Pattern LEGACY_COLOR_PATTERN = Pattern.compile("(?i)[§&][0-9A-FK-OR]");
-    private static final List<String> MINIMESSAGE_TAGS = List.of("<black>", "<dark_blue>", "<dark_green>",
-            "<dark_aqua>", "<dark_red>", "<dark_purple>", "<gold>", "<gray>", "<dark_gray>", "<blue>", "<green>",
-            "<aqua>", "<red>", "<light_purple>", "<yellow>", "<white>", "<obfuscated>", "<bold>", "<strikethrough>",
-            "<underlined>", "<italic>", "<reset>", "<rainbow>");
+    // Cache a MiniMessage instance per each MessageFormat.
+    private static final Map<MessageFormat, MiniMessage> MINI_CACHE = new ConcurrentHashMap<>();
 
-    // Sends a formatted message to the player, expanding placeholders and color
-    // codes.
+    // Sends a formatted message with every supported tag active.
     public static void trueogMessage(Player player, String message) {
 
-        player.sendMessage(expandTextWithPlaceholders(message, player));
+        trueogMessage(player, message, MessageFormat.full());
 
     }
 
-    // Sends a formatted message to the player without expanding MiniPlaceholders.
+    // Sends a formatted expanding message.
+    public static void trueogMessage(Player player, String message, MessageFormat format) {
+
+        player.sendMessage(expandTextWithPlaceholders(message, player, format));
+
+    }
+
+    // Sends a fully formatted non expanding message.
     public static void trueogRawMessage(Player player, String message) {
 
-        player.sendMessage(MiniMessage.miniMessage().deserialize(processColorCodes(message)));
+        trueogRawMessage(player, message, MessageFormat.full());
 
     }
 
-    // Sends a pre-built component to the player immediately on the caller's current
-    // thread.
+    // Sends a selectively formatted non expanding message.
+    public static void trueogRawMessage(Player player, String message, MessageFormat format) {
+
+        player.sendMessage(miniMessage(format).deserialize(processColorCodes(message)));
+
+    }
+
+    // Sends a pre-built Component with every supported tag active.
     public static void trueogMessage(Player player, Component message) {
 
         player.sendMessage(message);
 
     }
 
-    // Expand global MiniPlaceholders recursively.
-    public static TextComponent expandTextWithPlaceholders(String message) {
+    // Sends a selectively formatted pre-built Component.
+    public static void trueogMessage(Player player, Component message, MessageFormat format) {
 
-        // Process any legacy color codes.
-        message = processColorCodes(message);
-
-        // Use global MiniPlaceholders for the resolver.
-        final TagResolver resolver = MiniPlaceholders.getGlobalPlaceholders();
-
-        // Recursively expand the MiniPlaceholders.
-        return recursivelyExpandPlaceholders(message, resolver);
+        player.sendMessage(applyFormat(message, format));
 
     }
 
-    // Expand MiniPlaceholders with player-specific context recursively.
-    public static TextComponent expandTextWithPlaceholders(String message, Player player) {
+    // Global-context MiniPlaceholder expansion with all tags active.
+    public static TextComponent expandTextWithPlaceholders(String message) {
 
-        // Process legacy color codes.
+        return expandTextWithPlaceholders(message, MessageFormat.full());
+
+    }
+
+    // Global-context MiniPlaceholder expansion with the given format.
+    public static TextComponent expandTextWithPlaceholders(String message, MessageFormat format) {
+
         message = processColorCodes(message);
 
-        // Create a resolver for global and audience-specific MiniPlaceholders.
+        final TagResolver resolver = MiniPlaceholders.getGlobalPlaceholders();
+
+        return recursivelyExpandPlaceholders(message, resolver, format);
+
+    }
+
+    // Audience-context MiniPlaceholder expansion with all tags active.
+    public static TextComponent expandTextWithPlaceholders(String message, Player player) {
+
+        return expandTextWithPlaceholders(message, player, MessageFormat.full());
+
+    }
+
+    // Audience-context MiniPlaceholder expansion with the given format.
+    public static TextComponent expandTextWithPlaceholders(String message, Player player, MessageFormat format) {
+
+        message = processColorCodes(message);
+
         final TagResolver resolver = TagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders(),
                 MiniPlaceholders.getAudiencePlaceholders(player));
 
-        // Recursively expand MiniPlaceholders using MiniMessage.
-        return recursivelyExpandPlaceholders(message, resolver);
+        return recursivelyExpandPlaceholders(message, resolver, format);
 
     }
 
-    // Relational placeholder expansion between two players.
+    // Relational-context MiniPlaceholder expansion with all tags active.
     public static TextComponent expandTextWithPlaceholders(String message, Player player, Player target) {
 
-        // Process legacy color codes.
+        return expandTextWithPlaceholders(message, player, target, MessageFormat.full());
+
+    }
+
+    // Relational-context MiniPlaceholder expansion with the given format.
+    public static TextComponent expandTextWithPlaceholders(String message, Player player, Player target,
+            MessageFormat format)
+    {
+
         message = processColorCodes(message);
 
-        // Create a resolver for global, audience, and relational MiniPlaceholders.
         final TagResolver resolver = TagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders(),
                 MiniPlaceholders.getAudiencePlaceholders(player),
                 MiniPlaceholders.getRelationalPlaceholders(player, target));
 
-        // Recursively expand MiniPlaceholders using MiniMessage.
-        return recursivelyExpandPlaceholders(message, resolver);
+        return recursivelyExpandPlaceholders(message, resolver, format);
 
     }
 
-    // Recursive placeholder expansion using MiniMessage.
-    private static TextComponent recursivelyExpandPlaceholders(String message, TagResolver resolver) {
+    // Recursive placeholder expansion driven by the format's MiniMessage
+    // instance plus the supplied placeholder resolver.
+    private static TextComponent recursivelyExpandPlaceholders(String message, TagResolver resolver,
+            MessageFormat format)
+    {
+
+        final MiniMessage mm = miniMessage(format);
 
         String previousMessage;
         Component expandedMessage;
 
-        // Loop until no new MiniPlaceholders are found (to handle recursive
-        // expansions).
         do {
 
             previousMessage = message;
-            expandedMessage = MiniMessage.miniMessage().deserialize(message, resolver);
+            expandedMessage = mm.deserialize(message, resolver);
 
-            // Serialize back to string.
-            message = MiniMessage.miniMessage().serialize(expandedMessage);
+            message = mm.serialize(expandedMessage);
 
         } while (!message.equals(previousMessage));
 
@@ -115,43 +151,31 @@ public class TextUtils {
 
     }
 
-    // Process color codes, converting legacy Bukkit color codes (e.g., &c) to
-    // MiniMessage-compatible codes.
+    // Converts legacy Bukkit color / formatting codes (&c, &l, &*) into
+    // MiniMessage markup. Unknown codes are left alone (ampersand preserved).
     public static String processColorCodes(String message) {
 
-        // Keeps track of the ampersand count in the loop.
         int count = 0;
-        // Count the number of ampersand characters to determine how many there are for
-        // lowercase conversion.
+
         for (char c : message.toCharArray()) {
 
-            // If the character is an ampersand, do this...
             if (c == '&') {
 
-                // Increase the ampersand count by 1.
                 count++;
 
             }
 
         }
 
-        // Keeps track of the positions of '&' characters in the message String.
         final int[] positions = new int[count];
-        // Keep track of the position of the metaphorical cursor in the message String.
         int index = 0;
-        // Iterate through the message String to find the positions of '&' characters
-        // for lowercase conversion.
+
         for (int i = 0; i < message.length(); i++) {
 
-            // If the character is an ampersand, do this...
             if (message.charAt(i) == '&') {
 
-                // If the character directly after the ampersand is a valid uppercase Bukkit
-                // color code, do this...
                 if (isUpperBukkitCode(message.charAt(i + 1))) {
 
-                    // Replace the valid uppercase Bukkit color code with the equivalent lowercase
-                    // one.
                     message = replaceAtIndex(message, (i + 1),
                             Character.toString(Character.toLowerCase(message.charAt(i + 1))));
 
@@ -159,35 +183,36 @@ public class TextUtils {
 
                 try {
 
-                    // Convert the newly uniform legacy Bukkit color codes into modern MiniMessage
-                    // color / formatting
-                    // codes.
                     message = replaceAtIndex(message, (i + 1), ColorCodeMap.toMiniMessage(message.charAt(i + 1)));
 
-                    // Delete the leftover ampersand.
                     message = replaceAtIndex(message, i, "");
 
                 } catch (NullPointerException error) {
 
-                    // Do nothing, ampersand is intended to be in the message, since it's not a
-                    // valid color code.
+                    // Unknown code: leave ampersand in place.
 
                 }
 
-                // Move the metaphorical cursor forward by one.
                 positions[index++] = i;
 
             }
 
         }
 
-        // Return the processed message with modern color codes.
         return message;
 
     }
 
-    // Strips color codes and MiniMessage tags from a String.
+    // Back-compat strip: delegates to stripFormatting.
     public static String stripColors(String input) {
+
+        return stripFormatting(input);
+
+    }
+
+    // Removes every legacy Bukkit code and every MiniMessage tag supported
+    // by Utilities-OG, returning plain text.
+    public static String stripFormatting(String input) {
 
         if (input == null) {
 
@@ -195,19 +220,29 @@ public class TextUtils {
 
         }
 
-        String stripped = input;
+        final String processed = processColorCodes(input);
+        final Component parsed = miniMessage(MessageFormat.full()).deserialize(processed);
 
-        for (String tag : MINIMESSAGE_TAGS) {
-
-            stripped = stripped.replace(tag, "");
-
-        }
-
-        return LEGACY_COLOR_PATTERN.matcher(stripped).replaceAll("");
+        return PlainTextComponentSerializer.plainText().serialize(parsed);
 
     }
 
-    // Sends an error message to the player if they lack the required permission.
+    // Flattens a Component tree to plain text, discarding every style and
+    // tag. Useful for passing player-visible messages into systems that only
+    // accept raw strings (logs, databases, etc)
+    public static String stripFormatting(Component component) {
+
+        if (component == null) {
+
+            return null;
+
+        }
+
+        return PlainTextComponentSerializer.plainText().serialize(component);
+
+    }
+
+    // Permissions error helper.
     public static void permissionsErrorMessage(Player player, String command, String permission) {
 
         trueogMessage(player,
@@ -215,21 +250,65 @@ public class TextUtils {
 
     }
 
-    // Logs a Component message to the console, stripping any colors.
+    // Console logger that strips every supported tag and legacy code.
     public static void logToConsole(String message) {
 
-        Bukkit.getLogger().info(stripColors(message));
+        Bukkit.getLogger().info(stripFormatting(message));
 
     }
 
-    // Detects if a Bukkit color code is uppercase (e.g., &C, &L).
+    // Obtain or spawn the MiniMessage instance configured for a given format.
+    public static MiniMessage miniMessage(MessageFormat format) {
+
+        return MINI_CACHE.computeIfAbsent(format, fmt -> MiniMessage.builder().tags(fmt.buildResolver()).build());
+
+    }
+
+    // Clear formatting selectively.
+    private static Component applyFormat(Component component, MessageFormat format) {
+
+        final Style.Builder style = component.style().toBuilder();
+
+        if (!format.has(MessageFormat.Tag.COLOR)) {
+
+            style.color(null);
+
+        }
+
+        if (!format.has(MessageFormat.Tag.DECORATIONS)) {
+
+            for (TextDecoration decoration : TextDecoration.values()) {
+
+                style.decoration(decoration, TextDecoration.State.NOT_SET);
+
+            }
+
+        }
+
+        final Component out = component.style(style.build());
+
+        final List<Component> children = out.children();
+        if (children.isEmpty()) {
+
+            return out;
+
+        }
+
+        final List<Component> rewritten = new ArrayList<>(children.size());
+        children.forEach(child -> rewritten.add(applyFormat(child, format)));
+
+        return out.children(rewritten);
+
+    }
+
+    // Identifies uppercase Bukkit color codes (e.g. &C, &L).
     private static boolean isUpperBukkitCode(char input) {
 
         return StringUtils.indexOf("ABCDEFKLMNOR", Character.toUpperCase(input)) != -1;
 
     }
 
-    // Replaces a character in a string at a given index with a new String.
+    // Replaces a character at a given index with a replacement string.
     private static String replaceAtIndex(String original, int index, String newString) {
 
         if (index >= 0 && index < original.length()) {
