@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -19,7 +21,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.trueog.utilitiesog.misc.ColorCodeMap;
 
 public class TextUtils {
 
@@ -151,55 +152,28 @@ public class TextUtils {
 
     }
 
-    // Converts legacy Bukkit color / formatting codes (&c, &l, &*) into
+    private static final Map<String, String> LEGACY_TO_MM_MAP = Map.ofEntries(Map.entry("0", "<black>"),
+            Map.entry("1", "<dark_blue>"), Map.entry("2", "<dark_green>"), Map.entry("3", "<dark_aqua>"),
+            Map.entry("4", "<dark_red>"), Map.entry("5", "<dark_purple>"), Map.entry("6", "<gold>"),
+            Map.entry("7", "<gray>"), Map.entry("8", "<dark_gray>"), Map.entry("9", "<blue>"),
+            Map.entry("a", "<green>"), Map.entry("b", "<aqua>"), Map.entry("c", "<red>"),
+            Map.entry("d", "<light_purple>"), Map.entry("e", "<yellow>"), Map.entry("f", "<white>"),
+            Map.entry("k", "<obfuscated>"), Map.entry("l", "<bold>"), Map.entry("m", "<strikethrough>"),
+            Map.entry("n", "<underlined>"), Map.entry("o", "<italic>"), Map.entry("r", "<reset>"),
+            Map.entry("*", "<rainbow>"));
+
+    private static final Pattern LEGACY_REGEX = Pattern.compile("[§&]([0-9a-fk-or*])", Pattern.CASE_INSENSITIVE);
+
+    // Converts legacy Bukkit color / formatting codes (&c, &l, &*, §c, §l, §*) into
     // MiniMessage markup. Unknown codes are left alone (ampersand preserved).
     public static String processColorCodes(String message) {
 
-        int count = 0;
+        return LEGACY_REGEX.matcher(message).replaceAll(match -> {
 
-        for (char c : message.toCharArray()) {
+            String key = match.group(1).toLowerCase();
+            return Matcher.quoteReplacement(LEGACY_TO_MM_MAP.getOrDefault(key, match.group(0)));
 
-            if (c == '&') {
-
-                count++;
-
-            }
-
-        }
-
-        final int[] positions = new int[count];
-        int index = 0;
-
-        for (int i = 0; i < message.length(); i++) {
-
-            if (message.charAt(i) == '&') {
-
-                if (isUpperBukkitCode(message.charAt(i + 1))) {
-
-                    message = replaceAtIndex(message, (i + 1),
-                            Character.toString(Character.toLowerCase(message.charAt(i + 1))));
-
-                }
-
-                try {
-
-                    message = replaceAtIndex(message, (i + 1), ColorCodeMap.toMiniMessage(message.charAt(i + 1)));
-
-                    message = replaceAtIndex(message, i, "");
-
-                } catch (NullPointerException error) {
-
-                    // Unknown code: leave ampersand in place.
-
-                }
-
-                positions[index++] = i;
-
-            }
-
-        }
-
-        return message;
+        });
 
     }
 
