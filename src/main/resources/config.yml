@@ -17,6 +17,8 @@ Ping: true
 RanksMenu: true
 # Should advancements be restricted to survival mode? Default: true.
 AdvancementsOnlyInSurvival: true
+# Registers stub redirect/denial commands (/wild, /rtp, /seed, /f, /faction, /guild, /kit). Default: true.
+MissingCommands: true
 # PostgreSQL Setup for FastOfflinePlayer database.
 postgresUrl: jdbc:postgresql://localhost:5432/fastofflineplayer
 postgresUser: ^{POSTGRES_USER}

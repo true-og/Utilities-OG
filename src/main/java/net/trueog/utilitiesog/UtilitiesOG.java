@@ -31,6 +31,13 @@ import net.trueog.utilitiesog.commands.PingCommand;
 import net.trueog.utilitiesog.commands.RanksCommand;
 import net.trueog.utilitiesog.commands.ToggleCrammingCommand;
 import net.trueog.utilitiesog.commands.TogglePhantomsCommand;
+import net.trueog.utilitiesog.commands.missingcommands.FCommand;
+import net.trueog.utilitiesog.commands.missingcommands.FactionCommand;
+import net.trueog.utilitiesog.commands.missingcommands.GuildCommand;
+import net.trueog.utilitiesog.commands.missingcommands.KitCommand;
+import net.trueog.utilitiesog.commands.missingcommands.RTPCommand;
+import net.trueog.utilitiesog.commands.missingcommands.SeedCommand;
+import net.trueog.utilitiesog.commands.missingcommands.WildCommand;
 import net.trueog.utilitiesog.listeners.AdvancementsOnlyInSurvivalListener;
 import net.trueog.utilitiesog.listeners.DisableEntityCrammingListener;
 import net.trueog.utilitiesog.listeners.NoFlippyListener;
@@ -198,6 +205,18 @@ public final class UtilitiesOG extends JavaPlugin {
         if (this.getConfig().getBoolean("AdvancementsOnlyInSurvival")) {
 
             getServer().getPluginManager().registerEvents(new AdvancementsOnlyInSurvivalListener(), this);
+
+        }
+
+        if (this.getConfig().getBoolean("MissingCommands")) {
+
+            this.getCommand("wild").setExecutor(new WildCommand());
+            this.getCommand("rtp").setExecutor(new RTPCommand());
+            this.getCommand("seed").setExecutor(new SeedCommand());
+            this.getCommand("f").setExecutor(new FCommand());
+            this.getCommand("faction").setExecutor(new FactionCommand());
+            this.getCommand("guild").setExecutor(new GuildCommand());
+            this.getCommand("kit").setExecutor(new KitCommand());
 
         }
 

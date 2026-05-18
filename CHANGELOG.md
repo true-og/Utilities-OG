@@ -1,3 +1,6 @@
+**1.7.1**
+- Merged `MissingCommands-OG` into Utilities-OG.
+
 **1.7**
 - Added `MessageFormat` as a selector for MiniMessage `StandardTags` families (`color`, `decorations`, `rainbow`, `gradient`, `reset`), and after Adventure 4.18 is shipped on TrueOG Network, also StandardTags.shadowColor().
 - Added optional `MessageFormat` parameter to `trueogMessage`, `trueogRawMessage`, `trueogColorize`, and `trueogExpand`. Existing single-argument calls keep legacy behavior (every formatting tag active unless stripped).

@@ -19,6 +19,34 @@ commands:
     usage: /bing
   colorcodes:
     usage: /colorcodes
+  kit:
+    description: Placeholder
+    usage: /kit
+    permission: missingcommandsog.canviewplaceholdercommands
+  wild:
+    description: Placeholder
+    usage: /wild
+    permission: missingcommandsog.canviewplaceholdercommands
+  guild:
+    description: Placeholder
+    usage: /guild
+    permission: missingcommandsog.canviewplaceholdercommands
+  f:
+    description: Placeholder
+    usage: /f
+    permission: missingcommandsog.canviewplaceholdercommands
+  faction:
+    description: Placeholder
+    usage: /faction
+    permission: missingcommandsog.canviewplaceholdercommands
+  seed:
+    description: Placeholder
+    usage: /seed
+    permission: missingcommandsog.canviewplaceholdercommands
+  rtp:
+    description: Placeholder
+    usage: /rtp
+    permission: missingcommandsog.canviewplaceholdercommands
 
 permissions:
   utilities.about:
@@ -39,3 +67,6 @@ permissions:
   utilities.ping:
     description: Permission to use the /ping and /bing commands.
     default: op
+  seed.bypass:
+    description: Allows access to the default Minecraft /seed command.
+    default: false

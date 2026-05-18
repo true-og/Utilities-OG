@@ -170,7 +170,7 @@ public class TextUtils {
 
         return LEGACY_REGEX.matcher(message).replaceAll(match -> {
 
-            String key = match.group(1).toLowerCase();
+            final String key = StringUtils.lowerCase(match.group(1));
             return Matcher.quoteReplacement(LEGACY_TO_MM_MAP.getOrDefault(key, match.group(0)));
 
         });
@@ -272,26 +272,6 @@ public class TextUtils {
         children.forEach(child -> rewritten.add(applyFormat(child, format)));
 
         return out.children(rewritten);
-
-    }
-
-    // Identifies uppercase Bukkit color codes (e.g. &C, &L).
-    private static boolean isUpperBukkitCode(char input) {
-
-        return StringUtils.indexOf("ABCDEFKLMNOR", Character.toUpperCase(input)) != -1;
-
-    }
-
-    // Replaces a character at a given index with a replacement string.
-    private static String replaceAtIndex(String original, int index, String newString) {
-
-        if (index >= 0 && index < original.length()) {
-
-            return StringUtils.substring(original, 0, index) + newString + StringUtils.substring(original, index + 1);
-
-        }
-
-        return original;
 
     }
 
