@@ -20,7 +20,9 @@ MiniPlaceholders support is always enabled. There is no config toggle for disabl
 * **Chain Armor:** Enables crafting chain armor from chains.
 * **Color Codes:** Displays information to players about Bukkit's chat color codes and their syntax.
 * **MiniPlaceholders:** Includes MiniPlaceholders-based expansion helpers and registration utilities. MiniPlaceholders is the only supported placeholder provider.
-* **NoFlippy:** Prevents trapdoors from being flipped in WorldGuard regions where the "can-flippy" flag is set to DENY (Requires WorldGuard plugin).
+* **NoFlippy:** Honors WorldGuard's `can-flippy` flag: DENY blocks trapdoors, ALLOW explicitly permits them, and an unset flag preserves normal protection (Requires WorldGuard plugin).
+* **Random Spawner Drops:** Gives Silk Touch spawner breaks a configurable chance to drop a spawner that retains its mob type. No Silk Touch means no drop.
+* **Random Dragon Egg Drops:** Gives dragon egg formation a configurable chance to succeed.
 * **TogglePhantoms:** Allows players to use the `/togglephantoms` command to turn phantom spawning on or off for themselves.
 * **Ping:** Provides two commands: `/ping` (displays real player ping) and `/bing` (replicates vanilla /ping functionality).
 * **Ranks Menu:** Displays information to players about available ranks at the [TrueOG Network Store](https://store.true-og.net).

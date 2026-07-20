@@ -46,6 +46,7 @@ import net.trueog.utilitiesog.listeners.TogglePhantomsListener;
 import net.trueog.utilitiesog.misc.FlagRegistrationException;
 import net.trueog.utilitiesog.modules.ChainArmorModule;
 import net.trueog.utilitiesog.modules.MockBambooModule;
+import net.trueog.utilitiesog.modules.RandomDropsModule;
 import net.trueog.utilitiesog.utils.MessageFormat;
 import net.trueog.utilitiesog.utils.PlaceholderUtils;
 import net.trueog.utilitiesog.utils.TextUtils;
@@ -178,6 +179,8 @@ public final class UtilitiesOG extends JavaPlugin {
             }
 
         }
+
+        RandomDropsModule.enable(this);
 
         if (this.getConfig().getBoolean("Ping")) {
 

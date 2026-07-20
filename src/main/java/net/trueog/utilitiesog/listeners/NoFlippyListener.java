@@ -5,7 +5,9 @@ package net.trueog.utilitiesog.listeners;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -16,6 +18,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -29,11 +32,13 @@ import net.trueog.utilitiesog.misc.FlagRegistrationException;
 public class NoFlippyListener implements Listener {
 
     // The can-flippy StateFlag owned by this module. Registered in onLoad via
-    // registerFlag() and consulted on every trap-door interaction.
+    // registerFlag() and consulted on every trap-door interaction. The flag
+    // is intentionally tri-state: allow grants the narrow exception, deny
+    // blocks it, and an unset flag leaves normal protection untouched.
     private static StateFlag flippyFlag;
 
     // Listen for a player interacting with a trap-door.
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent event) {
 
         final Action action = event.getAction();
@@ -63,9 +68,21 @@ public class NoFlippyListener implements Listener {
         final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         final RegionQuery query = container.createQuery();
         final ApplicableRegionSet set = query.getApplicableRegions(blockLocation);
-        if (!set.testState(null, flippyFlag)) {
+        final State flippyState = set.queryState(null, flippyFlag);
+        if (flippyState == State.DENY) {
 
             event.setCancelled(true);
+            return;
+
+        }
+
+        // WorldGuard evaluates normal interact/use restrictions at NORMAL
+        // priority. An explicit can-flippy allow is a deliberately narrow
+        // exception for trapdoors, but never clears another plugin's full
+        // event cancellation.
+        if (flippyState == State.ALLOW && !((Cancellable) event).isCancelled()) {
+
+            event.setUseInteractedBlock(org.bukkit.event.Event.Result.ALLOW);
 
         }
 
@@ -81,7 +98,7 @@ public class NoFlippyListener implements Listener {
 
         try {
 
-            final StateFlag flag = new StateFlag("can-flippy", true);
+            final StateFlag flag = new StateFlag("can-flippy", false);
 
             registry.register(flag);
 

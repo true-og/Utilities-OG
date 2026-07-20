@@ -7,8 +7,16 @@ ColorCodes: true
 # Turn off entity cramming damage server-wide. Entity cramming is when mobs pile up and cause damage to each other. Default: false.
 # WARNING: Make sure there are other plugins (such as true-og/ChunkCap-OG and true-og/MobLimiter-OG) that establish entity limits if this module is enabled. Otherwise the server will lag.
 DisableEntityCramming: true
-# Prevents trap doors from being flipped in any WorldGuard regions with the "can-flippy" flag set to DENY. Default: true.
+# Honors the WorldGuard "can-flippy" flag: DENY blocks trapdoors, ALLOW explicitly permits them, and an unset flag preserves normal protection. Default: true.
 NoFlippy: true
+# Enables random Silk Touch spawner drops. Placing a state-bearing spawner still restores its mob type when this is false. Default: true.
+RandomSpawnerDrops: true
+# The chance from 0.0 (never) to 1.0 (always) for a Silk Touch spawner to drop. Default: 0.5.
+SpawnerDropChance: 0.5
+# Enables random dragon egg formation. Default: true.
+RandomDragonEggDrops: true
+# The chance from 0.0 (never) to 1.0 (always) for a dragon egg to form. Default: 0.1.
+DragonEggDropChance: 0.1
 # Empowers individual players to toggle phantom spawning on or off with the command /togglephantoms. Default: true.
 TogglePhantoms: true
 # A /ping command that returns a player's real ping, in addition to a /bing command that replicates the functionality of the default /ping command. Default: true.

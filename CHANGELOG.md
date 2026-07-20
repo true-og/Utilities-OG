@@ -1,3 +1,7 @@
+**1.7.2**
+- Refactored NoFlippy-OG to enforce its rules more strongly.
+- Absorbed RandomDrops-OG into Utilities-OG.
+
 **1.7.1**
 - Merged `MissingCommands-OG` into Utilities-OG.
 
