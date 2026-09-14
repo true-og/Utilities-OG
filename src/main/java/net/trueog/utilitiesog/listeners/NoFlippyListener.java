@@ -32,12 +32,12 @@ import net.trueog.utilitiesog.misc.FlagRegistrationException;
 public class NoFlippyListener implements Listener {
 
     // The can-flippy StateFlag owned by this module. Registered in onLoad via
-    // registerFlag() and consulted on every trap-door interaction. The flag
-    // is intentionally tri-state: allow grants the narrow exception, deny
-    // blocks it, and an unset flag leaves normal protection untouched.
+    // registerFlag() and consulted on every trapdoor and fence gate interaction.
+    // Tri-state: allow grants the narrow exception, deny blocks it, and an unset
+    // flag leaves normal protection untouched.
     private static StateFlag flippyFlag;
 
-    // Listen for a player interacting with a trap-door.
+    // Listen for a player interacting with a trap-door or fence gate.
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent event) {
 
@@ -56,8 +56,10 @@ public class NoFlippyListener implements Listener {
 
         }
 
-        final boolean condition = StringUtils.contains(blockContainerAsString, "TRAPDOOR") && action.isRightClick()
-                && !player.hasPermission("noflippy.bypass");
+        // Fence gates flip like trapdoors, so they share the can-flippy flag.
+        final boolean flippable = StringUtils.contains(blockContainerAsString, "TRAPDOOR")
+                || StringUtils.contains(blockContainerAsString, "FENCE_GATE");
+        final boolean condition = flippable && action.isRightClick() && !player.hasPermission("noflippy.bypass");
         if (!condition) {
 
             return;
@@ -76,10 +78,9 @@ public class NoFlippyListener implements Listener {
 
         }
 
-        // WorldGuard evaluates normal interact/use restrictions at NORMAL
-        // priority. An explicit can-flippy allow is a deliberately narrow
-        // exception for trapdoors, but never clears another plugin's full
-        // event cancellation.
+        // WorldGuard evaluates normal interact/use restrictions at NORMAL priority.
+        // A can-flippy allow is a narrow exception for trapdoors and fence gates,
+        // but never clears another plugin's full event cancellation.
         if (flippyState == State.ALLOW && !((Cancellable) event).isCancelled()) {
 
             event.setUseInteractedBlock(org.bukkit.event.Event.Result.ALLOW);

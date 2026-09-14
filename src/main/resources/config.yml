@@ -7,7 +7,7 @@ ColorCodes: true
 # Turn off entity cramming damage server-wide. Entity cramming is when mobs pile up and cause damage to each other. Default: false.
 # WARNING: Make sure there are other plugins (such as true-og/ChunkCap-OG and true-og/MobLimiter-OG) that establish entity limits if this module is enabled. Otherwise the server will lag.
 DisableEntityCramming: true
-# Honors the WorldGuard "can-flippy" flag: DENY blocks trapdoors, ALLOW explicitly permits them, and an unset flag preserves normal protection. Default: true.
+# Honors the WorldGuard "can-flippy" flag: DENY blocks trapdoors and fence gates, ALLOW explicitly permits them, and an unset flag preserves normal protection. Default: true.
 NoFlippy: true
 # Enables random Silk Touch spawner drops. Placing a state-bearing spawner still restores its mob type when this is false. Default: true.
 RandomSpawnerDrops: true

@@ -1,3 +1,6 @@
+**1.7.3**
+- NoFlippy now covers fence gates as well as trapdoors under the `can-flippy` flag.
+
 **1.7.2**
 - Refactored NoFlippy-OG to enforce its rules more strongly.
 - Absorbed RandomDrops-OG into Utilities-OG.
