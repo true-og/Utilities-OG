@@ -2,9 +2,6 @@
 // Authors: NotAlexNoyle.
 package net.trueog.utilitiesog;
 
-import com.github.jasync.sql.db.pool.ConnectionPool;
-import com.github.jasync.sql.db.postgresql.PostgreSQLConnection;
-
 // Internal-only accessors for states owned by the main UtilitiesOG class.
 public final class Internal {
 
@@ -23,13 +20,6 @@ public final class Internal {
     public static String getPrefix() {
 
         return UtilitiesOG.getPluginPrefix();
-
-    }
-
-    // Shared jasync Postgres connection pool.
-    public static ConnectionPool<PostgreSQLConnection> getPostgres() {
-
-        return UtilitiesOG.getPluginPostgres();
 
     }
 

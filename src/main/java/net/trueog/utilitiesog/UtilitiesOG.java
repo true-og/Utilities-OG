@@ -13,10 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.jasync.sql.db.pool.ConnectionPool;
-import com.github.jasync.sql.db.postgresql.PostgreSQLConnection;
-import com.github.jasync.sql.db.postgresql.PostgreSQLConnectionBuilder;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.luckperms.api.LuckPerms;
@@ -61,9 +57,6 @@ public final class UtilitiesOG extends JavaPlugin {
     // Declare live plugin instance to be initialized in onEnable().
     private static UtilitiesOG instance;
 
-    // Declare live PostgreSQL connection pool to be initialized in onEnable().
-    private static ConnectionPool<PostgreSQLConnection> POOL;
-
     // Package-private hooks consumed by net.trueog.utilitiesog.Internal.
     static UtilitiesOG getPluginInstance() {
 
@@ -74,12 +67,6 @@ public final class UtilitiesOG extends JavaPlugin {
     static String getPluginPrefix() {
 
         return PREFIX;
-
-    }
-
-    static ConnectionPool<PostgreSQLConnection> getPluginPostgres() {
-
-        return POOL;
 
     }
 
@@ -94,8 +81,6 @@ public final class UtilitiesOG extends JavaPlugin {
             this.saveDefaultConfig();
 
         }
-
-        POOL = initPsql();
 
         if (this.getConfig().getBoolean("ChainArmor")) {
 
@@ -497,22 +482,6 @@ public final class UtilitiesOG extends JavaPlugin {
     public static void logToConsole(String prefix, String message) {
 
         Bukkit.getLogger().info(TextUtils.stripFormatting(prefix + " " + message));
-
-    }
-
-    // Initialize postgres connection;
-    private ConnectionPool<PostgreSQLConnection> initPsql() {
-
-        // Reads the values from config.yml;
-        final String baseUrl = getConfig().getString("postgresUrl"); // e.g. jdbc:postgresql://localhost:5432/diamond
-        final String user = getConfig().getString("postgresUser"); // e.g. postgres
-        final String password = getConfig().getString("postgresPassword"); // e.g. postgresPassword
-
-        // Appends credentials to the URL (only if they are not already present)
-        final String jdbcUrl = "%s?user=%s&password=%s".formatted(baseUrl, user, password);
-
-        // Create postgres connection.
-        return PostgreSQLConnectionBuilder.createConnectionPool(jdbcUrl);
 
     }
 

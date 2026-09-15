@@ -56,7 +56,6 @@ dependencies {
     compileOnly("net.luckperms:api:5.4") // Import LuckPerms API.
     implementation(kotlin("stdlib")) // Import and package Kotlin standard library.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import and package Kotlin async library.
-    implementation("com.github.jasync-sql:jasync-postgresql:2.2.4") // Import and package Jasync API.
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Add JUnit API to testing environment.
     testImplementation("org.mockito:mockito-core:5.18.0") // Add Mockito API to testing environment.
     testImplementation("com.github.seeseemelk:MockBukkit-v1.19:2.29.0") // Add MockBukkit API to testing environment.
