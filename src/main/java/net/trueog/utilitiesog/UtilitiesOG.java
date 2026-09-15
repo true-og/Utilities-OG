@@ -9,8 +9,14 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.trueog.utilitiesog.utils.PlayerDataUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.kyori.adventure.text.Component;
@@ -46,6 +52,8 @@ import net.trueog.utilitiesog.modules.RandomDropsModule;
 import net.trueog.utilitiesog.utils.MessageFormat;
 import net.trueog.utilitiesog.utils.PlaceholderUtils;
 import net.trueog.utilitiesog.utils.TextUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // Declare main plugin class.
 public final class UtilitiesOG extends JavaPlugin {
@@ -56,6 +64,8 @@ public final class UtilitiesOG extends JavaPlugin {
 
     // Declare live plugin instance to be initialized in onEnable().
     private static UtilitiesOG instance;
+
+    private static PlayerDataUtils playerDataUtils;
 
     // Package-private hooks consumed by net.trueog.utilitiesog.Internal.
     static UtilitiesOG getPluginInstance() {
@@ -74,6 +84,8 @@ public final class UtilitiesOG extends JavaPlugin {
     public void onEnable() {
 
         instance = this;
+
+        playerDataUtils = new PlayerDataUtils();
 
         final File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -482,6 +494,65 @@ public final class UtilitiesOG extends JavaPlugin {
     public static void logToConsole(String prefix, String message) {
 
         Bukkit.getLogger().info(TextUtils.stripFormatting(prefix + " " + message));
+
+    }
+
+    public static @Nullable ItemStack @NotNull [] getInventoryData(UUID uuid) {
+
+        final ListTag inventoryData = playerDataUtils.getPlayerData(uuid).getList("Inventory", Tag.TAG_COMPOUND);
+        final ItemStack[] inventoryContents = new ItemStack[41];
+        for (int i = 0; i < inventoryData.size(); i++) {
+
+            final CompoundTag slotTag = inventoryData.getCompound(i);
+            final int slot = slotTag.getByte("Slot") & 0xFF;
+            final String id = slotTag.getString("id");
+            final int count = slotTag.getByte("Count") & 0xFF;
+            final Material material = Material.matchMaterial(id);
+            if (material == null) {
+
+                continue;
+
+            }
+
+            if (slot < inventoryContents.length) {
+
+                inventoryContents[slot] = new ItemStack(material, count);
+
+            }
+
+        }
+
+        return inventoryContents;
+
+    }
+
+    public static void setInventoryData(UUID uuid, @Nullable ItemStack @NotNull [] items) {
+
+        final ListTag inventoryData = new ListTag();
+        for (int i = 0; i < items.length; i++) {
+
+            final ItemStack item = items[i];
+            if (item == null) {
+
+                continue;
+
+            }
+
+            final CompoundTag slotTag = new CompoundTag();
+            slotTag.putByte("Slot", (byte) i);
+            slotTag.putString("id", item.getType().getKey().toString());
+            slotTag.putByte("Count", (byte) item.getAmount());
+            inventoryData.add(slotTag);
+
+        }
+
+        playerDataUtils.setInventoryData(uuid, inventoryData);
+
+    }
+
+    public static int getHeldItemSlot(UUID uuid) {
+
+        return playerDataUtils.getPlayerData(uuid).getInt("SelectedItemSlot");
 
     }
 

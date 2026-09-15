@@ -6,6 +6,7 @@ plugins {
     id("java-library") // Import Java Library plugin.
     id("com.diffplug.spotless") version "8.1.0" // Import Spotless plugin.
     id("com.gradleup.shadow") version "8.3.9" // Import Shadow plugin.
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
     id("checkstyle") // Import Checkstyle plugin.
     eclipse // Import Eclipse plugin.
     kotlin("jvm") version "2.1.21" // Import Kotlin JVM plugin.
@@ -49,7 +50,7 @@ repositories {
 
 /* ---------------------- Java project deps ---------------------------- */
 dependencies {
-    compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare Purpur API version to be packaged.
+    paperweightDevelopmentBundle("org.purpurmc.purpur:dev-bundle:1.19.4-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.8") // Import WorldGuard API.
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.14.1") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
@@ -77,6 +78,8 @@ tasks.shadowJar {
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
+
+tasks.assemble { dependsOn(tasks.reobfJar) }
 
 tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends on spotless and shadow.
 
