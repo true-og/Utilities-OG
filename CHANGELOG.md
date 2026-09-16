@@ -1,3 +1,8 @@
+**1.7.4**
+- Added offline player data API backed by Purpur internals via paperweight: `getInventoryData(UUID)`, `setInventoryData(UUID, ItemStack[])`, and `getHeldItemSlot(UUID)`.
+- Removed FastOfflinePlayer and its PostgreSQL / jasync dependency, along with the `postgres*` config keys.
+- Gradle now outputs a single reobfuscated `Utilities-OG-<version>.jar` in `build/libs`; intermediate jars moved to `build/intermediates`.
+
 **1.7.3**
 - NoFlippy now covers fence gates as well as trapdoors under the `can-flippy` flag.
 

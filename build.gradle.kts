@@ -26,7 +26,7 @@ kotlin { jvmToolchain(17) }
 /* ----------------------------- Metadata ------------------------------ */
 group = "net.trueog.utilities-og" // Declare bundle identifier.
 
-version = "1.7.3" // Declare plugin version (will be in .jar).
+version = "1.7.4" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 
@@ -71,17 +71,28 @@ tasks.withType<AbstractArchiveTask>().configureEach { // Ensure reproducible .ja
 }
 
 /* ----------------------------- Shadow -------------------------------- */
+val intermediateJars = layout.buildDirectory.dir("intermediates") // Keep unfinished jars out of build/libs.
+
+tasks.jar {
+    archiveClassifier.set("part") // Applies to root jarfile only.
+    destinationDirectory.set(intermediateJars)
+}
+
 tasks.shadowJar {
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
-    archiveClassifier.set("") // Use empty string instead of null.
+    archiveClassifier.set("dev") // Mojang-mapped shaded jar, consumed by reobfJar.
+    destinationDirectory.set(intermediateJars)
     minimize()
 }
 
-tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
+/* --------------------------- Reobfuscation --------------------------- */
+tasks.reobfJar {
+    outputJar.set(layout.buildDirectory.file("libs/${project.name}-${project.version}.jar")) // Only jar in build/libs.
+}
 
-tasks.assemble { dependsOn(tasks.reobfJar) }
+tasks.assemble { dependsOn(tasks.reobfJar) } // Assemble depends on the reobfuscated jar.
 
-tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends on spotless and shadow.
+tasks.build { dependsOn(tasks.spotlessApply, tasks.reobfJar) } // Build depends on spotless and reobf.
 
 /* --------------------------- Javac opts ------------------------------- */
 tasks.withType<JavaCompile>().configureEach {
