@@ -619,3 +619,45 @@ Java:
 ```java
 UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>color codes!");
 ```
+
+**[ItemStack[]] getInventoryData(UUID uuid)**
+
+Gets the inventory contents of an offline player using the TrueOG Purpur player data API.
+
+Kotlin:
+```kotlin
+val inventoryData = UtilitiesOG.getInventoryData(uuid)
+```
+
+Java:
+```java
+ItemStack[] inventoryData = UtilitiesOG.getInventoryData(uuid);
+```
+
+**[void] setInventoryData(UUID uuid, ItemStack[] items)**
+
+Sets the inventory contents of an offline player using the TrueOG Purpur player data API.
+
+Kotlin:
+```kotlin
+UtilitiesOG.setInventoryData(uuid, inventoryData)
+```
+
+Java:
+```java
+UtilitiesOG.setInventoryData(uuid, inventoryData);
+```
+
+**[int] getHeldItemSlot(UUID uuid)**
+
+Gets the held item slot of an offline player using the TrueOG Purpur player data API.
+
+Kotlin:
+```kotlin
+val heldItemSlot = UtilitiesOG.getHeldItemSlot(uuid)
+```
+
+Java:
+```java
+int heldItemSlot = UtilitiesOG.getHeldItemSlot(uuid);
+```

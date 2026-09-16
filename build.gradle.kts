@@ -6,6 +6,7 @@ plugins {
     id("java-library") // Import Java Library plugin.
     id("com.diffplug.spotless") version "8.1.0" // Import Spotless plugin.
     id("com.gradleup.shadow") version "8.3.9" // Import Shadow plugin.
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
     id("checkstyle") // Import Checkstyle plugin.
     eclipse // Import Eclipse plugin.
     kotlin("jvm") version "2.1.21" // Import Kotlin JVM plugin.
@@ -49,14 +50,13 @@ repositories {
 
 /* ---------------------- Java project deps ---------------------------- */
 dependencies {
-    compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare Purpur API version to be packaged.
+    paperweightDevelopmentBundle("org.purpurmc.purpur:dev-bundle:1.19.4-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.8") // Import WorldGuard API.
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.14.1") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
     compileOnly("net.luckperms:api:5.4") // Import LuckPerms API.
     implementation(kotlin("stdlib")) // Import and package Kotlin standard library.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import and package Kotlin async library.
-    implementation("com.github.jasync-sql:jasync-postgresql:2.2.4") // Import and package Jasync API.
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Add JUnit API to testing environment.
     testImplementation("org.mockito:mockito-core:5.18.0") // Add Mockito API to testing environment.
     testImplementation("com.github.seeseemelk:MockBukkit-v1.19:2.29.0") // Add MockBukkit API to testing environment.
@@ -78,6 +78,8 @@ tasks.shadowJar {
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
+
+tasks.assemble { dependsOn(tasks.reobfJar) }
 
 tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends on spotless and shadow.
 

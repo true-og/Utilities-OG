@@ -27,10 +27,3 @@ RanksMenu: true
 AdvancementsOnlyInSurvival: true
 # Registers stub redirect/denial commands (/wild, /rtp, /seed, /f, /faction, /guild, /kit). Default: true.
 MissingCommands: true
-# PostgreSQL Setup for FastOfflinePlayer database.
-postgresUrl: jdbc:postgresql://localhost:5432/fastofflineplayer
-postgresUser: ^{POSTGRES_USER}
-postgresPassword: ^{POSTGRES_PASSWORD}
-postgresTable: fastofflineplayer
-postgresLogTable: fastofflineplayer_log
-postgresLogLimit: 500
