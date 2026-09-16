@@ -14,7 +14,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.trueog.utilitiesog.utils.PlayerDataUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -509,19 +509,20 @@ public final class UtilitiesOG extends JavaPlugin {
         for (int i = 0; i < inventoryData.size(); i++) {
 
             final CompoundTag slotTag = inventoryData.getCompound(i);
-            final int slot = slotTag.getByte("Slot") & 0xFF;
-            final String id = slotTag.getString("id");
-            final int count = slotTag.getByte("Count") & 0xFF;
-            final Material material = Material.matchMaterial(id);
-            if (material == null) {
+            final byte slot = slotTag.getByte("Slot");
+            final ItemStack itemStack = CraftItemStack.asBukkitCopy(net.minecraft.world.item.ItemStack.of(slotTag));
 
-                continue;
+            if (slot >= 0 && slot <= 35) {
 
-            }
+                inventoryContents[slot] = itemStack;
 
-            if (slot < inventoryContents.length) {
+            } else if (slot >= 100 && slot <= 103) {
 
-                inventoryContents[slot] = new ItemStack(material, count);
+                inventoryContents[slot - 64] = itemStack;
+
+            } else if (slot == -106) {
+
+                inventoryContents[40] = itemStack;
 
             }
 
@@ -534,7 +535,7 @@ public final class UtilitiesOG extends JavaPlugin {
     public static void setInventoryData(UUID uuid, @Nullable ItemStack @NotNull [] items) {
 
         final ListTag inventoryData = new ListTag();
-        for (int i = 0; i < items.length; i++) {
+        for (byte i = 0; i < items.length; i++) {
 
             final ItemStack item = items[i];
             if (item == null) {
@@ -543,10 +544,29 @@ public final class UtilitiesOG extends JavaPlugin {
 
             }
 
-            final CompoundTag slotTag = new CompoundTag();
-            slotTag.putByte("Slot", (byte) i);
-            slotTag.putString("id", item.getType().getKey().toString());
-            slotTag.putByte("Count", (byte) item.getAmount());
+            final byte slot;
+            if (i <= 35) {
+
+                slot = i;
+
+            } else if (i <= 39) {
+
+                slot = (byte) (i + 64);
+
+            } else if (i == 40) {
+
+                slot = -106;
+
+            } else {
+
+                continue;
+
+            }
+
+            CompoundTag slotTag = new CompoundTag();
+            CraftItemStack.asNMSCopy(item).save(slotTag);
+            slotTag.putByte("Slot", slot);
+
             inventoryData.add(slotTag);
 
         }
