@@ -47,6 +47,18 @@ commands:
     description: Placeholder
     usage: /rtp
     permission: missingcommandsog.canviewplaceholdercommands
+  ah:
+    description: Placeholder
+    usage: /ah
+    permission: missingcommandsog.canviewplaceholdercommands
+  auction:
+    description: Placeholder
+    usage: /auction
+    permission: missingcommandsog.canviewplaceholdercommands
+  info:
+    description: Placeholder
+    usage: /info
+    permission: missingcommandsog.canviewplaceholdercommands
 
 permissions:
   utilities.about:

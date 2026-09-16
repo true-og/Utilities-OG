@@ -33,9 +33,11 @@ import net.trueog.utilitiesog.commands.PingCommand;
 import net.trueog.utilitiesog.commands.RanksCommand;
 import net.trueog.utilitiesog.commands.ToggleCrammingCommand;
 import net.trueog.utilitiesog.commands.TogglePhantomsCommand;
+import net.trueog.utilitiesog.commands.missingcommands.AuctionCommand;
 import net.trueog.utilitiesog.commands.missingcommands.FCommand;
 import net.trueog.utilitiesog.commands.missingcommands.FactionCommand;
 import net.trueog.utilitiesog.commands.missingcommands.GuildCommand;
+import net.trueog.utilitiesog.commands.missingcommands.InfoCommand;
 import net.trueog.utilitiesog.commands.missingcommands.KitCommand;
 import net.trueog.utilitiesog.commands.missingcommands.RTPCommand;
 import net.trueog.utilitiesog.commands.missingcommands.SeedCommand;
@@ -217,6 +219,9 @@ public final class UtilitiesOG extends JavaPlugin {
             this.getCommand("faction").setExecutor(new FactionCommand());
             this.getCommand("guild").setExecutor(new GuildCommand());
             this.getCommand("kit").setExecutor(new KitCommand());
+            this.getCommand("ah").setExecutor(new AuctionCommand());
+            this.getCommand("auction").setExecutor(new AuctionCommand());
+            this.getCommand("info").setExecutor(new InfoCommand());
 
         }
 

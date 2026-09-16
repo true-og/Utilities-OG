@@ -18,7 +18,7 @@ public class WildCommand implements CommandExecutor {
         if (sender instanceof Player player) {
 
             UtilitiesOG.trueogMessage(player,
-                    "&7[&a&lTrue&c&lOG &e&lNetwork&7] &e/wild &6will not be implemented! &cEscape spawn!");
+                    "&7[&a&lTrue&c&lOG &e&lNetwork&7] &e/wild &6will not be implemented! &cEscape spawn yourself!");
 
         }
 

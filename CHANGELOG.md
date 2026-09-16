@@ -1,3 +1,8 @@
+**1.7.5**
+- Added `/ah` and `/auction` stubs explaining that TrueOG has no auction house, only the physical player market in the warzone.
+- Added `/info` stub that forwards to `/help` with the same arguments.
+- `/wild` and `/rtp` now print identical messages apart from the command name.
+
 **1.7.4**
 - Added offline player data API backed by Purpur internals via paperweight: `getInventoryData(UUID)`, `setInventoryData(UUID, ItemStack[])`, and `getHeldItemSlot(UUID)`.
 - Removed FastOfflinePlayer and its PostgreSQL / jasync dependency, along with the `postgres*` config keys.

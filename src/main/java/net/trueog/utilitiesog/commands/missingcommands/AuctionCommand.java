@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 
 import net.trueog.utilitiesog.UtilitiesOG;
 
-// Stub /rtp command: TrueOG does not implement random teleport.
-public class RTPCommand implements CommandExecutor {
+// Stub /ah and /auction command: TrueOG has no auction house, only the physical player market.
+public class AuctionCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -18,7 +18,7 @@ public class RTPCommand implements CommandExecutor {
         if (sender instanceof Player player) {
 
             UtilitiesOG.trueogMessage(player,
-                    "&7[&a&lTrue&c&lOG &e&lNetwork&7] &e/rtp &6will not be implemented! &cEscape spawn yourself!");
+                    "&7[&a&lTrue&c&lOG &e&lNetwork&7] &6There is no auction house on &2True&4OG&6. Visit the player market in the center of the warzone, where players rent shop plots and trade using a &bdiamond &6economy.");
 
         }
 
