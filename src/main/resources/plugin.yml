@@ -3,7 +3,7 @@ authors: [ christianniehaus, NotAlexNoyle ]
 version: '${version}'
 api-version: '${apiVersion}'
 main: net.trueog.utilitiesog.UtilitiesOG
-depend: [ MiniPlaceholders, WorldGuard ]
+depend: [ MiniPlaceholders, WorldGuard, Item-NBT-API ]
 commands:
   utilities:
     usage: /utilites

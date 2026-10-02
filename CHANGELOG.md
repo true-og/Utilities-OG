@@ -1,3 +1,11 @@
+**1.7.8**
+- Utilities-OG is now the single bridge to the TrueOG Purpur RocksDB player data storage. New world scoped API with raw NMS tags as `Object`: `getPlayerData(world, uuid)`, `savePlayerData(world, uuid, tag)`, `savePlayerData(uuid, perWorld)` (atomic), `hasPlayerData(world, uuid)`, `getSeenPlayers(world)`, `dropWorldPlayerData(world)`, `copyWorldPlayerData(from, to)`, plus `isPlayerDataApiAvailable()`. MyWorlds uses it for per-world inventories.
+- The bridge is plain reflection into the server. Paperweight, the dev bundle, reobfuscation and the `v1_19_R3` pin are gone from the build.
+- Inventory helpers convert items with Item-NBT-API (now a hard `depend`, so the helpers always work when the fork API is present): `setInventoryData` returns `boolean` and writes nothing for a player without a stored profile or when the server refuses the write. `getInventoryData` and `getHeldItemSlot` return empty results instead of throwing for such players. Added `isPlayerInventoryApiAvailable()`.
+- Added `flushPlayerData()` (durable WAL flush, needs the matching Purpur `PlayerDataApi.flush()`; false on older forks) and per-player `lockPlayerData`/`unlockPlayerData`. `setInventoryData` now holds that lock so an offline edit and a MyWorlds save cannot interleave their read-modify-writes.
+- Removed the unused `hasPlayerData(UUID)` single-arg overload; use `hasPlayerData(world, uuid)`.
+- Added a `RegisterPlaceholders` config toggle (default true) to disable the built-in MiniPlaceholders (`servers_name`, `player_display_name`); the placeholder API for other plugins is unaffected.
+
 **1.7.5**
 - Added `/ah` and `/auction` stubs explaining that TrueOG has no auction house, only the physical player market in the warzone.
 - Added `/info` stub that forwards to `/help` with the same arguments.

@@ -6,7 +6,6 @@ plugins {
     id("java-library") // Import Java Library plugin.
     id("com.diffplug.spotless") version "8.1.0" // Import Spotless plugin.
     id("com.gradleup.shadow") version "8.3.9" // Import Shadow plugin.
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
     id("checkstyle") // Import Checkstyle plugin.
     eclipse // Import Eclipse plugin.
     kotlin("jvm") version "2.1.21" // Import Kotlin JVM plugin.
@@ -26,7 +25,7 @@ kotlin { jvmToolchain(17) }
 /* ----------------------------- Metadata ------------------------------ */
 group = "net.trueog.utilities-og" // Declare bundle identifier.
 
-version = "1.7.5" // Declare plugin version (will be in .jar).
+version = "1.7.8" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 
@@ -50,7 +49,7 @@ repositories {
 
 /* ---------------------- Java project deps ---------------------------- */
 dependencies {
-    paperweightDevelopmentBundle("org.purpurmc.purpur:dev-bundle:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Import Purpur API.
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.8") // Import WorldGuard API.
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.14.1") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
@@ -80,19 +79,13 @@ tasks.jar {
 
 tasks.shadowJar {
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
-    archiveClassifier.set("dev") // Mojang-mapped shaded jar, consumed by reobfJar.
-    destinationDirectory.set(intermediateJars)
+    archiveClassifier.set("") // Only jar in build/libs.
     minimize()
 }
 
-/* --------------------------- Reobfuscation --------------------------- */
-tasks.reobfJar {
-    outputJar.set(layout.buildDirectory.file("libs/${project.name}-${project.version}.jar")) // Only jar in build/libs.
-}
+tasks.assemble { dependsOn(tasks.shadowJar) } // Assemble depends on the shaded jar.
 
-tasks.assemble { dependsOn(tasks.reobfJar) } // Assemble depends on the reobfuscated jar.
-
-tasks.build { dependsOn(tasks.spotlessApply, tasks.reobfJar) } // Build depends on spotless and reobf.
+tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends on spotless and shadow.
 
 /* --------------------------- Javac opts ------------------------------- */
 tasks.withType<JavaCompile>().configureEach {

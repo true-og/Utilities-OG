@@ -10,9 +10,7 @@ Current Target: Purpur 1.19.4
 
 The resulting .jar file will be in build/libs
 
-At the moment, any config change requires a server restart to take effect.
-
-MiniPlaceholders support is always enabled. There is no config toggle for disabling the built-in placeholder registration.
+Any config change requires a server restart to take effect.
 
 ## Features:
 
@@ -29,7 +27,7 @@ MiniPlaceholders support is always enabled. There is no config toggle for disabl
 
 **Warning:**
 
-* **DisableEntityCramming (Default: false):** Disables entity cramming damage server-wide. This can cause lag if no other plugin manages entity limits. Enable this Module only if you have a separate plugin managing entity limitations.
+* **DisableEntityCramming (Default: true):** Disables entity cramming damage server-wide. This can cause lag if no other plugin manages entity limits. Keep this module enabled only if you have a separate plugin managing entity limitations.
 
 ## Permissions:
 
@@ -620,9 +618,57 @@ Java:
 UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>color codes!");
 ```
 
+**Player data (TrueOG Purpur RocksDB storage)**
+
+Utilities-OG is the only bridge to the server's RocksDB player data. Profiles are the raw NMS `NBTTagCompound`, passed as `Object`. Wrap them with Item-NBT-API `NBTContainer(Object)` or BKCommonLib `CommonTagCompound.create(Object)`. A null world, or the server's own level name, is the default storage that vanilla reads and writes. Any other world name is that world's own storage, created on first save. MyWorlds keeps its per-world inventory groups there. Every method throws `UnsupportedOperationException` on a server without the TrueOG Purpur patch.
+
+**[boolean] isPlayerDataApiAvailable()**
+
+True on a TrueOG Purpur server.
+
+**[Object] getPlayerData(String world, UUID uuid)**
+
+Profile of the player on that world, or null when there is none. Throws `IllegalStateException` when the storage failed or the stored profile can not be read, never a null in that case, so treat the exception as "do not touch this player".
+
+**[boolean] savePlayerData(String world, UUID uuid, Object tag)**
+
+Stores a profile. False when the server refused the write, for example while player data saving is disabled.
+
+**[boolean] savePlayerData(UUID uuid, Map<String, Object> perWorld)**
+
+Stores one player's profiles on several worlds as a single atomic write. Use a `HashMap`, a null key is the default storage.
+
+**[boolean] hasPlayerData(String world, UUID uuid)**
+
+True when a stored profile exists on that world (a null world is the default storage). Players who never joined have none. Throws `IllegalStateException` when the storage failed.
+
+**[List<UUID>] getSeenPlayers(String world)**
+
+Every player with a profile on that world. Empty for an unknown world.
+
+**[boolean] dropWorldPlayerData(String world)**
+
+Deletes a world's own storage. The default storage and the main worlds (the level, its nether and its end) can not be dropped; false is returned.
+
+**[int] copyWorldPlayerData(String from, String to)**
+
+Copies every profile of one storage into another. Returns the count, 0 when nothing to do, -1 on failure or when the target is a main world.
+
+**[boolean] flushPlayerData()**
+
+Forces buffered writes to durable storage. False when the fork is too old to support it or the flush failed. Call it before moving a migration source aside.
+
+**[void] lockPlayerData(UUID uuid)** / **[void] unlockPlayerData(UUID uuid)**
+
+Hold this lock around any read-modify-write of one player's stored data (release it in a `finally`). `setInventoryData` and MyWorlds' saves use it so they never interleave.
+
+**Offline inventory helpers**
+
+Built on the default storage and Item-NBT-API (a hard dependency, so it is always present). `isPlayerInventoryApiAvailable()` reports whether the TrueOG Purpur player data API is bound; the helpers throw `UnsupportedOperationException` otherwise.
+
 **[ItemStack[]] getInventoryData(UUID uuid)**
 
-Gets the inventory contents of an offline player using the TrueOG Purpur player data API.
+Gets the stored inventory contents of a player. 41 slots in `PlayerInventory.getContents()` order (36 main, 4 armor, offhand). All null when the player has no stored profile. On a MyWorlds server this is the main inventory group.
 
 Kotlin:
 ```kotlin
@@ -634,9 +680,9 @@ Java:
 ItemStack[] inventoryData = UtilitiesOG.getInventoryData(uuid);
 ```
 
-**[void] setInventoryData(UUID uuid, ItemStack[] items)**
+**[boolean] setInventoryData(UUID uuid, ItemStack[] items)**
 
-Sets the inventory contents of an offline player using the TrueOG Purpur player data API.
+Replaces the stored inventory contents of an offline player using the TrueOG Purpur player data API. Same 41 slot layout as `getInventoryData`. Returns false, and writes nothing, when the player has no stored profile or the server refused the write. Use the live `Player` inventory for online players.
 
 Kotlin:
 ```kotlin
@@ -650,7 +696,7 @@ UtilitiesOG.setInventoryData(uuid, inventoryData);
 
 **[int] getHeldItemSlot(UUID uuid)**
 
-Gets the held item slot of an offline player using the TrueOG Purpur player data API.
+Gets the held hotbar slot of a player's stored profile using the TrueOG Purpur player data API. 0 when the player has no stored profile.
 
 Kotlin:
 ```kotlin

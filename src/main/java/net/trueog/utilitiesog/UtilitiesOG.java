@@ -4,17 +4,17 @@ package net.trueog.utilitiesog;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.trueog.utilitiesog.utils.InventoryNbtCodec;
 import net.trueog.utilitiesog.utils.PlayerDataUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -116,48 +116,54 @@ public final class UtilitiesOG extends JavaPlugin {
 
         }
 
-        // Registering a global MiniPlaceholder.
-        registerGlobalPlaceholder("servers_name", () -> "&aTrue&cOG &eNetwork");
+        // Built-in MiniPlaceholders; disable in config.yml to let another plugin own
+        // these names instead
+        if (this.getConfig().getBoolean("RegisterPlaceholders", true)) {
 
-        // Registering an Audience MiniPlaceholder.
-        registerAudiencePlaceholder("player_display_name", (Player player) -> {
+            // Registering a global MiniPlaceholder.
+            registerGlobalPlaceholder("servers_name", () -> "&aTrue&cOG &eNetwork");
 
-            final LuckPerms luckPerms = LuckPermsProvider.get();
-            final User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-            if (user == null) {
+            // Registering an Audience MiniPlaceholder.
+            registerAudiencePlaceholder("player_display_name", (Player player) -> {
 
-                getLogger().info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
-                        + " has no User object in LuckPerms!");
+                final LuckPerms luckPerms = LuckPermsProvider.get();
+                final User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+                if (user == null) {
 
-                return player.getName();
+                    getLogger().info("ERROR: MiniPlaceholder processing error. Player: " + player.getName()
+                            + " has no User object in LuckPerms!");
 
-            }
+                    return player.getName();
 
-            final String primaryGroup = user.getPrimaryGroup();
-            final Group group = luckPerms.getGroupManager().getGroup(primaryGroup);
-            if (group == null) {
+                }
 
-                getLogger().info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
-                        + " has no Group assignment in LuckPerms!");
+                final String primaryGroup = user.getPrimaryGroup();
+                final Group group = luckPerms.getGroupManager().getGroup(primaryGroup);
+                if (group == null) {
 
-                return player.getName();
+                    getLogger().info("ERROR: MiniPlaceholder processing error. User: " + player.getName()
+                            + " has no Group assignment in LuckPerms!");
 
-            }
+                    return player.getName();
 
-            final String prefix = group.getNodes().stream().filter(node -> node instanceof PrefixNode).findFirst()
-                    .map(node -> ((PrefixNode) node).getMetaValue()).orElse(null);
+                }
 
-            if (prefix == null) {
+                final String prefix = group.getNodes().stream().filter(node -> node instanceof PrefixNode).findFirst()
+                        .map(node -> ((PrefixNode) node).getMetaValue()).orElse(null);
 
-                return player.getName();
+                if (prefix == null) {
 
-            }
+                    return player.getName();
 
-            final String colorCode = prefix.replaceAll(".*\\](.*)", "$1");
+                }
 
-            return "<luckperms_prefix>" + colorCode + " " + player.getName();
+                final String colorCode = prefix.replaceAll(".*\\](.*)", "$1");
 
-        });
+                return "<luckperms_prefix>" + colorCode + " " + player.getName();
+
+            });
+
+        }
 
         if (this.getConfig().getBoolean("MockBamboo")) {
 
@@ -502,82 +508,160 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
+    // TrueOG Purpur RocksDB player data, tags are raw NMS compound objects.
+
+    public static boolean isPlayerDataApiAvailable() {
+
+        return playerDataUtils != null && playerDataUtils.isAvailable();
+
+    }
+
+    // Profile on a world, null when absent. Null world is the default storage.
+    public static @Nullable Object getPlayerData(@Nullable String world, UUID uuid) {
+
+        return playerDataUtils.get(world, uuid);
+
+    }
+
+    // False when the server refused the write.
+    public static boolean savePlayerData(@Nullable String world, UUID uuid, Object tag) {
+
+        return playerDataUtils.save(world, uuid, tag);
+
+    }
+
+    // Atomic write across worlds. Use a HashMap, a null key is the default.
+    public static boolean savePlayerData(UUID uuid, Map<String, Object> perWorld) {
+
+        return playerDataUtils.saveAll(uuid, perWorld);
+
+    }
+
+    public static boolean hasPlayerData(@Nullable String world, UUID uuid) {
+
+        return playerDataUtils.has(world, uuid);
+
+    }
+
+    // Every player with a profile on a world. Empty for an unknown world.
+    public static List<UUID> getSeenPlayers(@Nullable String world) {
+
+        return playerDataUtils.seen(world);
+
+    }
+
+    // Deletes a world's own storage. The default storage can not be dropped.
+    public static boolean dropWorldPlayerData(String world) {
+
+        return playerDataUtils.drop(world);
+
+    }
+
+    // Copies one storage into another. Count, 0 when nothing, -1 on failure.
+    public static int copyWorldPlayerData(@Nullable String from, String to) {
+
+        return playerDataUtils.copy(from, to);
+
+    }
+
+    // Forces buffered player data writes to durable storage. False when unsupported
+    // or it failed.
+    public static boolean flushPlayerData() {
+
+        return playerDataUtils != null && playerDataUtils.flush();
+
+    }
+
+    // Per player locks so an offline edit here and a MyWorlds save never interleave
+    // their read-modify-writes.
+    private static final ConcurrentHashMap<UUID, ReentrantLock> playerDataLocks = new ConcurrentHashMap<>();
+
+    // Hold this around any read-modify-write of one player's stored data, released
+    // in a finally.
+    public static void lockPlayerData(UUID uuid) {
+
+        playerDataLocks.computeIfAbsent(uuid, u -> new ReentrantLock()).lock();
+
+    }
+
+    public static void unlockPlayerData(UUID uuid) {
+
+        final ReentrantLock lock = playerDataLocks.get(uuid);
+        if (lock != null && lock.isHeldByCurrentThread()) {
+
+            lock.unlock();
+
+        }
+
+    }
+
+    // Offline inventory helpers on the default storage. Need Item-NBT-API.
+
+    public static boolean isPlayerInventoryApiAvailable() {
+
+        return playerDataUtils != null && playerDataUtils.isItemConversionAvailable();
+
+    }
+
+    private static void requireInventoryApi() {
+
+        if (!isPlayerInventoryApiAvailable()) {
+
+            throw new UnsupportedOperationException("Offline inventory helpers need TrueOG Purpur and Item-NBT-API");
+
+        }
+
+    }
+
+    // 41 slots in getContents() order. All null without a stored profile.
     public static @Nullable ItemStack @NotNull [] getInventoryData(UUID uuid) {
 
-        final ListTag inventoryData = playerDataUtils.getPlayerData(uuid).getList("Inventory", Tag.TAG_COMPOUND);
-        final ItemStack[] inventoryContents = new ItemStack[41];
-        for (int i = 0; i < inventoryData.size(); i++) {
-
-            final CompoundTag slotTag = inventoryData.getCompound(i);
-            final byte slot = slotTag.getByte("Slot");
-            final ItemStack itemStack = CraftItemStack.asBukkitCopy(net.minecraft.world.item.ItemStack.of(slotTag));
-
-            if (slot >= 0 && slot <= 35) {
-
-                inventoryContents[slot] = itemStack;
-
-            } else if (slot >= 100 && slot <= 103) {
-
-                inventoryContents[slot - 64] = itemStack;
-
-            } else if (slot == -106) {
-
-                inventoryContents[40] = itemStack;
-
-            }
-
-        }
-
-        return inventoryContents;
+        requireInventoryApi();
+        final Object tag = playerDataUtils.get(null, uuid);
+        return (tag == null) ? new ItemStack[41] : InventoryNbtCodec.read(tag);
 
     }
 
-    public static void setInventoryData(UUID uuid, @Nullable ItemStack @NotNull [] items) {
+    // Replaces the stored inventory. False if no profile or the write failed.
+    public static boolean setInventoryData(UUID uuid, @Nullable ItemStack @NotNull [] items) {
 
-        final ListTag inventoryData = new ListTag();
-        for (byte i = 0; i < items.length; i++) {
+        requireInventoryApi();
+        // Lock the whole read-modify-write so a concurrent save cannot land between get
+        // and save
+        lockPlayerData(uuid);
+        try {
 
-            final ItemStack item = items[i];
-            if (item == null) {
+            final Object tag = playerDataUtils.get(null, uuid);
+            if (tag == null) {
 
-                continue;
-
-            }
-
-            final byte slot;
-            if (i <= 35) {
-
-                slot = i;
-
-            } else if (i <= 39) {
-
-                slot = (byte) (i + 64);
-
-            } else if (i == 40) {
-
-                slot = -106;
-
-            } else {
-
-                continue;
+                logToConsole(PREFIX, "&cNo stored player data for " + uuid + ", inventory not written.");
+                return false;
 
             }
 
-            CompoundTag slotTag = new CompoundTag();
-            CraftItemStack.asNMSCopy(item).save(slotTag);
-            slotTag.putByte("Slot", slot);
+            final boolean saved = playerDataUtils.save(null, uuid, InventoryNbtCodec.write(tag, items));
+            if (!saved) {
 
-            inventoryData.add(slotTag);
+                logToConsole(PREFIX, "&cThe server refused the player data write for " + uuid + ".");
+
+            }
+
+            return saved;
+
+        } finally {
+
+            unlockPlayerData(uuid);
 
         }
 
-        playerDataUtils.setInventoryData(uuid, inventoryData);
-
     }
 
+    // Held hotbar slot of the stored profile, 0 without a stored profile.
     public static int getHeldItemSlot(UUID uuid) {
 
-        return playerDataUtils.getPlayerData(uuid).getInt("SelectedItemSlot");
+        requireInventoryApi();
+        final Object tag = playerDataUtils.get(null, uuid);
+        return (tag == null) ? 0 : InventoryNbtCodec.heldItemSlot(tag);
 
     }
 

@@ -27,3 +27,5 @@ RanksMenu: true
 AdvancementsOnlyInSurvival: true
 # Registers stub redirect/denial commands (/wild, /rtp, /seed, /f, /faction, /guild, /kit, /ah, /auction, /info). Default: true.
 MissingCommands: true
+# Registers Utilities-OG's own MiniPlaceholders (servers_name, player_display_name). Default: true.
+RegisterPlaceholders: true
