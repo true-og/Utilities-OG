@@ -7,66 +7,68 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.WriteBatch;
 
 import net.trueog.utilitiesog.Internal;
 
-// Reflection bridge to the fork's PlayerDataApi. Tags are raw NMS objects.
+// Reflection bridge to the fork's PlayerDataStorage. Tags are raw NMS objects.
 public final class PlayerDataUtils {
 
-    private final Object api;
+    private final Object storage;
     private final Method getMethod;
-    private final Method saveAllMethod;
+    private final Method saveMethod;
+    private final Method stageMethod;
     private final Method hasMethod;
     private final Method seenMethod;
-    private final Method dropMethod;
-    private final Method copyMethod;
-    private final Method flushMethod;
+    private final Method upgradeMethod;
+    private final Method databaseMethod;
+    private final Method isClosedMethod;
+    private final Method getColumnFamilyMethod;
+    private final Method createColumnFamilyMethod;
+    private final Method dropColumnFamilyMethod;
     private final String unavailableReason;
-    private final String levelName;
 
     public PlayerDataUtils() {
 
         final Logger logger = Internal.getPlugin().getLogger();
-        Object boundApi = null;
-        Method[] bound = new Method[6];
-        Method flushLocal = null;
+        Object boundStorage = null;
+        final Method[] bound = new Method[11];
         String reason = null;
         try {
 
             final Object server = Bukkit.getServer();
             final Object playerList = server.getClass().getMethod("getHandle").invoke(server);
-            final Object storage = findStorage(playerList);
-            if (storage == null) {
+            boundStorage = findStorage(playerList);
+            if (boundStorage == null) {
 
                 reason = "Not running TrueOG Purpur jar";
 
             } else {
 
-                boundApi = findApiMethod(storage.getClass()).invoke(storage);
-                final Class<?> apiType = boundApi.getClass();
-                bound[0] = apiType.getMethod("get", String.class, UUID.class);
-                bound[1] = apiType.getMethod("saveAll", UUID.class, Map.class);
-                bound[2] = apiType.getMethod("has", String.class, UUID.class);
-                bound[3] = apiType.getMethod("seen", String.class);
-                bound[4] = apiType.getMethod("drop", String.class);
-                bound[5] = apiType.getMethod("copy", String.class, String.class);
-                // Optional: older forks lack flush(), so its absence must not disable the whole
-                // API
-                try {
-
-                    flushLocal = apiType.getMethod("flush");
-
-                } catch (NoSuchMethodException ignored) {
-
-                }
+                final Class<?> type = boundStorage.getClass();
+                final Method save = findSaveMethod(type);
+                final Class<?> tagType = save.getParameterTypes()[1];
+                bound[0] = type.getMethod("getPlayerData", UUID.class);
+                bound[1] = save;
+                bound[2] = type.getMethod("stagePlayerData", WriteBatch.class, UUID.class, tagType);
+                bound[3] = type.getMethod("hasPlayerData", UUID.class);
+                // Vanilla getSeenPlayers() is obfuscated on the shipped jar, the fork adds this
+                // name
+                bound[4] = type.getMethod("getStoredPlayers");
+                bound[5] = type.getMethod("upgradePlayerData", tagType);
+                bound[6] = type.getMethod("getDatabase");
+                bound[7] = type.getMethod("isClosed");
+                bound[8] = type.getMethod("getColumnFamily", String.class);
+                bound[9] = type.getMethod("createColumnFamily", String.class);
+                bound[10] = type.getMethod("dropColumnFamily", String.class);
 
             }
 
@@ -78,16 +80,19 @@ public final class PlayerDataUtils {
         }
 
         final boolean ok = (reason == null);
-        this.api = ok ? boundApi : null;
+        this.storage = ok ? boundStorage : null;
         this.getMethod = ok ? bound[0] : null;
-        this.saveAllMethod = ok ? bound[1] : null;
-        this.hasMethod = ok ? bound[2] : null;
-        this.seenMethod = ok ? bound[3] : null;
-        this.dropMethod = ok ? bound[4] : null;
-        this.copyMethod = ok ? bound[5] : null;
-        this.flushMethod = ok ? flushLocal : null;
+        this.saveMethod = ok ? bound[1] : null;
+        this.stageMethod = ok ? bound[2] : null;
+        this.hasMethod = ok ? bound[3] : null;
+        this.seenMethod = ok ? bound[4] : null;
+        this.upgradeMethod = ok ? bound[5] : null;
+        this.databaseMethod = ok ? bound[6] : null;
+        this.isClosedMethod = ok ? bound[7] : null;
+        this.getColumnFamilyMethod = ok ? bound[8] : null;
+        this.createColumnFamilyMethod = ok ? bound[9] : null;
+        this.dropColumnFamilyMethod = ok ? bound[10] : null;
         this.unavailableReason = reason;
-        this.levelName = Bukkit.getWorlds().get(0).getName();
         if (reason != null) {
 
             logger.warning(reason + ", player data APIs are unavailable");
@@ -96,14 +101,15 @@ public final class PlayerDataUtils {
 
     }
 
-    // Field names are obfuscated, so find the field whose type declares api().
+    // Field names are obfuscated, so find the field whose type declares
+    // savePlayerData(UUID, tag).
     private static Object findStorage(Object playerList) throws IllegalAccessException {
 
         for (Class<?> type = playerList.getClass(); type != null; type = type.getSuperclass()) {
 
             for (Field field : type.getDeclaredFields()) {
 
-                if (Modifier.isStatic(field.getModifiers()) || findApiMethod(field.getType()) == null) {
+                if (Modifier.isStatic(field.getModifiers()) || findSaveMethod(field.getType()) == null) {
 
                     continue;
 
@@ -120,25 +126,29 @@ public final class PlayerDataUtils {
 
     }
 
-    // Resolved on the class, so a hook subclass still binds.
-    private static Method findApiMethod(Class<?> type) {
+    // Resolved on the class, so a hook subclass still binds. The tag parameter
+    // type is NMS, so it is matched by position rather than by name.
+    private static Method findSaveMethod(Class<?> type) {
 
-        try {
+        for (Method method : type.getMethods()) {
 
-            final Method method = type.getMethod("api");
-            return method.getReturnType().getSimpleName().equals("PlayerDataApi") ? method : null;
+            if (method.getName().equals("savePlayerData") && method.getParameterCount() == 2
+                    && method.getParameterTypes()[0] == UUID.class && method.getReturnType() == boolean.class)
+            {
 
-        } catch (NoSuchMethodException e) {
+                return method;
 
-            return null;
+            }
 
         }
+
+        return null;
 
     }
 
     public boolean isAvailable() {
 
-        return api != null;
+        return storage != null;
 
     }
 
@@ -146,13 +156,13 @@ public final class PlayerDataUtils {
     // stacks when the fork API is bound.
     public boolean isItemConversionAvailable() {
 
-        return api != null;
+        return storage != null;
 
     }
 
     private void requireAvailable() {
 
-        if (api == null) {
+        if (storage == null) {
 
             throw new UnsupportedOperationException(unavailableReason + ", player data APIs are unavailable");
 
@@ -160,112 +170,88 @@ public final class PlayerDataUtils {
 
     }
 
-    // The main worlds never lose their storage: the level itself, its nether and
-    // its end.
-    private boolean isProtected(String world) {
-
-        return world != null && (world.equalsIgnoreCase(levelName) || world.equalsIgnoreCase(levelName + "_nether")
-                || world.equalsIgnoreCase(levelName + "_the_end"));
-
-    }
-
-    // The server's own level name maps to null here, the fork knows only null as
-    // default.
-    private String key(String world) {
-
-        return (world == null || world.equalsIgnoreCase(levelName)) ? null : world;
-
-    }
-
-    // Null world or the server's own level name is the default storage.
-    public Object get(String world, UUID uuid) {
+    // Vanilla profile, null when absent or the storage is closed.
+    public Object get(UUID uuid) {
 
         requireAvailable();
-        return invoke(getMethod, key(world), uuid);
+        return invoke(getMethod, uuid);
 
     }
 
-    // A single write is a one entry batch, the fork only has saveAll.
-    public boolean save(String world, UUID uuid, Object tag) {
-
-        return saveAll(uuid, Collections.singletonMap(world, tag));
-
-    }
-
-    // One atomic write across worlds. A null key is the default storage.
-    public boolean saveAll(UUID uuid, Map<String, Object> perWorld) {
+    public boolean save(UUID uuid, Object tag) {
 
         requireAvailable();
-        final Map<String, Object> keyed = new HashMap<>(perWorld.size() * 2);
-        for (Map.Entry<String, Object> entry : perWorld.entrySet()) {
-
-            keyed.put(key(entry.getKey()), entry.getValue());
-
-        }
-
-        if (keyed.size() != perWorld.size()) {
-
-            throw new IllegalArgumentException(
-                    "The batch names the default storage twice, as null and as the level name");
-
-        }
-
-        return Boolean.TRUE.equals(invoke(saveAllMethod, uuid, keyed));
+        return Boolean.TRUE.equals(invoke(saveMethod, uuid, tag));
 
     }
 
-    public boolean has(String world, UUID uuid) {
+    // Adds the vanilla profile write to a batch the caller writes. False when the
+    // storage refused it.
+    public boolean stage(WriteBatch batch, UUID uuid, Object tag) {
 
         requireAvailable();
-        return Boolean.TRUE.equals(invoke(hasMethod, key(world), uuid));
+        try {
 
-    }
+            invoke(stageMethod, batch, uuid, tag);
+            return true;
 
-    @SuppressWarnings("unchecked")
-    public List<UUID> seen(String world) {
+        } catch (RuntimeException e) {
 
-        requireAvailable();
-        final Object result = invoke(seenMethod, key(world));
-        return (result == null) ? Collections.<UUID>emptyList() : (List<UUID>) result;
-
-    }
-
-    // The default storage can not be dropped, so the level name is refused here.
-    public boolean drop(String world) {
-
-        requireAvailable();
-        if (world == null || isProtected(world)) {
-
+            Internal.getPlugin().getLogger().log(Level.WARNING, "Failed to stage the player data of " + uuid, e);
             return false;
 
         }
 
-        return Boolean.TRUE.equals(invoke(dropMethod, world));
+    }
+
+    public boolean has(UUID uuid) {
+
+        requireAvailable();
+        return Boolean.TRUE.equals(invoke(hasMethod, uuid));
 
     }
 
-    // The default storage can not be a copy target, -1 when the level name is
-    // given.
-    public int copy(String from, String to) {
+    @SuppressWarnings("unchecked")
+    public List<UUID> seen() {
 
         requireAvailable();
-        if (to == null || isProtected(to)) {
-
-            return -1;
-
-        }
-
-        final Object result = invoke(copyMethod, key(from), to);
-        return (result == null) ? -1 : ((Integer) result).intValue();
+        final Object result = invoke(seenMethod);
+        return (result == null) ? Collections.<UUID>emptyList() : (List<UUID>) result;
 
     }
 
-    // Forces buffered writes to durable storage. False when the fork is too old to
-    // support it.
-    public boolean flush() {
+    public Object upgrade(Object tag) {
 
         requireAvailable();
-        return flushMethod != null && Boolean.TRUE.equals(invoke(flushMethod));
+        return invoke(upgradeMethod, tag);
+
+    }
+
+    public boolean isOpen() {
+
+        return storage != null && !Boolean.TRUE.equals(invoke(isClosedMethod));
+
+    }
+
+    // Null once the storage is closed.
+    public RocksDB database() {
+
+        requireAvailable();
+        return isOpen() ? (RocksDB) invoke(databaseMethod) : null;
+
+    }
+
+    public ColumnFamilyHandle columnFamily(String name, boolean create) {
+
+        requireAvailable();
+        return (ColumnFamilyHandle) invoke(create ? createColumnFamilyMethod : getColumnFamilyMethod, name);
+
+    }
+
+    public boolean dropColumnFamily(String name) {
+
+        requireAvailable();
+        return Boolean.TRUE.equals(invoke(dropColumnFamilyMethod, name));
 
     }
 
@@ -273,7 +259,7 @@ public final class PlayerDataUtils {
 
         try {
 
-            return method.invoke(api, args);
+            return method.invoke(storage, args);
 
         } catch (InvocationTargetException e) {
 

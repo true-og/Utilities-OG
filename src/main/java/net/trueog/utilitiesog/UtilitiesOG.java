@@ -4,7 +4,6 @@ package net.trueog.utilitiesog;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,6 +14,9 @@ import java.util.function.Supplier;
 import net.trueog.utilitiesog.utils.InventoryNbtCodec;
 import net.trueog.utilitiesog.utils.PlayerDataUtils;
 import org.bukkit.Bukkit;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.WriteBatch;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -516,59 +518,77 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    // Profile on a world, null when absent. Null world is the default storage.
-    public static @Nullable Object getPlayerData(@Nullable String world, UUID uuid) {
+    // Vanilla profile of a player, null when absent. Throws IllegalStateException
+    // when the storage failed.
+    public static @Nullable Object getPlayerData(UUID uuid) {
 
-        return playerDataUtils.get(world, uuid);
+        return playerDataUtils.get(uuid);
 
     }
 
     // False when the server refused the write.
-    public static boolean savePlayerData(@Nullable String world, UUID uuid, Object tag) {
+    public static boolean savePlayerData(UUID uuid, Object tag) {
 
-        return playerDataUtils.save(world, uuid, tag);
-
-    }
-
-    // Atomic write across worlds. Use a HashMap, a null key is the default.
-    public static boolean savePlayerData(UUID uuid, Map<String, Object> perWorld) {
-
-        return playerDataUtils.saveAll(uuid, perWorld);
+        return playerDataUtils.save(uuid, tag);
 
     }
 
-    public static boolean hasPlayerData(@Nullable String world, UUID uuid) {
+    public static boolean hasPlayerData(UUID uuid) {
 
-        return playerDataUtils.has(world, uuid);
-
-    }
-
-    // Every player with a profile on a world. Empty for an unknown world.
-    public static List<UUID> getSeenPlayers(@Nullable String world) {
-
-        return playerDataUtils.seen(world);
+        return playerDataUtils.has(uuid);
 
     }
 
-    // Deletes a world's own storage. The default storage can not be dropped.
-    public static boolean dropWorldPlayerData(String world) {
+    // Every player with a vanilla profile.
+    public static List<UUID> getSeenPlayers() {
 
-        return playerDataUtils.drop(world);
-
-    }
-
-    // Copies one storage into another. Count, 0 when nothing, -1 on failure.
-    public static int copyWorldPlayerData(@Nullable String from, String to) {
-
-        return playerDataUtils.copy(from, to);
+        return playerDataUtils.seen();
 
     }
 
-    // Forces buffered player data writes to durable storage. False when unsupported
-    // or it failed.
-    public static boolean flushPlayerData() {
+    // Runs the server's player data fixes on a tag and stamps its data version.
+    public static Object upgradePlayerData(Object tag) {
 
-        return playerDataUtils != null && playerDataUtils.flush();
+        return playerDataUtils.upgrade(tag);
+
+    }
+
+    // Shared database for plugins that keep their own column families next to the
+    // vanilla profiles. Null once the storage is closed.
+
+    public static boolean isPlayerDataStorageOpen() {
+
+        return playerDataUtils != null && playerDataUtils.isOpen();
+
+    }
+
+    public static @Nullable RocksDB getPlayerDataDatabase() {
+
+        return playerDataUtils.database();
+
+    }
+
+    // A plugin column family by name, created on demand. Null when absent without
+    // create, reserved, closed or failed.
+    public static @Nullable ColumnFamilyHandle getPlayerDataColumnFamily(String name, boolean create) {
+
+        return playerDataUtils.columnFamily(name, create);
+
+    }
+
+    // True when dropped or absent. Keep your own handles out of use while dropping.
+    public static boolean dropPlayerDataColumnFamily(String name) {
+
+        return playerDataUtils.dropColumnFamily(name);
+
+    }
+
+    // Adds the vanilla profile write, with its previous backup, to a batch the
+    // caller writes, so plugin column families land atomically with it. False when
+    // the storage refused it.
+    public static boolean stagePlayerData(WriteBatch batch, UUID uuid, Object tag) {
+
+        return playerDataUtils.stage(batch, uuid, tag);
 
     }
 
@@ -617,7 +637,7 @@ public final class UtilitiesOG extends JavaPlugin {
     public static @Nullable ItemStack @NotNull [] getInventoryData(UUID uuid) {
 
         requireInventoryApi();
-        final Object tag = playerDataUtils.get(null, uuid);
+        final Object tag = playerDataUtils.get(uuid);
         return (tag == null) ? new ItemStack[41] : InventoryNbtCodec.read(tag);
 
     }
@@ -631,7 +651,7 @@ public final class UtilitiesOG extends JavaPlugin {
         lockPlayerData(uuid);
         try {
 
-            final Object tag = playerDataUtils.get(null, uuid);
+            final Object tag = playerDataUtils.get(uuid);
             if (tag == null) {
 
                 logToConsole(PREFIX, "&cNo stored player data for " + uuid + ", inventory not written.");
@@ -639,7 +659,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
             }
 
-            final boolean saved = playerDataUtils.save(null, uuid, InventoryNbtCodec.write(tag, items));
+            final boolean saved = playerDataUtils.save(uuid, InventoryNbtCodec.write(tag, items));
             if (!saved) {
 
                 logToConsole(PREFIX, "&cThe server refused the player data write for " + uuid + ".");
@@ -660,7 +680,7 @@ public final class UtilitiesOG extends JavaPlugin {
     public static int getHeldItemSlot(UUID uuid) {
 
         requireInventoryApi();
-        final Object tag = playerDataUtils.get(null, uuid);
+        final Object tag = playerDataUtils.get(uuid);
         return (tag == null) ? 0 : InventoryNbtCodec.heldItemSlot(tag);
 
     }

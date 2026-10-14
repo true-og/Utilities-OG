@@ -620,51 +620,63 @@ UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>col
 
 **Player data (TrueOG Purpur RocksDB storage)**
 
-Utilities-OG is the only bridge to the server's RocksDB player data. Profiles are the raw NMS `NBTTagCompound`, passed as `Object`. Wrap them with Item-NBT-API `NBTContainer(Object)` or BKCommonLib `CommonTagCompound.create(Object)`. A null world, or the server's own level name, is the default storage that vanilla reads and writes. Any other world name is that world's own storage, created on first save. MyWorlds keeps its per-world inventory groups there. Every method throws `UnsupportedOperationException` on a server without the TrueOG Purpur patch.
+Utilities-OG is the only bridge to the server's RocksDB player data. Profiles are the raw NMS `NBTTagCompound`, passed as `Object`. Wrap them with Item-NBT-API `NBTContainer(Object)` or BKCommonLib `CommonTagCompound.create(Object)`. The server stores one vanilla profile per player; a plugin that needs more (MyWorlds keeps one profile per inventory group) owns its own column families in the same database through the shared-database calls below. Every method throws `UnsupportedOperationException` on a server without the TrueOG Purpur patch.
 
 **[boolean] isPlayerDataApiAvailable()**
 
 True on a TrueOG Purpur server.
 
-**[Object] getPlayerData(String world, UUID uuid)**
+**[Object] getPlayerData(UUID uuid)**
 
-Profile of the player on that world, or null when there is none. Throws `IllegalStateException` when the storage failed or the stored profile can not be read, never a null in that case, so treat the exception as "do not touch this player".
+Vanilla profile of the player, upgraded to the current data version, or null when there is none. Throws `IllegalStateException` when the storage failed or the stored profile can not be read, never a null in that case, so treat the exception as "do not touch this player".
 
-**[boolean] savePlayerData(String world, UUID uuid, Object tag)**
+**[boolean] savePlayerData(UUID uuid, Object tag)**
 
-Stores a profile. False when the server refused the write, for example while player data saving is disabled.
+Stores the vanilla profile; the replaced one is kept as the player's previous profile. False when the server refused the write, for example while player data saving is disabled.
 
-**[boolean] savePlayerData(UUID uuid, Map<String, Object> perWorld)**
+**[boolean] hasPlayerData(UUID uuid)**
 
-Stores one player's profiles on several worlds as a single atomic write. Use a `HashMap`, a null key is the default storage.
+True when a vanilla profile exists. Players who never joined have none. Throws `IllegalStateException` when the storage failed.
 
-**[boolean] hasPlayerData(String world, UUID uuid)**
+**[List<UUID>] getSeenPlayers()**
 
-True when a stored profile exists on that world (a null world is the default storage). Players who never joined have none. Throws `IllegalStateException` when the storage failed.
+Every player with a vanilla profile.
 
-**[List<UUID>] getSeenPlayers(String world)**
+**[Object] upgradePlayerData(Object tag)**
 
-Every player with a profile on that world. Empty for an unknown world.
-
-**[boolean] dropWorldPlayerData(String world)**
-
-Deletes a world's own storage. The default storage and the main worlds (the level, its nether and its end) can not be dropped; false is returned.
-
-**[int] copyWorldPlayerData(String from, String to)**
-
-Copies every profile of one storage into another. Returns the count, 0 when nothing to do, -1 on failure or when the target is a main world.
-
-**[boolean] flushPlayerData()**
-
-Forces buffered writes to durable storage. False when the fork is too old to support it or the flush failed. Call it before moving a migration source aside.
+Runs the server's player data fixes on a tag read from elsewhere and stamps its data version, so a plugin's own profiles load like vanilla ones.
 
 **[void] lockPlayerData(UUID uuid)** / **[void] unlockPlayerData(UUID uuid)**
 
 Hold this lock around any read-modify-write of one player's stored data (release it in a `finally`). `setInventoryData` and MyWorlds' saves use it so they never interleave.
 
+**Shared database**
+
+The server opens one RocksDB at `<level>/playerdatadb` and only it may hold the directory open, so plugins that want player-keyed storage next to the vanilla profiles use its database. Column families named `default` and `previous` belong to the server. Compile against `org.rocksdb:rocksdbjni` as `compileOnly`; the server ships it, never bundle it.
+
+**[boolean] isPlayerDataStorageOpen()**
+
+False once the server closed the storage at shutdown; no handle may be used after that.
+
+**[RocksDB] getPlayerDataDatabase()**
+
+The database, or null once it is closed. Use the server's key layout for players: 16 bytes, most significant bits then least significant bits, big endian.
+
+**[ColumnFamilyHandle] getPlayerDataColumnFamily(String name, boolean create)**
+
+A plugin column family by name, created when `create` is true. Null when absent without `create`, when the name is reserved, when the storage is closed, or when creation failed.
+
+**[boolean] dropPlayerDataColumnFamily(String name)**
+
+Drops a plugin column family. True when dropped or absent, false when reserved, refused or failed. Keep your own handles to it out of use while dropping.
+
+**[boolean] stagePlayerData(WriteBatch batch, UUID uuid, Object tag)**
+
+Adds the vanilla profile write, with its previous backup, to a batch you write yourself, so your column families and the vanilla profile land in one atomic write. False when the server refused the write.
+
 **Offline inventory helpers**
 
-Built on the default storage and Item-NBT-API (a hard dependency, so it is always present). `isPlayerInventoryApiAvailable()` reports whether the TrueOG Purpur player data API is bound; the helpers throw `UnsupportedOperationException` otherwise.
+Built on the vanilla profile and Item-NBT-API (a hard dependency, so it is always present). `isPlayerInventoryApiAvailable()` reports whether the TrueOG Purpur player data API is bound; the helpers throw `UnsupportedOperationException` otherwise.
 
 **[ItemStack[]] getInventoryData(UUID uuid)**
 
