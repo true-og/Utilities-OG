@@ -620,7 +620,7 @@ UtilitiesOG.logToConsole("[MyPlugin-OG]", "&6This is a &*message with <green>col
 
 **Player data (TrueOG Purpur RocksDB storage)**
 
-Utilities-OG is the only bridge to the server's RocksDB player data. Profiles are the raw NMS `NBTTagCompound`, passed as `Object`. Wrap them with Item-NBT-API `NBTContainer(Object)` or BKCommonLib `CommonTagCompound.create(Object)`. The server stores one vanilla profile per player; a plugin that needs more (MyWorlds keeps one profile per inventory group) owns its own column families in the same database through the shared-database calls below. Every method throws `UnsupportedOperationException` on a server without the TrueOG Purpur patch.
+Utilities-OG is the only bridge to the server's RocksDB player data. Profiles are the raw NMS `NBTTagCompound`, passed as `Object`. Wrap them with Item-NBT-API `NBTContainer(Object)` or BKCommonLib `CommonTagCompound.create(Object)`. The server stores one vanilla profile per player; a plugin that needs more keeps it inside that profile, best under `BukkitValues` (the persistent data container, which the server carries through the live player and writes back on every save; MyWorlds nests one profile per inventory group under `BukkitValues.myworlds:groups`). Every method throws `UnsupportedOperationException` on a server without the TrueOG Purpur patch.
 
 **[boolean] isPlayerDataApiAvailable()**
 
@@ -628,11 +628,11 @@ True on a TrueOG Purpur server.
 
 **[Object] getPlayerData(UUID uuid)**
 
-Vanilla profile of the player, upgraded to the current data version, or null when there is none. Throws `IllegalStateException` when the storage failed or the stored profile can not be read, never a null in that case, so treat the exception as "do not touch this player".
+Vanilla profile of the player, upgraded to the current data version, or null when there is none. Throws `IllegalStateException` (after the server logged it) when a stored profile can not be read, so a missing profile and a broken one are never confused: treat the exception as "do not touch this player".
 
-**[boolean] savePlayerData(UUID uuid, Object tag)**
+**[void] savePlayerData(UUID uuid, Object tag)**
 
-Stores the vanilla profile; the replaced one is kept as the player's previous profile. False when the server refused the write, for example while player data saving is disabled.
+Replaces the vanilla profile. Throws `IllegalStateException` (after the server logged it) when the write failed; does nothing while player data saving is disabled. Read, modify and write under `lockPlayerData`, and keep every compound you found in the profile, other plugins' data lives there too.
 
 **[boolean] hasPlayerData(UUID uuid)**
 
@@ -644,43 +644,19 @@ Every player with a vanilla profile.
 
 **[Object] upgradePlayerData(Object tag)**
 
-Runs the server's player data fixes on a tag read from elsewhere and stamps its data version, so a plugin's own profiles load like vanilla ones.
+Runs the server's player data fixes on a tag kept elsewhere, from its `DataVersion` (absent counts as the oldest, like vanilla) to the current one, and stamps the current version on it.
 
 **[void] lockPlayerData(UUID uuid)** / **[void] unlockPlayerData(UUID uuid)**
 
 Hold this lock around any read-modify-write of one player's stored data (release it in a `finally`). `setInventoryData` and MyWorlds' saves use it so they never interleave.
 
-**Shared database**
-
-The server opens one RocksDB at `<level>/playerdatadb` and only it may hold the directory open, so plugins that want player-keyed storage next to the vanilla profiles use its database. Column families named `default` and `previous` belong to the server. Compile against `org.rocksdb:rocksdbjni` as `compileOnly`; the server ships it, never bundle it.
-
-**[boolean] isPlayerDataStorageOpen()**
-
-False once the server closed the storage at shutdown; no handle may be used after that.
-
-**[RocksDB] getPlayerDataDatabase()**
-
-The database, or null once it is closed. Use the server's key layout for players: 16 bytes, most significant bits then least significant bits, big endian.
-
-**[ColumnFamilyHandle] getPlayerDataColumnFamily(String name, boolean create)**
-
-A plugin column family by name, created when `create` is true. Null when absent without `create`, when the name is reserved, when the storage is closed, or when creation failed.
-
-**[boolean] dropPlayerDataColumnFamily(String name)**
-
-Drops a plugin column family. True when dropped or absent, false when reserved, refused or failed. Keep your own handles to it out of use while dropping.
-
-**[boolean] stagePlayerData(WriteBatch batch, UUID uuid, Object tag)**
-
-Adds the vanilla profile write, with its previous backup, to a batch you write yourself, so your column families and the vanilla profile land in one atomic write. False when the server refused the write.
-
 **Offline inventory helpers**
 
-Built on the vanilla profile and Item-NBT-API (a hard dependency, so it is always present). `isPlayerInventoryApiAvailable()` reports whether the TrueOG Purpur player data API is bound; the helpers throw `UnsupportedOperationException` otherwise.
+Built on the vanilla profile and Item-NBT-API (a hard dependency, so it is always present). `isPlayerInventoryApiAvailable()` reports whether the TrueOG Purpur player data API is bound; the helpers throw `UnsupportedOperationException` otherwise. A stored record without a `Pos` list is not a profile (it holds only data other plugins keep for a player who never joined), and the helpers treat it as "no stored profile".
 
 **[ItemStack[]] getInventoryData(UUID uuid)**
 
-Gets the stored inventory contents of a player. 41 slots in `PlayerInventory.getContents()` order (36 main, 4 armor, offhand). All null when the player has no stored profile. On a MyWorlds server this is the main inventory group.
+Gets the stored inventory contents of a player. 41 slots in `PlayerInventory.getContents()` order (36 main, 4 armor, offhand). All null when the player has no stored profile; throws `IllegalStateException` when the stored profile can not be read. On a MyWorlds server this is the main inventory group.
 
 Kotlin:
 ```kotlin
@@ -694,7 +670,7 @@ ItemStack[] inventoryData = UtilitiesOG.getInventoryData(uuid);
 
 **[boolean] setInventoryData(UUID uuid, ItemStack[] items)**
 
-Replaces the stored inventory contents of an offline player using the TrueOG Purpur player data API. Same 41 slot layout as `getInventoryData`. Returns false, and writes nothing, when the player has no stored profile or the server refused the write. Use the live `Player` inventory for online players.
+Replaces the stored inventory contents of an offline player using the TrueOG Purpur player data API. Same 41 slot layout as `getInventoryData`. Returns false, and writes nothing, when the player has no stored profile; throws `IllegalStateException` when the stored profile can not be read (nothing is written then) or when the write failed. Use the live `Player` inventory for online players.
 
 Kotlin:
 ```kotlin

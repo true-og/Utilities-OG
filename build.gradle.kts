@@ -25,7 +25,7 @@ kotlin { jvmToolchain(17) }
 /* ----------------------------- Metadata ------------------------------ */
 group = "net.trueog.utilities-og" // Declare bundle identifier.
 
-version = "1.7.9" // Declare plugin version (will be in .jar).
+version = "1.8.0" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 
@@ -54,7 +54,6 @@ dependencies {
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.14.1") // Import NBT API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3") // Import MiniPlaceholders API.
     compileOnly("net.luckperms:api:5.4") // Import LuckPerms API.
-    compileOnly("org.rocksdb:rocksdbjni:10.10.1.1") // Import RocksDB API, shipped by TrueOG Purpur.
     implementation(kotlin("stdlib")) // Import and package Kotlin standard library.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2") // Import and package Kotlin async library.
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Add JUnit API to testing environment.

@@ -1,6 +1,12 @@
+**1.8.0**
+- Updated the player data bridge for TrueOG Purpur. `savePlayerData` now returns `void`, and `getSeenPlayers` uses Bukkit's offline player list.
+- Removed shared database APIs and the RocksDB dependency. MyWorlds now stores per-world profiles inside vanilla player profiles.
+- `upgradePlayerData` now uses Paper's public data converter.
+- Player data and inventory helpers now throw `IllegalStateException` on storage read or write failures.
+
 **1.7.9**
-- The player data bridge now matches the slimmed TrueOG Purpur `PlayerDataStorage`, which stores vanilla profiles only. MyWorlds handles its own.
-- Added shared-database access for plugins that keep their own column families next to the vanilla profiles: `isPlayerDataStorageOpen()`, `getPlayerDataDatabase()`, `getPlayerDataColumnFamily(name, create)`, `dropPlayerDataColumnFamily(name)` and `stagePlayerData(batch, uuid, tag)` for atomic writes.
+- Updated the player data bridge for TrueOG Purpur's vanilla-only profile storage. MyWorlds manages its own profiles.
+- Added shared database APIs for plugins to manage their own column families and make atomic writes.
 
 **1.7.8**
 - Utilities-OG is now the single bridge to the TrueOG Purpur RocksDB player data storage. New world scoped API with raw NMS tags as `Object`: `getPlayerData(world, uuid)`, `savePlayerData(world, uuid, tag)`, `savePlayerData(uuid, perWorld)` (atomic), `hasPlayerData(world, uuid)`, `getSeenPlayers(world)`, `dropWorldPlayerData(world)`, `copyWorldPlayerData(from, to)`, plus `isPlayerDataApiAvailable()`. MyWorlds uses it for per-world inventories.

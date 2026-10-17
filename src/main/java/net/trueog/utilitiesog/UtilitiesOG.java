@@ -14,9 +14,6 @@ import java.util.function.Supplier;
 import net.trueog.utilitiesog.utils.InventoryNbtCodec;
 import net.trueog.utilitiesog.utils.PlayerDataUtils;
 import org.bukkit.Bukkit;
-import org.rocksdb.ColumnFamilyHandle;
-import org.rocksdb.RocksDB;
-import org.rocksdb.WriteBatch;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -518,21 +515,24 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    // Vanilla profile of a player, null when absent. Throws IllegalStateException
-    // when the storage failed.
+    // Vanilla profile of a player, upgraded to the current data version, null when
+    // absent. Throws IllegalStateException when the stored profile could not be
+    // read, so callers never mistake a broken profile for a missing one.
     public static @Nullable Object getPlayerData(UUID uuid) {
 
         return playerDataUtils.get(uuid);
 
     }
 
-    // False when the server refused the write.
-    public static boolean savePlayerData(UUID uuid, Object tag) {
+    // Replaces the vanilla profile. Throws IllegalStateException when the write
+    // failed; silently does nothing while player data saving is disabled.
+    public static void savePlayerData(UUID uuid, Object tag) {
 
-        return playerDataUtils.save(uuid, tag);
+        playerDataUtils.save(uuid, tag);
 
     }
 
+    // Throws IllegalStateException when the storage failed.
     public static boolean hasPlayerData(UUID uuid) {
 
         return playerDataUtils.has(uuid);
@@ -546,49 +546,11 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    // Runs the server's player data fixes on a tag and stamps its data version.
+    // Runs the server's player data fixes on a tag kept elsewhere and stamps its
+    // data version, so a plugin's own profiles load like vanilla ones.
     public static Object upgradePlayerData(Object tag) {
 
         return playerDataUtils.upgrade(tag);
-
-    }
-
-    // Shared database for plugins that keep their own column families next to the
-    // vanilla profiles. Null once the storage is closed.
-
-    public static boolean isPlayerDataStorageOpen() {
-
-        return playerDataUtils != null && playerDataUtils.isOpen();
-
-    }
-
-    public static @Nullable RocksDB getPlayerDataDatabase() {
-
-        return playerDataUtils.database();
-
-    }
-
-    // A plugin column family by name, created on demand. Null when absent without
-    // create, reserved, closed or failed.
-    public static @Nullable ColumnFamilyHandle getPlayerDataColumnFamily(String name, boolean create) {
-
-        return playerDataUtils.columnFamily(name, create);
-
-    }
-
-    // True when dropped or absent. Keep your own handles out of use while dropping.
-    public static boolean dropPlayerDataColumnFamily(String name) {
-
-        return playerDataUtils.dropColumnFamily(name);
-
-    }
-
-    // Adds the vanilla profile write, with its previous backup, to a batch the
-    // caller writes, so plugin column families land atomically with it. False when
-    // the storage refused it.
-    public static boolean stagePlayerData(WriteBatch batch, UUID uuid, Object tag) {
-
-        return playerDataUtils.stage(batch, uuid, tag);
 
     }
 
@@ -633,16 +595,19 @@ public final class UtilitiesOG extends JavaPlugin {
 
     }
 
-    // 41 slots in getContents() order. All null without a stored profile.
+    // 41 slots in getContents() order. All null without a stored profile; throws
+    // IllegalStateException when the stored profile could not be read.
     public static @Nullable ItemStack @NotNull [] getInventoryData(UUID uuid) {
 
         requireInventoryApi();
         final Object tag = playerDataUtils.get(uuid);
-        return (tag == null) ? new ItemStack[41] : InventoryNbtCodec.read(tag);
+        return (tag == null || !InventoryNbtCodec.isProfile(tag)) ? new ItemStack[41] : InventoryNbtCodec.read(tag);
 
     }
 
-    // Replaces the stored inventory. False if no profile or the write failed.
+    // Replaces the stored inventory. False without a stored profile. Throws
+    // IllegalStateException when the stored profile could not be read (nothing is
+    // written then) or when the write failed.
     public static boolean setInventoryData(UUID uuid, @Nullable ItemStack @NotNull [] items) {
 
         requireInventoryApi();
@@ -652,21 +617,15 @@ public final class UtilitiesOG extends JavaPlugin {
         try {
 
             final Object tag = playerDataUtils.get(uuid);
-            if (tag == null) {
+            if (tag == null || !InventoryNbtCodec.isProfile(tag)) {
 
                 logToConsole(PREFIX, "&cNo stored player data for " + uuid + ", inventory not written.");
                 return false;
 
             }
 
-            final boolean saved = playerDataUtils.save(uuid, InventoryNbtCodec.write(tag, items));
-            if (!saved) {
-
-                logToConsole(PREFIX, "&cThe server refused the player data write for " + uuid + ".");
-
-            }
-
-            return saved;
+            playerDataUtils.save(uuid, InventoryNbtCodec.write(tag, items));
+            return true;
 
         } finally {
 
@@ -681,7 +640,7 @@ public final class UtilitiesOG extends JavaPlugin {
 
         requireInventoryApi();
         final Object tag = playerDataUtils.get(uuid);
-        return (tag == null) ? 0 : InventoryNbtCodec.heldItemSlot(tag);
+        return (tag == null || !InventoryNbtCodec.isProfile(tag)) ? 0 : InventoryNbtCodec.heldItemSlot(tag);
 
     }
 

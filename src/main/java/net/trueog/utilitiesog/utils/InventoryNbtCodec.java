@@ -17,6 +17,14 @@ public final class InventoryNbtCodec {
 
     }
 
+    // A stored tag without a position is no profile, only data other plugins keep
+    // for a player who never joined (a MyWorlds inventory group, for example).
+    public static boolean isProfile(Object tag) {
+
+        return new NBTContainer(tag).hasTag("Pos");
+
+    }
+
     // 41 slots in PlayerInventory.getContents() order
     public static ItemStack[] read(Object tag) {
 
