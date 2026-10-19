@@ -1,3 +1,6 @@
+**1.8.1**
+- Added `/phtest`, merged from PlaceholderTest-OG: it checks that the MiniPlaceholders other plugins register resolve. Gated by the `utilities.phtest` permission, toggled by `PlaceholderTest`, and the expected tags live under `PlaceholderTestPlugins` in config.yml.
+
 **1.8.0**
 - Updated the player data bridge for TrueOG Purpur. `savePlayerData` now returns `void`, and `getSeenPlayers` uses Bukkit's offline player list.
 - Removed shared database APIs and the RocksDB dependency. MyWorlds now stores per-world profiles inside vanilla player profiles.

@@ -17,6 +17,9 @@ commands:
     usage: /ping
   bing:
     usage: /bing
+  phtest:
+    description: Check that the MiniPlaceholders other plugins register resolve.
+    usage: /phtest [player] | /phtest raw <text> [player]
   colorcodes:
     usage: /colorcodes
   kit:
@@ -79,6 +82,9 @@ permissions:
   utilities.ping:
     description: Permission to use the /ping and /bing commands.
     default: op
+  utilities.phtest:
+    description: Permission to use the /phtest command. Granted only through LuckPerms.
+    default: false
   seed.bypass:
     description: Allows access to the default Minecraft /seed command.
     default: false

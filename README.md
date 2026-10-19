@@ -24,6 +24,7 @@ Any config change requires a server restart to take effect.
 * **TogglePhantoms:** Allows players to use the `/togglephantoms` command to turn phantom spawning on or off for themselves.
 * **Ping:** Provides two commands: `/ping` (displays real player ping) and `/bing` (replicates vanilla /ping functionality).
 * **Ranks Menu:** Displays information to players about available ranks at the [TrueOG Network Store](https://store.true-og.net).
+* **Placeholder Test:** `/phtest [player]` resolves every MiniPlaceholder listed under `PlaceholderTestPlugins` in config.yml and marks each one `[OK]`, `[EMPTY]`, `[NOT REGISTERED]` or `[REGISTERED BUT UNRESOLVED]`. `/phtest raw <text> [player]` expands any MiniMessage text.
 
 **Warning:**
 
@@ -49,6 +50,9 @@ Any config change requires a server restart to take effect.
 * **`utilities.ping`**
     * **Description:** Grants permission to use the `/ping` (real ping) and `/bing` (mimics vanilla ping) commands.
     * **Default:** `op` (Server Operator)
+* **`utilities.phtest`**
+    * **Description:** Allows players to use the `/phtest` command. Grant it with LuckPerms; the console can always run it.
+    * **Default:** `false` (nobody, until granted)
 
 **Please note:** These permissions can be modified in the Utilities-OG configuration file config.yml.
 

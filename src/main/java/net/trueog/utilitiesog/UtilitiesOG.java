@@ -29,6 +29,7 @@ import net.trueog.utilitiesog.commands.AboutCommand;
 import net.trueog.utilitiesog.commands.BingCommand;
 import net.trueog.utilitiesog.commands.ColorCodesCommand;
 import net.trueog.utilitiesog.commands.PingCommand;
+import net.trueog.utilitiesog.commands.PlaceholderTestCommand;
 import net.trueog.utilitiesog.commands.RanksCommand;
 import net.trueog.utilitiesog.commands.ToggleCrammingCommand;
 import net.trueog.utilitiesog.commands.TogglePhantomsCommand;
@@ -227,6 +228,15 @@ public final class UtilitiesOG extends JavaPlugin {
             this.getCommand("ah").setExecutor(new AuctionCommand());
             this.getCommand("auction").setExecutor(new AuctionCommand());
             this.getCommand("info").setExecutor(new InfoCommand());
+
+        }
+
+        if (this.getConfig().getBoolean("PlaceholderTest", true)) {
+
+            final PlaceholderTestCommand placeholderTest = new PlaceholderTestCommand(
+                    PlaceholderTestCommand.loadExpected(this.getConfig()));
+            this.getCommand("phtest").setExecutor(placeholderTest);
+            this.getCommand("phtest").setTabCompleter(placeholderTest);
 
         }
 

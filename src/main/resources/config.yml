@@ -29,3 +29,17 @@ AdvancementsOnlyInSurvival: true
 MissingCommands: true
 # Registers Utilities-OG's own MiniPlaceholders (servers_name, player_display_name). Default: true.
 RegisterPlaceholders: true
+# Registers /phtest, which checks that the MiniPlaceholders other plugins register resolve. Requires utilities.phtest. Default: true.
+PlaceholderTest: true
+# The MiniPlaceholder tags /phtest expects, listed under each plugin's name as shown by /plugins.
+PlaceholderTestPlugins:
+  TheHerobrine-OG:
+    - hb_score
+    - hb_rank
+    - hb_class
+  BuildBattle-OG:
+    - bb_score
+    - bb_rank
+  Splegg-OG:
+    - sp_score
+    - sp_rank
