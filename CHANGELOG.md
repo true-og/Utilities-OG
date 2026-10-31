@@ -52,7 +52,7 @@
 - MiniPlaceholder output now bleeds formatting into surrounding text like legacy color codes, unless explicitly reset or stripped.
 
 **1.6.6**
-- Disabled entity cramming now that true-og/ChunkCap-OG and true-og/MobLimiter-OG establish a ceiling.
+- Disabled entity cramming now that trueog/ChunkCap-OG and trueog/MobLimiter-OG establish a ceiling.
 - Split string-based player messaging into miniplaceholder expanding and non-expanding APIs.
 - Add `trueogRawMessage(Player, String)` and `trueogRawMessage(UUID, String)` for sending unexpanded or pre-expanded text with TrueOG formatting.
 
